@@ -6,7 +6,9 @@ import { Injectable } from '@angular/core';
  */
 @Injectable()
 export class Api {
-  public static API_URL: string = 'https://mars.webebook.org/api';
+  public static API_URL: string = 'https://mars.webebook.org';
+  // public static API_URL: string = 'http://localhost:8100';
+  // public static API_URL: string = 'http://192.168.10.104:8100';
 
   constructor(public http: HttpClient) {
   }

@@ -67,7 +67,7 @@ export class MyApp {
             this.tryLogin();
         } else {
             // Try to get the oauth settings from the server
-            this.api.get('auth-info').subscribe((data: any) => {
+            this.api.get('/api/auth-info').subscribe((data: any) => {
               console.log("Received data, ", data);
                     data.redirectUri = 'http://localhost:8100';
                     // save in localStorage so redirect back gets config immediately

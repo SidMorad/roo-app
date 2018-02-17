@@ -11,6 +11,6 @@ export class User {
     constructor(public api: Api) { }
 
     findAll(): Observable<any> {
-        return this.api.get('users');
+        return this.api.get('/api/users');
     }
 }

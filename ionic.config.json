@@ -8,7 +8,7 @@
   "proxies": [
     {
       "path": "/api",
-      "proxyUrl": "http://localhost/api"
+      "proxyUrl": "https://mars.webebook.org/api"
     }
   ]
 }

@@ -1,0 +1,46 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>Categories</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="open()">
+                <ion-icon name="add"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<!-- todo: add elasticsearch support -->
+<ion-content padding>
+    <ion-refresher (ionRefresh)="loadAll($event)">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    <ion-list>
+        <ion-item-sliding *ngFor="let category of categories; trackBy: trackId" #slidingItem>
+            <button ion-item (click)="detail(category)">
+                <p>{{category.uuid}}</p>
+                <p>{{category.titleEng}}</p>
+                <p>{{category.indexOrder}}</p>
+                <p>{{category.forSell}}</p>
+                <p>{{category.commingSoon}}</p>
+                <p>{{category.cameNew}}</p>
+                <!--
+                <ion-avatar *ngIf="category.picture">
+                    <img [src]="'data:' + category.pictureContentType + ';base64,' + category.picture" />
+                    <span *ngIf="category.picture">{{category.pictureContentType}}, {{byteSize(category.picture)}}</span>
+                </ion-avatar>
+                todo: what to do when it's a byte[] or ByteBuffer? In normal entity generatory, an open link is rendered -->
+            </button>
+            <ion-item-options>
+                <button ion-button color="primary" (click)="open(slidingItem, blog)">
+                    {{ 'EDIT_BUTTON' | translate }}
+                </button>
+                <button ion-button color="danger" (click)="delete(category)">
+                    {{ 'DELETE_BUTTON' | translate }}
+                </button>
+            </ion-item-options>
+        </ion-item-sliding>
+    </ion-list>
+    <ion-item *ngIf="!categories?.length">
+        No Categories found.
+    </ion-item>
+</ion-content>
