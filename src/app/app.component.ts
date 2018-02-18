@@ -8,6 +8,9 @@ import { MainPage } from '../pages/pages';
 import { Settings } from '../providers/providers';
 import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
 import { Api } from '../providers/api/api';
+import { TabsPage } from '../pages/tabs/tabs';
+
+declare const window: any;
 
 @Component({
     template: `
@@ -44,7 +47,7 @@ export class MyApp {
         {title: 'Entities', component: 'EntityPage'}
     ];
 
-    constructor(private translate: TranslateService, platform: Platform, settings: Settings, private config: Config,
+    constructor(private translate: TranslateService, private platform: Platform, settings: Settings, private config: Config,
                 private statusBar: StatusBar, private splashScreen: SplashScreen, private oauthService: OAuthService, private api: Api) {
         platform.ready().then(() => {
             // Okay, so the platform is ready and our plugins are available.
@@ -55,6 +58,30 @@ export class MyApp {
 
         this.initTranslate();
         this.initAuthentication();
+
+        const me = this;
+        window.handleOpenURL = (url) => {
+          setTimeout(function() {
+            const responseParameters = (url.split('#')[1]).split('&');
+            const parsedResponse = {};
+            for (let i = 0; i < responseParameters.length; i++) {
+                parsedResponse[responseParameters[i].split('=')[0]] =
+                    responseParameters[i].split('=')[1];
+            }
+            if (parsedResponse['access_token'] !== undefined &&
+                parsedResponse['access_token'] !== null) {
+                const idToken = parsedResponse['id_token'];
+                const accessToken = parsedResponse['access_token'];
+                const keyValuePair = `#id_token=${encodeURIComponent(idToken)}&access_token=${encodeURIComponent(accessToken)}`;
+                me.oauthService.tryLogin({
+                    customHashFragment: keyValuePair,
+                    disableOAuth2StateCheck: true
+                });
+                me.oauthService.getIdentityClaims();
+                me.nav.setRoot(TabsPage);
+            }
+          }, 0);
+        };
     }
 
     initAuthentication() {
@@ -68,21 +95,28 @@ export class MyApp {
         } else {
             // Try to get the oauth settings from the server
             this.api.get('/api/auth-info').subscribe((data: any) => {
-              console.log("Received data, ", data);
-                    data.redirectUri = 'http://localhost:8100';
-                    // save in localStorage so redirect back gets config immediately
-                    localStorage.setItem(AUTH_CONFIG, JSON.stringify(data));
-                    this.oauthService.configure(data);
-                    this.tryLogin();
-                }, error => {
-                    console.error('ERROR fetching authentication information, defaulting to Keycloak settings');
-                    this.oauthService.redirectUri = 'http://localhost:8100';
-                    this.oauthService.clientId = 'web_app';
-                    this.oauthService.scope = 'openid profile email';
-                    this.oauthService.issuer = 'http://localhost:9080/auth/realms/jhipster';
-                    this.tryLogin();
-                }
-            );
+                const me = this;
+                this.platform.ready().then(() => {
+                    window.cordova.plugins.browsertab.isAvailable(function(result) {
+                        if (result) {
+                            data.redirectUri = 'marsroo://oauth2redirect';
+                        } else {
+                            data.redirectUri = 'http://localhost:8100';
+                        }
+                        // save in localStorage so redirect back gets config immediately
+                        localStorage.setItem(AUTH_CONFIG, JSON.stringify(data));
+                        me.oauthService.configure(data);
+                        me.tryLogin();
+                    });
+                });
+            }, error => {
+                console.error('ERROR fetching authentication information, defaulting to Keycloak settings');
+                this.oauthService.redirectUri = 'http://localhost:8100';
+                this.oauthService.clientId = 'web_app';
+                this.oauthService.scope = 'openid profile email';
+                this.oauthService.issuer = 'http://localhost:9080/auth/realms/jhipster';
+                this.tryLogin();
+            });
         }
     }
 

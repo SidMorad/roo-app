@@ -40,32 +40,43 @@ export class LoginService {
             }
             return new Promise((resolve, reject) => {
                 const oauthUrl = this.buildUrl(state, nonce);
-                const browser = window.cordova.InAppBrowser.open(oauthUrl, '_blank',
-                    'location=no,clearsessioncache=yes,clearcache=yes');
-                browser.addEventListener('loadstart', (event) => {
-                    if ((event.url).indexOf('http://localhost:8100') === 0) {
-                        browser.removeEventListener('exit', () => {
-                        });
-                        browser.close();
-                        const responseParameters = ((event.url).split('#')[1]).split('&');
-                        const parsedResponse = {};
-                        for (let i = 0; i < responseParameters.length; i++) {
-                            parsedResponse[responseParameters[i].split('=')[0]] =
-                                responseParameters[i].split('=')[1];
-                        }
-                        const defaultError = 'Problem authenticating with OAuth';
-                        if (parsedResponse['state'] !== state) {
-                            reject(defaultError);
-                        } else if (parsedResponse['access_token'] !== undefined &&
-                            parsedResponse['access_token'] !== null) {
-                            resolve(parsedResponse);
+                this.platform.ready().then(()=> {
+                  const defaultError = 'Problem authenticating with OAuth';
+                    window.cordova.plugins.browsertab.isAvailable(function(result) {
+                        if (result) {
+                            window.cordova.plugins.browsertab.openUrl(oauthUrl,
+                                function(success) { console.log("Success ", success); },
+                                function(error) { reject(defaultError) }
+                            );
                         } else {
-                            reject(defaultError);
+                            const browser = window.cordova.InAppBrowser.open(oauthUrl, '_blank',
+                                'location=no,clearsessioncache=no,clearcache=no');
+                            browser.addEventListener('loadstart', (event) => {
+                                if ((event.url).indexOf('http://localhost:8100') === 0) {
+                                    browser.removeEventListener('exit', () => {
+                                    });
+                                    browser.close();
+                                    const responseParameters = ((event.url).split('#')[1]).split('&');
+                                    const parsedResponse = {};
+                                    for (let i = 0; i < responseParameters.length; i++) {
+                                        parsedResponse[responseParameters[i].split('=')[0]] =
+                                            responseParameters[i].split('=')[1];
+                                    }
+                                    if (parsedResponse['state'] !== state) {
+                                        reject(defaultError);
+                                    } else if (parsedResponse['access_token'] !== undefined &&
+                                        parsedResponse['access_token'] !== null) {
+                                        resolve(parsedResponse);
+                                    } else {
+                                        reject(defaultError);
+                                    }
+                                }
+                            });
+                            browser.addEventListener('exit', function (event) {
+                                reject('The OAuth sign in flow was canceled');
+                            });
                         }
-                    }
-                });
-                browser.addEventListener('exit', function (event) {
-                    reject('The OAuth sign in flow was canceled');
+                    });
                 });
             });
         });
