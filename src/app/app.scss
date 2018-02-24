@@ -36,3 +36,11 @@ only screen and (                min-resolution: 2dppx) {
     background-size: contain;
   }
 }
+
+.force-ltr {
+  direction: ltr;
+}
+
+.bar-button-md {
+  text-transform: none;
+}

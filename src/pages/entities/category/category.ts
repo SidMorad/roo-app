@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, ModalController, NavController, ToastController } from 'ionic-angular';
+import { ModalController, NavController, ToastController } from 'ionic-angular';
 import { Category } from './category.model';
 import { CategoryService } from './category.provider';
 
-@IonicPage()
+// @IonicPage()
 @Component({
     selector: 'page-category',
     templateUrl: 'category.html'

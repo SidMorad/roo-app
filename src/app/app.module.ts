@@ -13,6 +13,7 @@ import { MyApp } from './app.component';
 import { LoginService } from '../providers/login/login.service';
 import { Principal } from '../providers/auth/principal.service';
 import { AccountService } from '../providers/auth/account.service';
+import { CategoryService } from '../providers/category/category.service';
 import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 import { AuthInterceptor } from '../providers/auth/auth-interceptor';
 import { EntityPageModule } from '../pages/entities/entity.module';
@@ -68,6 +69,7 @@ export function provideSettings(storage: Storage) {
     LoginService,
     Principal,
     AccountService,
+    CategoryService,
     LocalStorageService,
     SessionStorageService,
     Camera,

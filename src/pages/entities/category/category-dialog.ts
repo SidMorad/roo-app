@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonicPage, NavController, NavParams, ToastController, ViewController } from 'ionic-angular';
+import { NavController, NavParams, ToastController, ViewController } from 'ionic-angular';
 import { Category } from './category.model';
 import { CategoryService } from './category.provider';
 
-@IonicPage()
+// @IonicPage()
 @Component({
     selector: 'page-category-dialog',
     templateUrl: 'category-dialog.html'

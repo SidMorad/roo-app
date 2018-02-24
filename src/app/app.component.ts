@@ -42,7 +42,7 @@ export class MyApp {
         {title: 'Tabs', component: 'TabsPage'},
         {title: 'Login', component: 'LoginPage'},
         {title: 'Signup', component: 'SignupPage'},
-        {title: 'Menu', component: 'MenuPage'},
+        // {title: 'Menu', component: 'MenuPage'},
         {title: 'Settings', component: 'SettingsPage'},
         {title: 'Entities', component: 'EntityPage'}
     ];

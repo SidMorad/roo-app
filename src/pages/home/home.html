@@ -1,18 +1,89 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Welcome, {{account?.firstName}}!
+      <span>{{'APP_NAME' | translate}}</span>
     </ion-title>
-    <ion-buttons end>
-      <button ion-button (click)="logout()">
-        Logout
+    <ion-buttons start>
+      <button ion-button solid (click)="logout()" *ngIf="isAuthenticated()">
+        <ion-icon name="contact"></ion-icon>
+        <span style="padding-left: 4px; padding-right: 4px;"> {{account.login}} </span>
+      </button>
+      <button ion-button outline (click)="signin()" *ngIf="!isAuthenticated()">
+        <ion-icon name="contact"></ion-icon>
+        <span style="padding-left: 4px; padding-right: 4px;"> {{'GUEST' | translate}} </span>
       </button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-  <p>{{ 'WELCOME_INTRO' | translate }}</p>
-  <p>Well</p>
-  <span class="hipster"></span>
+<ion-content class="force-ltr">
+  <ion-scroll style="width: auto; height: 100%" class="force-ltr" scrollX="true" scrollY="false" zoom="false">
+    <div class="categories-index">
+    <div class="content">
+    <div id="map-container-main" class="map-container-main">
+    <div class="map-container map-wrapper">
+    <div class="map map-inner map-webview touch-action" id="map-webview" [style.width.px]="mapWidth" style="height:inherit; overflow-x:auto; display:inline-block;">
+
+      <div id="pin-daily" class="pin">
+        <div class="pin-image-photo">
+          <a (click)="dailyLesson()">
+          </a>
+        </div>
+        <div class="pin-image">
+          <div class="date">
+            <span class="day">{{'SOON_LABEL' | translate}}</span>
+          </div>
+        </div>
+        <div class="title">
+          <span>
+            {{'DAILY_LESSON' | translate}}
+          </span>
+        </div>
+      </div>
+
+      <div id="pin-bot" class="pin">
+        <div class="pin-image-photo">
+          <a (click)="dailyLesson()"></a>
+          <div class="loader-center">
+            <div class="loader"></div>
+          </div>
+        </div>
+        <div class="pin-image">
+           <div class="completed">
+             <span>{{'SOON_LABEL' | translate}}</span>
+           </div>
+        </div>
+        <div class="title">
+          <span>{{'CHAT_BOT' | translate}}</span>
+        </div>
+      </div>
+      <div class="bot-dot">
+      </div>
+
+      <div class="pin" id="pin-{{i+1}}" *ngFor="let category of categories; let i = index; trackBy uuid;">
+       <div class="pin-image-photo">
+         <a (click)="categoryLesson(category)" [class.pin-locked]="category.forSell">
+         </a>
+         <div class="loader-center">
+           <div class="loader">
+           </div>
+         </div>
+       </div>
+       <div class="pin-image">
+         <div class="completed">
+           <span *ngIf="!category.commingSoon"> 0 / {{category.nol}}</span>
+           <span *ngIf="category.commingSoon">{{'SOON_LABEL' | translate}}</span>
+         </div>
+       </div>
+       <div class="title">
+         <span>{{category.title}}</span>
+       </div>
+       <div *ngIf="category.cameNew" class="new-label">{{'NEW_LABEL' | translate}}</div>
+      </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+  </ion-scroll>
 </ion-content>

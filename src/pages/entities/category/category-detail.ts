@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { IonicPage, ModalController, NavParams, ToastController } from 'ionic-angular';
+import { ModalController, NavParams, ToastController } from 'ionic-angular';
 import { Category } from './category.model';
 import { CategoryService } from './category.provider';
 
-@IonicPage({
-    segment: 'category-detail/:id'
-})
+// @IonicPage({
+//     segment: 'category-detail/:id'
+// })
 @Component({
     selector: 'page-category-detail',
     templateUrl: 'category-detail.html'

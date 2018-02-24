@@ -23,4 +23,9 @@ export class WelcomePage {
   signup() {
     this.navCtrl.push('SignupPage');
   }
+
+  home() {
+    this.navCtrl.push('TabsPage');
+  }
+
 }
