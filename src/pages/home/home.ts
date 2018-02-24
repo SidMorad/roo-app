@@ -64,6 +64,7 @@ export class HomePage implements OnInit {
 
   categoryLesson(category) {
     console.log("Category selected: ", category);
+    this.navCtrl.push('CategoryLessonPage', { category: category});
   }
 
   dailyLesson() {

@@ -14,4 +14,8 @@ export class CategoryService {
     return this.http.get(Api.API_URL + '/roo/api/public/categories/' + TranslDir[translDir]);
   }
 
+  getLessonPublicList(translDir: TranslDir, uuid: string): Observable<any> {
+    return this.http.get(Api.API_URL + '/roo/api/public/lessons/' + TranslDir[translDir] + '/' + uuid);
+  }
+
 }
