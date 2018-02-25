@@ -4,3 +4,6 @@ export * from './user.model';
 export * from './transl-dir';
 export * from './category.model';
 export * from './lesson.model';
+export * from './question-type';
+export * from './question-difficulty';
+export * from './question.model';

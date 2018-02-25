@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { IonicPage, Platform, NavParams, Slides } from 'ionic-angular';
+import { IonicPage, Platform, NavParams, Slides, NavController } from 'ionic-angular';
+import { NgProgress } from '@ngx-progressbar/core';
+import { Subscription } from 'rxjs/Rx';
 
 import { Category, Lesson, TranslDir } from '../../models';
 import { CategoryService } from '../../providers/category/category.service';
@@ -18,30 +20,41 @@ export class CategoryLessonPage implements OnInit {
   category: Category;
   isEnd: boolean;
   isBeginning: boolean;
+  subscription: Subscription;
 
-  constructor(platform: Platform, navParams: NavParams,
-              private categorySerivce: CategoryService) {
+  constructor(platform: Platform, navParams: NavParams, private navCtrl: NavController,
+              private categorySerivce: CategoryService, public ngProgress: NgProgress) {
     this.dir = platform.dir();
     this.category = navParams.get('category');
     this.lessons = [];
   }
 
   ngOnInit() {
-    console.log("CategoryLessonPage initialized.");
+    this.isBeginning = true;
     this.categorySerivce.getLessonPublicList(TranslDir.FA$EN_UK, this.category.uuid)
       .subscribe((res) => {
         this.lessons = res;
       }, (error) => {
-        console.log('Oops category-lesson load failed!');
+        console.log('Oops category-lesson load failed! TODO');
       });
   }
 
-  ionViewDidEnter() {
-    this.isBeginning = true;
+  startLesson(index) {
+    this.subscription = this.categorySerivce.getQuestions(this.lessons[index]).subscribe((res) => {
+      this.navCtrl.push('LessonQuestionPage', {category: this.category, lesson: this.lessons[index], questions: res});
+    }, (error) => {
+      console.log('Oops this should not happend, TODO');
+    });
   }
 
-  start(index) {
-    console.log('Start lesson ', index, this.lessons[index]);
+  cancel(index) {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  isInProgress() {
+    return this.ngProgress.isStarted();
   }
 
   onSlideChangeStart(slider) {

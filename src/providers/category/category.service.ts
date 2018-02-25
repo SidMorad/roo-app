@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Rx';
 import { HttpClient } from '@angular/common/http';
 
 import { Api } from '../api/api';
-import { TranslDir } from '../../models';
+import { TranslDir, Lesson, QuestionDifficulty } from '../../models';
 
 @Injectable()
 export class CategoryService {
@@ -16,6 +16,13 @@ export class CategoryService {
 
   getLessonPublicList(translDir: TranslDir, uuid: string): Observable<any> {
     return this.http.get(Api.API_URL + '/roo/api/public/lessons/' + TranslDir[translDir] + '/' + uuid);
+  }
+
+  getQuestions(lesson: Lesson): Observable<any> {
+    return this.http.get(Api.API_URL + '/roo/api/public/questions/'
+                                + lesson.translDir + '/'
+                                + QuestionDifficulty[QuestionDifficulty.Beginner] + '/'
+                                + lesson.uuid);
   }
 
 }

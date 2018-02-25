@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-navbar [hideBackButton]="true">
+    <ion-toolbar>
+      <ion-grid>
+        <ion-row>
+          <ion-col col-auto>
+            <span *ngFor="let i of [5, 4, 3, 2, 1]">
+              <ion-icon name="star" color="gold"></ion-icon>
+            </span>
+          </ion-col>
+          <ion-col col-auto>
+            <progress max="{{questions.length}}" [value]="6"></progress>
+          </ion-col>
+          <ion-col col-1>
+            <button ion-button icon-only clear (click)="exit()">
+              <ion-icon name="close"></ion-icon>
+            </button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-toolbar>
+  </ion-navbar>
+</ion-header>
+
+<ion-content no-padding>
+  <section class="question-container">
+    <div class="quesiton-part padding">
+      <span class="float-left">
+        <button ion-button small icon-only clear color="dark" (click)="speak()">
+          <ion-icon name="repeat"></ion-icon>
+        </button>
+      </span>
+      <span class="float-right">
+        <button ion-button small icon-only clear color="dark" (click)="showHelp()">
+          <ion-icon name="help-buoy"></ion-icon>
+        </button>
+      </span>
+      <p [class.dir-rtl]="lesson.isFromLangRTL()">&nbsp; {{question.description}}</p>
+      <p *ngIf="question.type.toString() !=='TwoPicture' || question.type.toString() != 'FourPicture'"
+          [class.dir-rtl]="lesson.isFromLangRTL() && question.dynamicPart.reverse">
+          {{question.dynamicPart.question}}
+      </p>
+    </div>
+  </section>
+</ion-content>

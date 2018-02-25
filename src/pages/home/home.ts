@@ -1,5 +1,6 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { App, IonicPage, NavController } from 'ionic-angular';
+import { NgProgress } from '@ngx-progressbar/core';
 
 import { Principal } from '../../providers/auth/principal.service';
 import { FirstRunPage } from '../pages';
@@ -16,13 +17,15 @@ export class HomePage implements OnInit {
   account: Account = {};
   categories: Category[];
   mapWidth: number;
+  showRetryButton: boolean;
 
   constructor(public navCtrl: NavController,
               private principal: Principal,
               private app: App,
               private ngZone: NgZone,
               private loginService: LoginService,
-              private categoryService: CategoryService) {
+              private categoryService: CategoryService,
+              public ngProgress: NgProgress) {
     this.categories = [];
     this.mapWidth = (window.screen.height * 4.8);
   }
@@ -41,11 +44,16 @@ export class HomePage implements OnInit {
         })
       }
     });
+    this.fetchCategories();
+  }
+
+  fetchCategories() {
+    this.showRetryButton = false;
     this.categoryService.getCategoryPublicList(TranslDir.FA$EN_UK).subscribe((response) => {
       this.categories = response;
     }, (error) => {
       console.log("Error on getting category list, Oops we are in trouble!", error);
-      this.categories = [];
+      this.showRetryButton = true;
     });
   }
 

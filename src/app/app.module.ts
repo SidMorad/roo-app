@@ -8,16 +8,19 @@ import { IonicStorageModule, Storage } from '@ionic/storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { OAuthModule } from 'angular-oauth2-oidc';
+import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
+import { NgProgressModule } from '@ngx-progressbar/core';
+import { NgProgressHttpModule } from '@ngx-progressbar/http';
+
 import { Api, Settings, User } from '../providers/providers';
 import { MyApp } from './app.component';
 import { LoginService } from '../providers/login/login.service';
 import { Principal } from '../providers/auth/principal.service';
 import { AccountService } from '../providers/auth/account.service';
 import { CategoryService } from '../providers/category/category.service';
-import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 import { AuthInterceptor } from '../providers/auth/auth-interceptor';
 import { EntityPageModule } from '../pages/entities/entity.module';
-import { OAuthModule } from 'angular-oauth2-oidc';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
@@ -54,10 +57,14 @@ export function provideSettings(storage: Storage) {
         deps: [HttpClient]
       }
     }),
-    IonicModule.forRoot(MyApp),
+    IonicModule.forRoot(MyApp, {
+      tabsHideOnSubPages: true
+    }),
     IonicStorageModule.forRoot(),
     EntityPageModule,
-    OAuthModule.forRoot()
+    OAuthModule.forRoot(),
+    NgProgressModule.forRoot(),
+    NgProgressHttpModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [

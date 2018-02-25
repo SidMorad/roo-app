@@ -44,3 +44,23 @@ only screen and (                min-resolution: 2dppx) {
 .bar-button-md {
   text-transform: none;
 }
+
+.row {
+  align-items: center;
+}
+
+.dir-ltr {
+  direction: ltr;
+}
+
+.dir-rtl {
+  direction: rtl;
+}
+
+.float-right {
+  float: right;
+}
+
+.float-left {
+  float: left;
+}

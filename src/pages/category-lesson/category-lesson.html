@@ -1,6 +1,7 @@
 <ion-header no-shadow>
   <ion-navbar>
     <ion-title>{{category.title}}</ion-title>
+    <ng-progress [thick]="true"></ng-progress>
   </ion-navbar>
 </ion-header>
 
@@ -11,24 +12,29 @@
         <h2 class="slide-title" [innerHTML]="lesson.title"></h2>
         <br />
         <br />
-        <h1 class="slide-nol">{{i}} / {{category.nol}}</h1>
+        <h1 class="slide-nol">{{i+1}} / {{category.nol}}</h1>
         <br />
         <br />
         <br />
-        <button ion-button round large (click)="start(i)" style="min-width: 150px">{{'START_LESSON' | translate}}</button>
+        <button ion-button round large (click)="startLesson(i)" style="min-width: 150px" *ngIf="!isInProgress()">
+          {{'START_LESSON' | translate}}
+        </button>
+        <button ion-button icon-only clear (click)="cancel()" *ngIf="isInProgress()">
+          <ion-icon name="close"></ion-icon>
+        </button>
         <br />
         <br />
       </ion-card>
       <ion-grid>
         <ion-row>
           <ion-col>
-            <button ion-button icon-only pull-start (click)="back()" *ngIf="!isBeginning" color="light">
+            <button ion-button icon-only (click)="back()" *ngIf="!isBeginning" color="light">
               <ion-icon name="arrow-back"></ion-icon>
             </button>
           </ion-col>
           <ion-col col-6></ion-col>
           <ion-col>
-            <button ion-button icon-only pull-end (click)="forward()" *ngIf="!isEnd" color="light">
+            <button ion-button icon-only (click)="forward()" *ngIf="!isEnd" color="light">
               <ion-icon name="arrow-forward"></ion-icon>
             </button>
           </ion-col>

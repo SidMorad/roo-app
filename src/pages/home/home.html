@@ -12,7 +12,11 @@
         <ion-icon name="contact"></ion-icon>
         <span style="padding-left: 4px; padding-right: 4px;"> {{'GUEST' | translate}} </span>
       </button>
+      <button ion-button icon-only clear *ngIf="showRetryButton" (click)="fetchCategories()">
+        <ion-icon name="refresh"></ion-icon>
+      </button>
     </ion-buttons>
+    <ng-progress [thick]="true"></ng-progress>
   </ion-navbar>
 </ion-header>
 

@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { NgProgressModule } from '@ngx-progressbar/core';
+import { NgProgressHttpModule } from '@ngx-progressbar/http';
 
 import { CategoryLessonPage } from './category-lesson';
 
@@ -11,7 +13,9 @@ import { CategoryLessonPage } from './category-lesson';
   ],
   imports: [
     IonicPageModule.forChild(CategoryLessonPage),
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
+    NgProgressModule,
+    NgProgressHttpModule
   ],
   exports: [
     CategoryLessonPage

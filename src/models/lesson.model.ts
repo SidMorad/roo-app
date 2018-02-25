@@ -7,4 +7,11 @@ export class Lesson {
     public translDir?: TranslDir,
     public indexOrder?: number
   ) { }
+
+  isFromLangRTL(): boolean {
+    const langs = (this.translDir+'').split('$');
+    return langs[0] === 'FA';
+  }
+
 }
+
