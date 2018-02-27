@@ -9,7 +9,7 @@ import { MainPage } from '../pages/pages';
 import { Settings } from '../providers/providers';
 import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
 import { Api } from '../providers/api/api';
-import { TabsPage } from '../pages/tabs/tabs';
+// import { TabsPage } from '../pages/tabs/tabs';
 
 declare const window: any;
 
@@ -82,7 +82,7 @@ export class MyApp {
                     disableOAuth2StateCheck: true
                 });
                 me.oauthService.getIdentityClaims();
-                me.nav.setRoot(TabsPage);
+                // me.nav.setRoot(TabsPage);
             }
           }, 0);
         };

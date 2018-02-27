@@ -10,7 +10,7 @@
             </span>
           </ion-col>
           <ion-col col-auto>
-            <progress [max]="questions.length" [value]="questionCounter+1"></progress>
+            <progress [max]="questions.length" [value]="questionCounter"></progress>
           </ion-col>
           <ion-col col-1>
             <button ion-button icon-only clear small (click)="exit()">
@@ -42,6 +42,9 @@
       <div *ngIf="isNotTypes(['TwoPicture', 'FourPicture'])"
           [class.dir-rtl]="lesson.isFromLangRTL() && question.d.reverse" padding>
           {{question.d.question}}
+      </div>
+      <div *ngIf="wasWrong" class="alert alert-info" [class.dir-rtl]="lesson.isFromLangRTL() && !question.d.reverse">
+        {{rightAnswerString}}
       </div>
 
 <!-- OneCheck -->
@@ -79,7 +82,7 @@
             <ion-col col-3></ion-col>
             <ion-col col-6>
               <div class="relative-flex-1" [dragula]='"two-pic"' id="{{twoPictures[0].answer}}_0" [class.alert-success]="wasCorrect && twoPictures[0].answered" [class.alert-error]="wasWrong && twoPictures[0].answered">
-                <img [src]="'data:' + twoPictures[0].pictureContentType + ';base64,' + twoPictures[0].picture" class="z_index_0" id="tpic0"/>
+                <img [src]="resolveImageUrl(twoPictures[0].name)" class="z_index_0"/>
                 <button ion-button full small color="secondary" *ngIf="twoPictures[0].answered && wasCorrect" >{{twoPictures[0].answer}}</button>
                 <button ion-button full small color="dark" *ngIf="!twoPictures[0].answered || wasWrong" >{{twoPictures[0].answer}}</button>
               </div>
@@ -99,7 +102,7 @@
             <ion-col col-3></ion-col>
             <ion-col col-6>
               <div class="relative-flex-1" [dragula]='"two-pic"' id="{{twoPictures[1].answer}}_1" [class.alert-success]="wasCorrect && twoPictures[1].answered" [class.alert-error]="wasWrong && twoPictures[1].answered">
-                <img [src]="'data:' + twoPictures[1].pictureContentType + ';base64,' + twoPictures[1].picture" class="z_index_0" id="tpic1"/>
+                <img [src]="resolveImageUrl(twoPictures[1].name)" class="z_index_0"/>
                 <button ion-button full small color="secondary" *ngIf="twoPictures[1].answered && wasCorrect" >{{twoPictures[1].answer}}</button>
                 <button ion-button full small color="dark" *ngIf="!twoPictures[1].answered || wasWrong" >{{twoPictures[1].answer}}</button>
               </div>
@@ -116,7 +119,7 @@
           <ion-row>
             <ion-col col-6>
               <div class="relative-flex-1" [dragula]='"four-pic"' id="{{question.d.pics[0].answer}}_0">
-                <img [src]="'data:' + question.b.pics[0].pictureContentType + ';base64,' + question.b.pics[0].picture" class="z_index_0" id="pic0"/>
+                <img [src]="resolveImageUrl(question.d.pics[0].name)" class="z_index_0"/>
                 <!-- <button ion-button full small color="dark" *ngIf="question.d.pics[0].answered">{{question.d.pics[0].hint}}</button> -->
                 <button ion-button full small color="secondary" *ngIf="question.d.pics[0].answered" >{{question.d.pics[0].answer}}</button>
                 <button ion-button full small color="dark" *ngIf="!question.d.pics[0].answered" >{{question.d.pics[0].answer}}</button>
@@ -124,7 +127,7 @@
             </ion-col>
             <ion-col col-6>
               <div class="relative-flex-1" [dragula]='"four-pic"' id="{{question.d.pics[1].answer}}_1">
-                <img [src]="'data:' + question.b.pics[1].pictureContentType + ';base64,' + question.b.pics[1].picture" class="z_index_0" id="pic1"/>
+                <img [src]="resolveImageUrl(question.d.pics[1].name)" class="z_index_0"/>
                 <!-- <button ion-button full small color="dark" *ngIf="question.d.pics[1].answered">{{question.d.pics[1].hint}}</button> -->
                 <button ion-button full small color="secondary" *ngIf="question.d.pics[1].answered">{{question.d.pics[1].answer}}</button>
                 <button ion-button full small color="dark" *ngIf="!question.d.pics[1].answered">{{question.d.pics[1].answer}}</button>
@@ -146,7 +149,7 @@
                 <button ion-button full small color="dark" *ngIf="!question.d.pics[2].answered" >{{question.d.pics[2].answer}}</button>
                 <button ion-button full small color="secondary" *ngIf="question.d.pics[2].answered" >{{question.d.pics[2].answer}}</button>
                 <!-- <button ion-button full small color="dark" *ngIf="question.d.pics[2].answered">{{question.d.pics[2].hint}}</button> -->
-                <img [src]="'data:' + question.b.pics[2].pictureContentType + ';base64,' + question.b.pics[2].picture" class="z_index_0" id="pic2"/>
+                <img [src]="resolveImageUrl(question.d.pics[2].name)" class="z_index_0"/>
               </div>
             </ion-col>
             <ion-col col-6>
@@ -154,7 +157,7 @@
                 <button ion-button full small color="dark" *ngIf="!question.d.pics[3].answered">{{question.d.pics[3].answer}}</button>
                 <button ion-button full small color="secondary" *ngIf="question.d.pics[3].answered">{{question.d.pics[3].answer}}</button>
                 <!-- <button ion-button full small color="dark" *ngIf="question.d.pics[3].answered">{{question.d.pics[3].hint}}</button> -->
-                <img [src]="'data:' + question.b.pics[3].pictureContentType + ';base64,' + question.b.pics[3].picture" class="z_index_0" id="pic3"/>
+                <img [src]="resolveImageUrl(question.d.pics[3].name)" class="z_index_0"/>
               </div>
             </ion-col>
           </ion-row>
@@ -165,9 +168,13 @@
   </section>
   <div style="position: absolute; bottom: 0px; width: 100%">
     <button ion-button full color="secondary"
-            *ngIf="isNotTypes(['FourPicture', 'TwoPicture', 'FourText'])"
+            *ngIf="isNotTypes(['FourPicture', 'TwoPicture', 'FourText']) && !wasWrong"
             [disabled]="!isAnswered() || isChecking" (click)="check()">
       {{'CHECK' | translate}}
+    </button>
+    <button ion-button full color="secondary"
+            *ngIf="wasWrong" (click)="continue()">
+      {{'CONTINUE' | translate}}
     </button>
   </div>
 </ion-content>

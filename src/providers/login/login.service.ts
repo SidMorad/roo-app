@@ -2,12 +2,15 @@ import { Injectable } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Platform } from 'ionic-angular';
 
+import { Principal } from '../auth/principal.service';
+
 declare const window: any;
 
 @Injectable()
 export class LoginService {
 
-    constructor(private oauthService: OAuthService, private platform: Platform) {}
+    constructor(private oauthService: OAuthService, private platform: Platform,
+                private principal: Principal) {}
 
     redirectLogin() {
         this.oauthService.initImplicitFlow();
@@ -99,5 +102,6 @@ export class LoginService {
             // don't redirect to global logout in app
             this.oauthService.logOut(true);
         }
+        this.principal.authenticate(null);
     }
 }

@@ -15,7 +15,7 @@
 
   "NEW_LABEL": "New",
   "SOON_LABEL": "Soon",
-  "DAILY_LESSON": "Daily lesson",
+  "DAILY_PRACTICE": "Daily practice",
   "CHAT_BOT": "Chat bot",
   "START_LESSON": "Start",
   "WANT_TO_EXIT_Q": "Want to exit?",
@@ -23,6 +23,12 @@
   "NO": "No",
   "YES": "Yes",
   "CHECK": "Check",
+  "PLEASE_LOGIN": "Please login",
+  "PLEASE_LOGIN_TO_CONTINUE": "Please login to continue",
+  "LOGIN_ESCAPE": "Cancel",
+  "WITHOUT_STAR": "Without star!",
+  "CONTINUE": "Continue",
+  "END_LESSON": "End lesson",
 
   "TAB1_TITLE": "Categories",
   "TAB2_TITLE": "Lessons",

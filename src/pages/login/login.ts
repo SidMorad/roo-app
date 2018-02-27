@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { IonicPage, NavController, Platform, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, Platform, ToastController, ViewController } from 'ionic-angular';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { TabsPage } from '../tabs/tabs';
+// import { TabsPage } from '../tabs/tabs';
 import { LoginService } from '../../providers/login/login.service';
 
 @IonicPage()
@@ -18,7 +18,8 @@ export class LoginPage {
                 public loginService: LoginService,
                 public toastCtrl: ToastController,
                 public translateService: TranslateService,
-                public platform: Platform) {
+                public platform: Platform,
+                public viewCtrl: ViewController) {
 
         this.translateService.get('LOGIN_ERROR').subscribe((value) => {
             this.loginErrorString = value;
@@ -28,7 +29,8 @@ export class LoginPage {
             this.loginService.redirectLogin();
         } else {
             this.loginService.appLogin((data) => {
-                this.navCtrl.push(TabsPage);
+                // this.navCtrl.push(TabsPage);
+                this.viewCtrl.dismiss();
             }, (err) => {
               console.log("appLogin ERROR: ", err);
                 // Unable to log in

@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { App, IonicPage, NavController } from 'ionic-angular';
+import { IonicPage, NavController } from 'ionic-angular';
 import { NgProgress } from '@ngx-progressbar/core';
 
 import { Principal } from '../../providers/auth/principal.service';
@@ -21,7 +21,6 @@ export class HomePage implements OnInit {
 
   constructor(public navCtrl: NavController,
               private principal: Principal,
-              private app: App,
               private ngZone: NgZone,
               private loginService: LoginService,
               private categoryService: CategoryService,
@@ -31,20 +30,17 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
-    this.principal.identity().then((account) => {
-      if (account === null) {
-      //   this.app.getRootNavs()[0].setRoot(FirstRunPage);
-        this.ngZone.run(() => {
-          this.account = {};
-        });
-      } else {
-        console.log("Authenticated user: ", account);
-        this.ngZone.run(() => {
-          this.account = account;
-        })
-      }
-    });
     this.fetchCategories();
+  }
+
+  ionViewWillEnter() {
+    this.principal.identity().then((account) => {
+      console.log("Authenticated user: ", account);
+      this.ngZone.run(() => {
+        this.account = account === null ? {} : account;
+      });
+      // this.app.getRootNavs()[0].setRoot(FirstRunPage);
+    });
   }
 
   fetchCategories() {
@@ -63,15 +59,14 @@ export class HomePage implements OnInit {
 
   logout() {
     this.loginService.logout();
-    this.app.getRootNavs()[0].setRoot(FirstRunPage);
+    this.navCtrl.push(FirstRunPage);
   }
 
   signin() {
-    this.app.getRootNavs()[0].setRoot(FirstRunPage);
+    this.navCtrl.push(FirstRunPage);
   }
 
   categoryLesson(category) {
-    console.log("Category selected: ", category);
     this.navCtrl.push('CategoryLessonPage', { category: category});
   }
 
