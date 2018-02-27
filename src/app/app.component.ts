@@ -3,6 +3,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { Config, Nav, Platform } from 'ionic-angular';
+import { DragulaService } from 'ng2-dragula/ng2-dragula';
 
 import { MainPage } from '../pages/pages';
 import { Settings } from '../providers/providers';
@@ -46,8 +47,11 @@ export class MyApp {
         {title: 'Entities', component: 'EntityPage'}
     ];
 
-    constructor(private translate: TranslateService, private platform: Platform, settings: Settings, private config: Config,
-                private statusBar: StatusBar, private splashScreen: SplashScreen, private oauthService: OAuthService, private api: Api) {
+    constructor(private translate: TranslateService, private platform: Platform,
+                settings: Settings, private config: Config,
+                private statusBar: StatusBar, private splashScreen: SplashScreen,
+                private oauthService: OAuthService, private api: Api,
+                private dragulaService: DragulaService) {
         platform.ready().then(() => {
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need.
@@ -57,6 +61,7 @@ export class MyApp {
 
         this.initTranslate();
         this.initAuthentication();
+        this.initDragulaConfigs();
 
         const me = this;
         window.handleOpenURL = (url) => {
@@ -145,9 +150,16 @@ export class MyApp {
         });
     }
 
+    initDragulaConfigs() {
+      this.dragulaService.setOptions('four-pic', {
+        copy: false
+      });
+    }
+
     openPage(page) {
         // Reset the content nav to have just this page
         // we wouldn't want the back button to show in this scenario
         this.nav.setRoot(page.component);
     }
+
 }

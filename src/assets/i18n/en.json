@@ -19,9 +19,10 @@
   "CHAT_BOT": "Chat bot",
   "START_LESSON": "Start",
   "WANT_TO_EXIT_Q": "Want to exit?",
-  "ARE_YOU_SURE_Q_YOUR_PROGRESS_WILL_NOT_BE_SAVED": "Are you sure? your progress will not be saved!",
+  "ARE_YOU_SURE_Q_YOUR_PROGRESS_WILL_NOT_BE_SAVED": "Are you sure? your progress will be lost!",
   "NO": "No",
-  "Yes": "Yes",
+  "YES": "Yes",
+  "CHECK": "Check",
 
   "TAB1_TITLE": "Categories",
   "TAB2_TITLE": "Lessons",

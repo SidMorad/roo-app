@@ -1,18 +1,19 @@
-<ion-header>
-  <ion-navbar [hideBackButton]="true">
-    <ion-toolbar>
+<ion-header no-padding>
+  <ion-navbar [hideBackButton]="true" no-padding>
+    <ion-toolbar no-padding>
       <ion-grid>
         <ion-row>
           <ion-col col-auto>
             <span *ngFor="let i of [5, 4, 3, 2, 1]">
-              <ion-icon name="star" color="gold"></ion-icon>
+              <ion-icon name="star" color="gold" *ngIf="i > noWrong" style="zoom:1.2;"></ion-icon>
+              <ion-icon name="star-outline" color="gold" *ngIf="i <= noWrong" style="zoom:1.2;"></ion-icon>
             </span>
           </ion-col>
           <ion-col col-auto>
-            <progress max="{{questions.length}}" [value]="6"></progress>
+            <progress [max]="questions.length" [value]="questionCounter+1"></progress>
           </ion-col>
           <ion-col col-1>
-            <button ion-button icon-only clear (click)="exit()">
+            <button ion-button icon-only clear small (click)="exit()">
               <ion-icon name="close"></ion-icon>
             </button>
           </ion-col>
@@ -25,21 +26,148 @@
 <ion-content no-padding>
   <section class="question-container">
     <div class="quesiton-part padding">
-      <span class="float-left">
-        <button ion-button small icon-only clear color="dark" (click)="speak()">
-          <ion-icon name="repeat"></ion-icon>
-        </button>
-      </span>
-      <span class="float-right">
-        <button ion-button small icon-only clear color="dark" (click)="showHelp()">
-          <ion-icon name="help-buoy"></ion-icon>
-        </button>
-      </span>
-      <p [class.dir-rtl]="lesson.isFromLangRTL()">&nbsp; {{question.description}}</p>
-      <p *ngIf="question.type.toString() !=='TwoPicture' || question.type.toString() != 'FourPicture'"
-          [class.dir-rtl]="lesson.isFromLangRTL() && question.dynamicPart.reverse">
-          {{question.dynamicPart.question}}
-      </p>
+      <div [class.alert-success]="wasCorrect" [class.alert-error]="wasWrong">
+        <span class="float-left">
+          <button ion-button small icon-only clear color="dark" (click)="speak()">
+            <ion-icon name="repeat"></ion-icon>
+          </button>
+        </span>
+        <span class="float-right">
+          <button ion-button small icon-only clear color="dark" (click)="showHelp()">
+            <ion-icon name="help-buoy"></ion-icon>
+          </button>
+        </span>
+        <p [class.dir-rtl]="lesson.isFromLangRTL()">&nbsp; {{question.description}}</p>
+      </div>
+      <div *ngIf="isNotTypes(['TwoPicture', 'FourPicture'])"
+          [class.dir-rtl]="lesson.isFromLangRTL() && question.d.reverse" padding>
+          {{question.d.question}}
+      </div>
+
+<!-- OneCheck -->
+      <div *ngIf="isType('OneCheck')">
+        <ion-card [class.dir-rtl]="lesson.isFromLangRTL() && !question.d.reverse">
+          <ion-list radio-group>
+            <ion-item text-wrap *ngFor="let choice of choices; let i = index;" [class.alert-success]="wasCorrect && choice.isCorrect" [class.alert-error]="wasWrong && choice.picked">
+              <ion-label (click)="oneChecked(i)">{{choice.text}}</ion-label>
+              <ion-radio value="{{choice.text}}" (click)="oneChecked(i)"></ion-radio>
+            </ion-item>
+          </ion-list>
+        </ion-card>
+      </div>
+
+<!-- MultiSelect -->
+      <div *ngIf="isType('MultiSelect')">
+        <div class="answer-background">
+          <div padding [class.dir-rtl]="lesson.isFromLangRTL() && !question.d.reverse" [class.alert-success]="wasCorrect" [class.alert-error]="wasWrong">
+            <span class="answer" *ngFor="let chosen of chosens; let i = index;" (click)="moveBackToOptions(chosen)">
+              <button class="answer-contents" id="chosen-{{i}}">{{chosen.text}}</button>
+            </span>
+          </div>
+        </div>
+        <div padding [class.dir-rtl]="lesson.isFromLangRTL() && !question.d.reverse">
+          <span class="answer answer-container" *ngFor="let option of options; let i = index;" (click)="moveToChosen(option)">
+            <button class="answer-contents" id="option-{{i}}">{{option.text}}</button>
+          </span>
+        </div>
+      </div>
+
+<!-- TwoPicture -->
+      <div *ngIf="isType('TwoPicture')">
+        <ion-grid text-center>
+          <ion-row text-center>
+            <ion-col col-3></ion-col>
+            <ion-col col-6>
+              <div class="relative-flex-1" [dragula]='"two-pic"' id="{{twoPictures[0].answer}}_0" [class.alert-success]="wasCorrect && twoPictures[0].answered" [class.alert-error]="wasWrong && twoPictures[0].answered">
+                <img [src]="'data:' + twoPictures[0].pictureContentType + ';base64,' + twoPictures[0].picture" class="z_index_0" id="tpic0"/>
+                <button ion-button full small color="secondary" *ngIf="twoPictures[0].answered && wasCorrect" >{{twoPictures[0].answer}}</button>
+                <button ion-button full small color="dark" *ngIf="!twoPictures[0].answered || wasWrong" >{{twoPictures[0].answer}}</button>
+              </div>
+            </ion-col>
+            <ion-col col-3></ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <div [dragula]='"two-pic"' text-center>
+                <button ion-button color="primary" class="button-for-two-picture" id="twoPictureButton" name="{{question.d.correct.answer}}_{{twoPictureCorrectIndex}}">
+                  {{question.d.correct.hint}}
+                </button>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-3></ion-col>
+            <ion-col col-6>
+              <div class="relative-flex-1" [dragula]='"two-pic"' id="{{twoPictures[1].answer}}_1" [class.alert-success]="wasCorrect && twoPictures[1].answered" [class.alert-error]="wasWrong && twoPictures[1].answered">
+                <img [src]="'data:' + twoPictures[1].pictureContentType + ';base64,' + twoPictures[1].picture" class="z_index_0" id="tpic1"/>
+                <button ion-button full small color="secondary" *ngIf="twoPictures[1].answered && wasCorrect" >{{twoPictures[1].answer}}</button>
+                <button ion-button full small color="dark" *ngIf="!twoPictures[1].answered || wasWrong" >{{twoPictures[1].answer}}</button>
+              </div>
+            </ion-col>
+            <ion-col col-3></ion-col>
+
+          </ion-row>
+        </ion-grid>
+      </div>
+
+<!-- FourPicture -->
+      <div *ngIf="isType('FourPicture')">
+        <ion-grid text-center>
+          <ion-row>
+            <ion-col col-6>
+              <div class="relative-flex-1" [dragula]='"four-pic"' id="{{question.d.pics[0].answer}}_0">
+                <img [src]="'data:' + question.b.pics[0].pictureContentType + ';base64,' + question.b.pics[0].picture" class="z_index_0" id="pic0"/>
+                <!-- <button ion-button full small color="dark" *ngIf="question.d.pics[0].answered">{{question.d.pics[0].hint}}</button> -->
+                <button ion-button full small color="secondary" *ngIf="question.d.pics[0].answered" >{{question.d.pics[0].answer}}</button>
+                <button ion-button full small color="dark" *ngIf="!question.d.pics[0].answered" >{{question.d.pics[0].answer}}</button>
+              </div>
+            </ion-col>
+            <ion-col col-6>
+              <div class="relative-flex-1" [dragula]='"four-pic"' id="{{question.d.pics[1].answer}}_1">
+                <img [src]="'data:' + question.b.pics[1].pictureContentType + ';base64,' + question.b.pics[1].picture" class="z_index_0" id="pic1"/>
+                <!-- <button ion-button full small color="dark" *ngIf="question.d.pics[1].answered">{{question.d.pics[1].hint}}</button> -->
+                <button ion-button full small color="secondary" *ngIf="question.d.pics[1].answered">{{question.d.pics[1].answer}}</button>
+                <button ion-button full small color="dark" *ngIf="!question.d.pics[1].answered">{{question.d.pics[1].answer}}</button>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <div [dragula]='"four-pic"' text-center>
+                <button ion-button color="primary" *ngFor="let fourPictureQuestion of fourPictureQuestionArray" class="button-for-four-picture" id="fourPictureButton" name="{{fourPictureQuestion.answer}}_{{fourPictureQuestion.tindex}}">
+                  {{fourPictureQuestion.hint}}
+                </button>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-6>
+              <div class="relative-flex-1" [dragula]='"four-pic"' id="{{question.d.pics[2].answer}}_2">
+                <button ion-button full small color="dark" *ngIf="!question.d.pics[2].answered" >{{question.d.pics[2].answer}}</button>
+                <button ion-button full small color="secondary" *ngIf="question.d.pics[2].answered" >{{question.d.pics[2].answer}}</button>
+                <!-- <button ion-button full small color="dark" *ngIf="question.d.pics[2].answered">{{question.d.pics[2].hint}}</button> -->
+                <img [src]="'data:' + question.b.pics[2].pictureContentType + ';base64,' + question.b.pics[2].picture" class="z_index_0" id="pic2"/>
+              </div>
+            </ion-col>
+            <ion-col col-6>
+              <div class="relative-flex-1" [dragula]='"four-pic"' id="{{question.d.pics[3].answer}}_3">
+                <button ion-button full small color="dark" *ngIf="!question.d.pics[3].answered">{{question.d.pics[3].answer}}</button>
+                <button ion-button full small color="secondary" *ngIf="question.d.pics[3].answered">{{question.d.pics[3].answer}}</button>
+                <!-- <button ion-button full small color="dark" *ngIf="question.d.pics[3].answered">{{question.d.pics[3].hint}}</button> -->
+                <img [src]="'data:' + question.b.pics[3].pictureContentType + ';base64,' + question.b.pics[3].picture" class="z_index_0" id="pic3"/>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+
     </div>
   </section>
+  <div style="position: absolute; bottom: 0px; width: 100%">
+    <button ion-button full color="secondary"
+            *ngIf="isNotTypes(['FourPicture', 'TwoPicture', 'FourText'])"
+            [disabled]="!isAnswered() || isChecking" (click)="check()">
+      {{'CHECK' | translate}}
+    </button>
+  </div>
 </ion-content>

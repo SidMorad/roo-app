@@ -64,3 +64,75 @@ only screen and (                min-resolution: 2dppx) {
 .float-left {
   float: left;
 }
+
+.z_index_0 {
+  z-index: 0;
+}
+
+.width_100 {
+  width: 100%;
+}
+
+
+.alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.alert-success {
+  color: #66cc33 !important;
+  background-color: #fffeef;
+//  color: #3c763d;
+//  background-color: #dff0d8;
+  border-color: #d6e9c6;
+}
+
+.alert-error {
+  color: #ef4e3a !important;
+  background-color: #ffeeee;
+//  color: #a94442;
+//  background-color: #f2dede;
+  border-color: #ebccd1;
+  line-height: 2em;
+}
+
+.alert-info {
+  color: #4a87ee !important;
+  background-color: #eeffff;
+//  color: #31708f;
+//  background-color: #d9edf7;
+  border-color: #bce8f1;
+}
+
+.alert-warning {
+  color: #8a6d3b !important;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+}
+
+/* Dragula css =============================================================*/
+.gu-mirror {
+  position: fixed !important;
+  margin: 0 !important;
+  z-index: 9999 !important;
+  opacity: 0.8;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  filter: alpha(opacity=80);
+}
+.gu-hide {
+  display: none !important;
+}
+.gu-unselectable {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+.gu-transit {
+  opacity: 0.2;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+  filter: alpha(opacity=20);
+}
+/*==========================================================================*/
