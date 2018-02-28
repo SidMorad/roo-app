@@ -12,7 +12,6 @@ import { OAuthModule } from 'angular-oauth2-oidc';
 import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { NgProgressHttpModule } from '@ngx-progressbar/http';
-import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 
 import { Api, Settings, User } from '../providers/providers';
 import { MyApp } from './app.component';
@@ -65,8 +64,7 @@ export function provideSettings(storage: Storage) {
     EntityPageModule,
     OAuthModule.forRoot(),
     NgProgressModule.forRoot(),
-    NgProgressHttpModule,
-    DragulaModule
+    NgProgressHttpModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [

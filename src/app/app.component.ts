@@ -3,7 +3,6 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { Config, Nav, Platform } from 'ionic-angular';
-import { DragulaService } from 'ng2-dragula/ng2-dragula';
 
 import { MainPage } from '../pages/pages';
 import { Settings } from '../providers/providers';
@@ -50,8 +49,7 @@ export class MyApp {
     constructor(private translate: TranslateService, private platform: Platform,
                 settings: Settings, private config: Config,
                 private statusBar: StatusBar, private splashScreen: SplashScreen,
-                private oauthService: OAuthService, private api: Api,
-                private dragulaService: DragulaService) {
+                private oauthService: OAuthService, private api: Api) {
         platform.ready().then(() => {
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need.
@@ -61,7 +59,6 @@ export class MyApp {
 
         this.initTranslate();
         this.initAuthentication();
-        this.initDragulaConfigs();
 
         const me = this;
         window.handleOpenURL = (url) => {
@@ -148,12 +145,6 @@ export class MyApp {
         this.translate.get(['BACK_BUTTON_TEXT']).subscribe(values => {
             this.config.set('ios', 'backButtonText', values.BACK_BUTTON_TEXT);
         });
-    }
-
-    initDragulaConfigs() {
-      this.dragulaService.setOptions('four-pic', {
-        copy: false
-      });
     }
 
     openPage(page) {

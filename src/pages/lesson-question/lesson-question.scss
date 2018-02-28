@@ -14,6 +14,12 @@ page-lesson-question {
     z-index: 100;
   }
 
+  .question-question {
+    font-size: 1.2em;
+    padding-left: 2em;
+    padding-right: 2em;
+  }
+
   .answer-background {
     background-color: rgba(0, 0, 255, 0.05);
     border-radius: 5px;
@@ -31,7 +37,6 @@ page-lesson-question {
       min-height: 100px;
     }
   }
-
 
   .answer {
     line-height: 30px;
@@ -53,7 +58,7 @@ page-lesson-question {
     vertical-align: top;
     text-align: center;
     text-overflow: ellipsis;
-    font-size: 16px;
+    font-size: 1.2em;
     line-height: 30px;
     cursor: pointer;
   }
@@ -127,7 +132,7 @@ page-lesson-question {
     vertical-align: top;
     text-align: center;
     text-overflow: ellipsis;
-    font-size: 16px;
+    font-size: 1.2em;
     line-height: 30px;
     cursor: pointer;
   }
@@ -208,6 +213,11 @@ page-lesson-question {
     margin: 0 !important;
     z-index: 101;
     min-width: 45vw;
+  }
+
+  padding-sides {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
 }
