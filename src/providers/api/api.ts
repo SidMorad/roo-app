@@ -1,16 +1,36 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Rx';
+
+import { TranslDir, Lesson, QuestionDifficulty, Score } from '../../models';
 
 /**
- * Api is a generic REST Api handler. Set your API url first.
+ * Api is a generic(and customized for Roo domain) REST Api handler.
  */
 @Injectable()
 export class Api {
-  public static API_URL: string = 'https://mars.webebook.org';
-  // public static API_URL: string = 'http://localhost:8100';
-  // public static API_URL: string = 'http://192.168.10.104:8100';
+  public static API_URL: string = 'https://mars.webebook.org/';
 
   constructor(public http: HttpClient) {
+  }
+
+  getCategoryPublicList(translDir: TranslDir): Observable<any> {
+    return this.get('roo/api/public/categories/' + TranslDir[translDir]);
+  }
+
+  getLessonPublicList(translDir: TranslDir, uuid: string): Observable<any> {
+    return this.get('roo/api/public/lessons/' + TranslDir[translDir] + '/' + uuid);
+  }
+
+  getQuestions(lesson: Lesson): Observable<any> {
+    return this.get('roo/api/public/questions/'
+                                + lesson.translDir + '/'
+                                + QuestionDifficulty[QuestionDifficulty.Beginner] + '/'
+                                + lesson.uuid);
+  }
+
+  createScore(score: Score): Observable<any> {
+    return this.post('roo/api/user/score/create', score);
   }
 
   get(endpoint: string, params?: any, reqOpts?: any) {
@@ -28,22 +48,22 @@ export class Api {
       }
     }
 
-    return this.http.get(Api.API_URL + '/' + endpoint, reqOpts);
+    return this.http.get(Api.API_URL + endpoint, reqOpts);
   }
 
   post(endpoint: string, body: any, reqOpts?: any) {
-    return this.http.post(Api.API_URL + '/' + endpoint, body, reqOpts);
+    return this.http.post(Api.API_URL + endpoint, body, reqOpts);
   }
 
   put(endpoint: string, body: any, reqOpts?: any) {
-    return this.http.put(Api.API_URL + '/' + endpoint, body, reqOpts);
+    return this.http.put(Api.API_URL + endpoint, body, reqOpts);
   }
 
   delete(endpoint: string, reqOpts?: any) {
-    return this.http.delete(Api.API_URL + '/' + endpoint, reqOpts);
+    return this.http.delete(Api.API_URL + endpoint, reqOpts);
   }
 
   patch(endpoint: string, body: any, reqOpts?: any) {
-    return this.http.put(Api.API_URL + '/' + endpoint, body, reqOpts);
+    return this.http.put(Api.API_URL + endpoint, body, reqOpts);
   }
 }

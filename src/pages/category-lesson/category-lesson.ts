@@ -4,7 +4,7 @@ import { NgProgress } from '@ngx-progressbar/core';
 import { Subscription } from 'rxjs/Rx';
 
 import { Category, Lesson, TranslDir } from '../../models';
-import { CategoryService } from '../../providers/category/category.service';
+import { Api } from '../../providers/api/api';
 
 @IonicPage()
 @Component({
@@ -23,7 +23,7 @@ export class CategoryLessonPage implements OnInit {
   subscription: Subscription;
 
   constructor(platform: Platform, navParams: NavParams, private navCtrl: NavController,
-              private categorySerivce: CategoryService, public ngProgress: NgProgress) {
+              private api: Api, public ngProgress: NgProgress) {
     this.dir = platform.dir();
     this.category = navParams.get('category');
     this.lessons = [];
@@ -31,7 +31,7 @@ export class CategoryLessonPage implements OnInit {
 
   ngOnInit() {
     this.isBeginning = true;
-    this.categorySerivce.getLessonPublicList(TranslDir.FA$EN_UK, this.category.uuid)
+    this.api.getLessonPublicList(TranslDir.FA$EN_UK, this.category.uuid)
       .subscribe((res) => {
         this.lessons = res;
       }, (error) => {
@@ -40,7 +40,7 @@ export class CategoryLessonPage implements OnInit {
   }
 
   startLesson(index) {
-    this.subscription = this.categorySerivce.getQuestions(this.lessons[index]).subscribe((res) => {
+    this.subscription = this.api.getQuestions(this.lessons[index]).subscribe((res) => {
       this.navCtrl.push('LessonQuestionPage', {category: this.category, lesson: this.lessons[index], questions: res});
     }, (error) => {
       console.log('Oops this should not happend, TODO');

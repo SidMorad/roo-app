@@ -5,7 +5,7 @@ import { NgProgress } from '@ngx-progressbar/core';
 import { Principal } from '../../providers/auth/principal.service';
 import { FirstRunPage } from '../pages';
 import { LoginService } from '../../providers/login/login.service';
-import { CategoryService } from '../../providers/category/category.service';
+import { Api } from '../../providers/api/api';
 import { Category, TranslDir } from '../../models';
 
 @IonicPage()
@@ -23,19 +23,20 @@ export class HomePage implements OnInit {
               private principal: Principal,
               private ngZone: NgZone,
               private loginService: LoginService,
-              private categoryService: CategoryService,
+              private api: Api,
               public ngProgress: NgProgress) {
     this.categories = [];
     this.mapWidth = (window.screen.height * 4.8);
   }
 
   ngOnInit() {
+    console.log('Home initalized. ', new Date());
     this.fetchCategories();
   }
 
   ionViewWillEnter() {
     this.principal.identity().then((account) => {
-      console.log("Authenticated user: ", account);
+      console.log("Authenticated user: ", account, new Date());
       this.ngZone.run(() => {
         this.account = account === null ? {} : account;
       });
@@ -45,7 +46,7 @@ export class HomePage implements OnInit {
 
   fetchCategories() {
     this.showRetryButton = false;
-    this.categoryService.getCategoryPublicList(TranslDir.FA$EN_UK).subscribe((response) => {
+    this.api.getCategoryPublicList(TranslDir.FA$EN_UK).subscribe((response) => {
       this.categories = response;
     }, (error) => {
       console.log("Error on getting category list, Oops we are in trouble!", error);

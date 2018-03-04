@@ -7,7 +7,6 @@ export class Question {
     public dynamicPart?: string,
     public binaryPart?: string,
     public indexOrder?: number,
-    public d?: any, // dynamicPart object
-    public b?: any  // binaryPart object
+    public d?: any // dynamicPart object
   ) { }
 }

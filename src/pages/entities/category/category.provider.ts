@@ -7,7 +7,7 @@ import { Category } from './category.model';
 
 @Injectable()
 export class CategoryService {
-    private resourceUrl = Api.API_URL + '/roo/api/categories';
+    private resourceUrl = Api.API_URL + 'roo/api/categories';
 
     constructor(private http: HttpClient) { }
 

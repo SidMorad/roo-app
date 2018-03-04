@@ -1,12 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonicPage, Platform, NavParams, AlertController, ViewController,
-        Content, ModalController } from 'ionic-angular';
+        Content, ModalController, ToastController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Category, Lesson, Question } from '../../models';
+import { Category, Lesson, Question, Score, ScoreType } from '../../models';
 import { IMAGE_ORIGIN } from '../../app/app.constants';
 import { Principal } from '../../providers/auth/principal.service';
 import { LoginService } from '../../providers/login/login.service';
+import { Api } from '../../providers/api/api';
 
 @IonicPage()
 @Component({
@@ -21,7 +22,6 @@ export class LessonQuestionPage implements OnInit {
   questions: Question[];
   question: Question;
   dir: string = 'ltr';
-  title: string;
   questionCounter: number;
   options: any[];
   chosens: any[];
@@ -40,25 +40,24 @@ export class LessonQuestionPage implements OnInit {
   constructor(platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
               private translateService: TranslateService, private viewCtrl: ViewController,
               private principal: Principal, private loginService: LoginService,
-              private modalCtrl: ModalController) {
+              private modalCtrl: ModalController, private api: Api,
+              private toastCtrl: ToastController) {
     this.dir = platform.dir();
     const l: Lesson = navParams.get('lesson');
-    this.lesson = new Lesson(l.uuid, l.title, l.translDir, l.translDir);
+    this.lesson = new Lesson(l.uuid, l.title, l.translDir, l.indexOrder);
     this.category = navParams.get('category');
     this.questions = navParams.get('questions');
     this.initTranslations();
   }
 
   ngOnInit() {
-    const arrow = this.dir === 'ltr' ? ' > ' : ' < ';
-    this.title = this.category.title + arrow + this.lesson.title;
     this.initQuestionary();
   }
 
   initQuestionary() {
     this.noCorrect = 0;
     this.noWrong = 0;
-    this.questionCounter = 0;
+    this.questionCounter = 5;
     this.goToNextQuestion();
   }
 
@@ -236,8 +235,18 @@ export class LessonQuestionPage implements OnInit {
           ]
         }).present();
       } else {
-        console.log('DONE TODO send score');
-        this.viewCtrl.dismiss();
+        let score: Score = new Score(ScoreType[ScoreType.LESSON.toString()], this.lesson.translDir, this.noCorrect,
+                              this.noWrong, this.lesson.uuid, this.category.uuid);
+        console.log('SCORE WAS ', score);
+        console.log('SCORE ify ', JSON.stringify(score));
+        this.api.createScore(score).subscribe((res) => {
+          this.toastCtrl.create({
+            message: 'Your score uploaded successfully!'
+          }).present();
+          this.viewCtrl.dismiss();
+        }, (err) => {
+          console.log('OOPS upload score failed, TODO');
+        })
       }
     } else {
       this.isChecking = false;
@@ -346,6 +355,10 @@ export class LessonQuestionPage implements OnInit {
       }
     });
     modal.present();
+  }
+
+  isAuthenticated() {
+    return this.principal.isAuthenticated();
   }
 
   exit() {

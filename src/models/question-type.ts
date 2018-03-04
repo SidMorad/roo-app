@@ -1,10 +1,10 @@
 
 export enum QuestionType {
-    'MultiSelect',
-    'TwoPicture',
-    'FourPicture',
-    'FourText',
-    'MultiCheck',
-    'OneCheck',
-    'Writing'
+  'MultiSelect',
+  'TwoPicture',
+  'FourPicture',
+  'FourText',
+  'MultiCheck',
+  'OneCheck',
+  'Writing'
 }

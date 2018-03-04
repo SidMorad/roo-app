@@ -13,7 +13,7 @@
             <progress [max]="questions.length" [value]="questionCounter-1"></progress>
           </ion-col>
           <ion-col col-1>
-            <button ion-button icon-only clear small (click)="exit()">
+            <button ion-button icon-only clear small (click)="exit()" [style.color]="isAuthenticated()? 'black' : 'red'">
               <ion-icon name="close"></ion-icon>
             </button>
           </ion-col>
