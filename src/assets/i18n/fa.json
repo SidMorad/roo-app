@@ -1,0 +1,76 @@
+{
+  "BACK_BUTTON_TEXT": "برگشت",
+
+  "APP_NAME": "Roo",
+
+  "NAME": "نام",
+  "EMAIL": "رایانامه",
+  "USERNAME": "نام کاربری",
+  "PASSWORD": "رمز عبور",
+  "REMEMBER_ME": "مرا به خاطر بسپار",
+  "LOGIN": "ورود",
+  "SIGNUP": "ثبت نام",
+  "NOT_NOW": "سپس تر",
+  "GUEST": "مهمان",
+
+  "NEW_LABEL": "تازه",
+  "SOON_LABEL": "به زودی",
+  "DAILY_PRACTICE": "تمرین روزانه",
+  "CHAT_BOT": "چت با ربات",
+  "START_LESSON": "شروع",
+  "WANT_TO_EXIT_Q": "میخواهید خارج شوید؟",
+  "ARE_YOU_SURE_Q_YOUR_PROGRESS_WILL_NOT_BE_SAVED": "مطمئن هستید؟ پیشرفت درسی شما از دست خواهد رفت!",
+  "NO": "خیر",
+  "YES": "بله",
+  "CHECK": "بررسی",
+  "PLEASE_LOGIN": "لطفا وارد شوید",
+  "PLEASE_LOGIN_TO_CONTINUE": "برای ادامه لطفا وارد شوید",
+  "LOGIN_ESCAPE": "بیخیال",
+  "WITHOUT_STAR": "بدون ستاره!",
+  "CONTINUE": "ادامه",
+  "END_LESSON": "پایان درس",
+
+  "TAB1_TITLE": "گروه ها",
+  "TAB2_TITLE": "آموزه ها",
+  "TAB3_TITLE": "آمار",
+
+  "MAP_TITLE": "نقشه",
+
+  "ROO_BANNER_MESSAGE": "یادگیری زبان، با Roo بپر!",
+
+  "SETTINGS_TITLE": "تنظیمات",
+  "SETTINGS_LANGUAGE": "زبان",
+  "SETTINGS_AUTO_PLAY_VOICE": "پخش خودکار صدا",
+  "SETTINGS_AUTO_CONTINUE": "ادامه به صورت خودکار",
+  "SETTINGS_OPTION4": "Option 4",
+
+  "SETTINGS_PROFILE_BUTTON": "ویرایش مشخصات",
+
+  "SETTINGS_PAGE_PROFILE": "ویرایش مشخصات",
+
+  "WELCOME_TITLE": "خوش آمدید",
+
+  "LOGIN_TITLE": "ورود",
+  "LOGIN_ERROR": "ورود ناموفق، لطفا بعد از بررسی اطلاعات حسابتون، دوباره تلاش کنید.",
+  "LOGIN_BUTTON": "ورود",
+  "SIGNOUT_BUTTON": "خروج",
+  "LOGOUT_BUTTON": "خروج",
+
+  "LIST_MASTER_TITLE": "موارد",
+
+  "ITEM_CREATE_TITLE": "مورد تازه",
+  "ITEM_CREATE_CHOOSE_IMAGE": "افزایش نگاره",
+
+  "ITEM_NAME_PLACEHOLDER": "نام",
+  "ITEM_ABOUT_PLACEHOLDER": "درباره",
+
+  "EDIT_BUTTON": "ویرایش",
+  "DONE_BUTTON": "انجام شد",
+  "CANCEL_BUTTON": "برگشت",
+  "DELETE_BUTTON": "پاک کردن",
+
+  "CARDS_TITLE": "همبودی",
+
+  "SEARCH_TITLE": "جستجو",
+  "SEARCH_PLACEHOLDER": "جستجوی موارد، مثله \"هتل\""
+}

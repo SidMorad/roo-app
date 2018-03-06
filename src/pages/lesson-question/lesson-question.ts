@@ -8,6 +8,7 @@ import { IMAGE_ORIGIN } from '../../app/app.constants';
 import { Principal } from '../../providers/auth/principal.service';
 import { LoginService } from '../../providers/login/login.service';
 import { Api } from '../../providers/api/api';
+import { Settings } from '../../providers/settings/settings';
 
 @IonicPage()
 @Component({
@@ -36,18 +37,21 @@ export class LessonQuestionPage implements OnInit {
   wasCorrect: boolean;
   wasWrong: boolean;
   rightAnswerString: string;
+  autoPlayVoice: boolean;
+  autoContinue: boolean;
 
   constructor(platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
               private translateService: TranslateService, private viewCtrl: ViewController,
               private principal: Principal, private loginService: LoginService,
               private modalCtrl: ModalController, private api: Api,
-              private toastCtrl: ToastController) {
+              private toastCtrl: ToastController, private settings: Settings) {
     this.dir = platform.dir();
     const l: Lesson = navParams.get('lesson');
     this.lesson = new Lesson(l.uuid, l.title, l.translDir, l.indexOrder);
     this.category = navParams.get('category');
     this.questions = navParams.get('questions');
     this.initTranslations();
+    this.initSettings();
   }
 
   ngOnInit() {
@@ -57,7 +61,7 @@ export class LessonQuestionPage implements OnInit {
   initQuestionary() {
     this.noCorrect = 0;
     this.noWrong = 0;
-    this.questionCounter = 5;
+    this.questionCounter = 0;
     this.goToNextQuestion();
   }
 
@@ -241,7 +245,8 @@ export class LessonQuestionPage implements OnInit {
         console.log('SCORE ify ', JSON.stringify(score));
         this.api.createScore(score).subscribe((res) => {
           this.toastCtrl.create({
-            message: 'Your score uploaded successfully!'
+            message: 'Your score uploaded successfully!',
+            duration: 3000
           }).present();
           this.viewCtrl.dismiss();
         }, (err) => {
@@ -357,10 +362,6 @@ export class LessonQuestionPage implements OnInit {
     modal.present();
   }
 
-  isAuthenticated() {
-    return this.principal.isAuthenticated();
-  }
-
   exit() {
     this.alertCtrl.create({
       title: this.labelExitTitle,
@@ -381,9 +382,14 @@ export class LessonQuestionPage implements OnInit {
     }).present();
   }
 
+  initSettings() {
+    this.autoPlayVoice = this.settings.allSettings.autoPlayVoice;
+    this.autoContinue = this.settings.allSettings.autoContinue;
+  }
+
   initTranslations() {
     this.translateService.get(['WANT_TO_EXIT_Q', 'NO', 'YES', 'LOGIN', 'PLEASE_LOGIN',
-                               'ARE_YOU_SURE_Q_YOUR_PROGRESS_WILL_NOT_BE_SAVED', 'CANCEL',
+                               'ARE_YOU_SURE_Q_YOUR_PROGRESS_WILL_NOT_BE_SAVED', 'CANCEL_BUTTON',
                                 'PLEASE_LOGIN_TO_CONTINUE']).subscribe(values => {
       this.labelYes = values['YES'];
       this.labelNo = values['NO'];
@@ -392,7 +398,7 @@ export class LessonQuestionPage implements OnInit {
       this.labelLogin = values['LOGIN'];
       this.labelLoginTitle = values['PLEASE_LOGIN'];
       this.labelLoginMessage = values['PLEASE_LOGIN_TO_CONTINUE'];
-      this.labelLoginEscape = values['CANCEL'];
+      this.labelLoginEscape = values['CANCEL_BUTTON'];
     });
   }
 

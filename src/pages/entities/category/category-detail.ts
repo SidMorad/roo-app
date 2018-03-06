@@ -1,3 +1,4 @@
+/*
 import { Component } from '@angular/core';
 import { ModalController, NavParams, ToastController } from 'ionic-angular';
 import { Category } from './category.model';
@@ -38,3 +39,4 @@ export class CategoryDetailPage {
         modal.present();
     }
 }
+*/

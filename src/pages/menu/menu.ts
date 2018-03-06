@@ -1,3 +1,4 @@
+/*
 import { Component, ViewChild } from '@angular/core';
 import { Nav, NavController } from 'ionic-angular';
 
@@ -32,3 +33,4 @@ export class MenuPage {
     this.nav.setRoot(page.component);
   }
 }
+*/

@@ -19,7 +19,7 @@
   display: inline-block;
   width: 347px;
   height: 497px;
-  background: url("../assets/img/hipster.png") no-repeat center top;
+  background: url("../assets/img/roo.png") no-repeat center top;
   background-size: contain;
 }
 
@@ -32,9 +32,76 @@ only screen and (        min-device-pixel-ratio: 2),
 only screen and (                min-resolution: 192dpi),
 only screen and (                min-resolution: 2dppx) {
   .hipster {
-    background: url("../assets/img/hipster2x.png") no-repeat center top;
+    background: url("../assets/img/roo2x.png") no-repeat center top;
     background-size: contain;
   }
+}
+
+@font-face {
+  font-family: Vazir;
+  src: url('../assets/fonts/Vazir.eot');
+  src: url('../assets/fonts/Vazir.eot?iefix') format('embedded-opentype'),
+       url('../assets/fonts/Vazir.woff') format('woff'),
+       url('../assets/fonts/Vazir.ttf') format('truetype');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: Vazir;
+  src: url('../assets/fonts/Vazir-Bold.eot');
+  src: url('../assets/fonts/Vazir-Bold.eot?iefix') format('embedded-opentype'),
+       url('../assets/fonts/Vazir-Bold.woff') format('woff'),
+       url('../assets/fonts/Vazir-Bold.ttf') format('truetype');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: Vazir;
+  src: url('../assets/fonts/Vazir-Light.eot');
+  src: url('../assets/fonts/Vazir-Light.eot?iefix') format('embedded-opentype'),
+       url('../assets/fonts/Vazir-Light.woff') format('woff'),
+       url('../assets/fonts/Vazir-Light.ttf') format('truetype');
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: UrwGothicL;
+  src: url('../assets/fonts/urw-gothic-l-book.ttf') format('truetype');
+  font-weight: normal;
+}
+
+/* Note: we only add this font-face to include roboto-regular and roboto-medium into production apk*/
+@font-face {
+  font-family: RobotoRoo;
+  src: url('../assets/fonts/roboto-reqular.woff') format('woff'),
+       url('../assets/fonts/roboto-reqular.woff2') format('woff2'),
+       url('../assets/fonts/roboto-reqular.ttf') format('truetype');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: RobotoRoo;
+  src: url('../assets/fonts/roboto-medium.woff') format('woff'),
+       url('../assets/fonts/roboto-medium.woff2') format('woff2'),
+       url('../assets/fonts/roboto-medium.ttf') format('truetype');
+  font-weight: 300;
+}
+
+.roboto-roo-font {
+  font-family: 'RobotoRoo';
+}
+
+.app-name {
+  font-family: 'UrwGothicL';
+  color: #387C2C;
+}
+
+.app-name-rtl {
+  display: block;
+  -webkit-transform: matrix(-1, 0, 0, 1, 0, 0);
+  -moz-transform: matrix(-1, 0, 0, 1, 0, 0);
+  -o-transform: matrix(-1, 0, 0, 1, 0, 0);
+  transform: matrix(-1, 0, 0, 1, 0, 0);
 }
 
 .force-ltr {
@@ -55,6 +122,7 @@ only screen and (                min-resolution: 2dppx) {
 
 .dir-rtl {
   direction: rtl;
+  font-family: 'Vazir';
 }
 
 .float-right {

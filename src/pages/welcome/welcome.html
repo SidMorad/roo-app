@@ -8,15 +8,20 @@
 
 <ion-content padding>
     <span class="hipster"></span>
-    <div>
-        <button ion-button block (click)="login()" class="login">{{ 'LOGIN' | translate }}</button>
+    <div text-center *ngIf="isTryingToLogin">
+      <ion-spinner></ion-spinner>
     </div>
-    <div>
-        <p><br /></p>
-        <p text-center>
-          <a (click)="home()">
-            {{'NOT_NOW' | translate}}
-          </a>
-        </p>
+    <div *ngIf="!isTryingToLogin">
+      <div>
+          <button ion-button block (click)="login()" class="login">{{ 'LOGIN' | translate }}</button>
+      </div>
+      <div>
+          <p></p>
+          <p text-center>
+            <a (click)="home()">
+              {{'NOT_NOW' | translate}}
+            </a>
+          </p>
+      </div>
     </div>
 </ion-content>

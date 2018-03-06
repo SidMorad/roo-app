@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { IonicPageModule } from 'ionic-angular';
-import { NgProgressModule } from '@ngx-progressbar/core';
-import { NgProgressHttpModule } from '@ngx-progressbar/http';
 
 import { HomePage } from './home';
 
@@ -12,9 +10,7 @@ import { HomePage } from './home';
   ],
   imports: [
     IonicPageModule.forChild(HomePage),
-    TranslateModule.forChild(),
-    NgProgressModule,
-    NgProgressHttpModule
+    TranslateModule.forChild()
   ],
   exports: [
     HomePage

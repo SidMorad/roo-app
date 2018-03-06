@@ -36,13 +36,12 @@
 
   "MAP_TITLE": "Map",
 
-  "ROO_BANNER_MESSAGE": "Roo, jump to a new language!",
-  "WELCOME_INTRO": "The starting point for learning a new language",
+  "ROO_BANNER_MESSAGE": "Roo, jump your way to a new language!",
 
   "SETTINGS_TITLE": "Settings",
-  "SETTINGS_OPTION1": "Option 1",
-  "SETTINGS_OPTION2": "Option 2",
-  "SETTINGS_OPTION3": "Option 3",
+  "SETTINGS_LANGUAGE": "Language",
+  "SETTINGS_AUTO_PLAY_VOICE": "Auto play voice",
+  "SETTINGS_AUTO_CONTINUE": "Auto continue",
   "SETTINGS_OPTION4": "Option 4",
 
   "SETTINGS_PROFILE_BUTTON": "Edit Profile",
@@ -54,9 +53,6 @@
   "LOGIN_TITLE": "Sign in",
   "LOGIN_ERROR": "Unable to sign in. Please check your account information and try again.",
   "LOGIN_BUTTON": "Sign in",
-  "SIGNUP_TITLE": "Sign up",
-  "SIGNUP_ERROR": "Unable to create account. Please check your account information and try again.",
-  "SIGNUP_BUTTON": "Sign up",
   "SIGNOUT_BUTTON": "Sign Out",
   "LOGOUT_BUTTON": "Logout",
 
@@ -76,5 +72,5 @@
   "CARDS_TITLE": "Social",
 
   "SEARCH_TITLE": "Search",
-  "SEARCH_PLACEHOLDER": "Search the items list, e.g. \"Donald Duck\""
+  "SEARCH_PLACEHOLDER": "Search the items list, e.g. \"Hotel\""
 }

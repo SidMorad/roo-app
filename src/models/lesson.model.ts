@@ -8,9 +8,14 @@ export class Lesson {
     public indexOrder?: number
   ) { }
 
-  isFromLangRTL(): boolean {
+  isMotherLangRTL(): boolean {
     const langs = (this.translDir+'').split('$');
     return langs[0] === 'FA';
+  }
+
+  isTargetLangLTR(): boolean {
+    const langs = (this.translDir+'').split('$');
+    return langs[1] !== 'FA';
   }
 
 }

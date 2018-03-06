@@ -1,3 +1,4 @@
+/*
 import { Component } from '@angular/core';
 import { ModalController, NavController, ToastController } from 'ionic-angular';
 import { Category } from './category.model';
@@ -79,3 +80,4 @@ export class CategoryPage {
         this.navCtrl.push('CategoryDetailPage', {id: category.id});
     }
 }
+*/

@@ -13,7 +13,7 @@
             <progress [max]="questions.length" [value]="questionCounter-1"></progress>
           </ion-col>
           <ion-col col-1>
-            <button ion-button icon-only clear small (click)="exit()" [style.color]="isAuthenticated()? 'black' : 'red'">
+            <button ion-button icon-only clear small (click)="exit()" [style.color]="principal.isAuthenticated()? 'black' : 'red'">
               <ion-icon name="close"></ion-icon>
             </button>
           </ion-col>
@@ -43,26 +43,29 @@
             <ion-icon name="sad"></ion-icon>
           </button>
         </span>
-        <p [class.dir-rtl]="lesson.isFromLangRTL()">&nbsp; {{question.description}}</p>
+        <p [class.dir-rtl]="lesson.isMotherLangRTL()">&nbsp; {{question.description}}</p>
       </div>
       <div *ngIf="isNotTypes(['TwoPicture', 'FourPicture'])"
-          [class.dir-rtl]="lesson.isFromLangRTL() && question.d.reverse" class="question-question">
+          [class.dir-rtl]="lesson.isMotherLangRTL() && question.d.reverse"
+          [class.dir-ltr]="lesson.isTargetLangLTR() && !question.d.reverse" class="question-question">
           {{question.d.question}}
       </div>
       <div *ngIf="isType('TwoPicture')"
-          [class.dir-rtl]="lesson.isFromLangRTL() && question.d.reverse" class="question-question">
+          [class.dir-rtl]="lesson.isMotherLangRTL() && question.d.reverse"
+          [class.dir-ltr]="lesson.isTargetLangLTR() && !question.d.reverse" class="question-question">
           {{question.d.correct.hint}}
       </div>
       <div *ngIf="isType('FourPicture')"
-          [class.dir-rtl]="lesson.isFromLangRTL() && question.d.reverse" class="question-question">
+          [class.dir-rtl]="lesson.isMotherLangRTL() && question.d.reverse"
+          [class.dir-ltr]="lesson.isTargetLangLTR() && !question.d.reverse" class="question-question">
           {{question.d.pics[fourPictureCorrectIndex].hint}}
       </div>
-      <!-- <div *ngIf="wasWrong && isNotTypes(['TwoPicture', 'FourPicture', 'MultiSelect', 'OneCheck'])" class="alert alert-info" [class.dir-rtl]="lesson.isFromLangRTL() && !question.d.reverse">
+      <!-- <div *ngIf="wasWrong && isNotTypes(['TwoPicture', 'FourPicture', 'MultiSelect', 'OneCheck'])" class="alert alert-info" [class.dir-rtl]="lesson.isMotherLangRTL() && !question.d.reverse">
         {{rightAnswerString}}
       </div> -->
 
       <div *ngIf="isType('OneCheck')">
-        <ion-card [class.dir-rtl]="lesson.isFromLangRTL() && !question.d.reverse">
+        <ion-card [class.dir-rtl]="lesson.isMotherLangRTL() && !question.d.reverse">
           <ion-list radio-group>
             <span *ngFor="let choice of choices; let i = index;">
               <ion-item text-wrap [class.alert-success]="wasCorrect && choice.isCorrect" *ngIf="(!wasWrong && !wasCorrect) || choice.isCorrect">
@@ -76,13 +79,13 @@
 
       <div *ngIf="isType('MultiSelect')">
         <div class="answer-background">
-          <div padding [class.dir-rtl]="lesson.isFromLangRTL() && !question.d.reverse" [class.alert-success]="wasCorrect">
+          <div padding [class.dir-rtl]="lesson.isMotherLangRTL() && !question.d.reverse" [class.alert-success]="wasCorrect">
             <span class="answer" *ngFor="let chosen of chosens; let i = index;" (click)="moveBackToOptions(chosen)">
               <button class="answer-contents" id="chosen-{{i}}">{{chosen.text}}</button>
             </span>
           </div>
         </div>
-        <div padding [class.dir-rtl]="lesson.isFromLangRTL() && !question.d.reverse">
+        <div padding [class.dir-rtl]="lesson.isMotherLangRTL() && !question.d.reverse">
           <span class="answer answer-container" *ngFor="let option of options; let i = index;" (click)="moveToChosen(option)">
             <button class="answer-contents" id="option-{{i}}">{{option.text}}</button>
           </span>
@@ -184,7 +187,7 @@
       {{'CHECK' | translate}}
     </button>
     <button ion-button full color="secondary"
-            *ngIf="wasWrong" (click)="continue()">
+            *ngIf="!autoContinue || wasWrong" (click)="continue()">
       {{'CONTINUE' | translate}}
     </button>
   </div>

@@ -16,15 +16,13 @@ export class CategoryLessonPage implements OnInit {
   @ViewChild(Slides) slides: Slides;
 
   lessons: Lesson[];
-  dir: string = 'ltr';
   category: Category;
   isEnd: boolean;
   isBeginning: boolean;
   subscription: Subscription;
 
-  constructor(platform: Platform, navParams: NavParams, private navCtrl: NavController,
+  constructor(public platform: Platform, navParams: NavParams, private navCtrl: NavController,
               private api: Api, public ngProgress: NgProgress) {
-    this.dir = platform.dir();
     this.category = navParams.get('category');
     this.lessons = [];
   }
@@ -37,6 +35,10 @@ export class CategoryLessonPage implements OnInit {
       }, (error) => {
         console.log('Oops category-lesson load failed! TODO');
       });
+      this.slides.paginationBulletRender = (index, defaultClass) => {
+        // return '<span class="' + defaultClass + '" (click)="goToSlide(' + index + ')">' + (index+1) + '</span>';
+        return '<button class="' + defaultClass + '" aria-label="Go to slide '+(index+1)+'" data-slide-index="'+index+'">'+(index+1)+'</button>';
+      };
   }
 
   startLesson(index) {
@@ -55,6 +57,11 @@ export class CategoryLessonPage implements OnInit {
 
   isInProgress() {
     return this.ngProgress.isStarted();
+  }
+
+  goToSlide(index) {
+    console.log('goToSlide called, ', index);
+    this.slides.slideTo(index);
   }
 
   onSlideChangeStart(slider) {

@@ -1,3 +1,4 @@
+/*
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController, NavParams, ToastController, ViewController } from 'ionic-angular';
@@ -46,17 +47,10 @@ export class CategoryDialogPage {
     ionViewDidLoad() {
     }
 
-    /**
-     * The user cancelled, dismiss without sending data back.
-     */
     cancel() {
         this.viewCtrl.dismiss();
     }
 
-    /**
-     * The user is done and wants to create the category, so return it
-     * back to the presenter.
-     */
     done() {
         if (!this.form.valid) { return; }
         this.viewCtrl.dismiss(this.form.value);
@@ -69,3 +63,4 @@ export class CategoryDialogPage {
     }
 
 }
+*/

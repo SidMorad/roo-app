@@ -1,0 +1,11 @@
+{
+    "android": {
+        "release": {
+            "keystore": "rooKeystore.jks",
+            "storePassword": "",
+            "alias": "roo",
+            "password" : "",
+            "keystoreType": "jks"
+        }
+    }
+}

@@ -1,10 +1,7 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
-import { NgProgress } from '@ngx-progressbar/core';
+import { IonicPage, NavController, Platform } from 'ionic-angular';
 
 import { Principal } from '../../providers/auth/principal.service';
-import { FirstRunPage } from '../pages';
-import { LoginService } from '../../providers/login/login.service';
 import { Api } from '../../providers/api/api';
 import { Category, TranslDir } from '../../models';
 
@@ -19,12 +16,11 @@ export class HomePage implements OnInit {
   mapWidth: number;
   showRetryButton: boolean;
 
-  constructor(public navCtrl: NavController,
+  constructor(private navCtrl: NavController,
               private principal: Principal,
               private ngZone: NgZone,
-              private loginService: LoginService,
               private api: Api,
-              public ngProgress: NgProgress) {
+              public platform: Platform) {
     this.categories = [];
     this.mapWidth = (window.screen.height * 4.8);
   }
@@ -47,7 +43,9 @@ export class HomePage implements OnInit {
   fetchCategories() {
     this.showRetryButton = false;
     this.api.getCategoryPublicList(TranslDir.FA$EN_UK).subscribe((response) => {
-      this.categories = response;
+      this.ngZone.run(() => {
+        this.categories = response;
+      });
     }, (error) => {
       console.log("Error on getting category list, Oops we are in trouble!", error);
       this.showRetryButton = true;
@@ -56,15 +54,6 @@ export class HomePage implements OnInit {
 
   isAuthenticated() {
     return this.principal.isAuthenticated();
-  }
-
-  logout() {
-    this.loginService.logout();
-    this.navCtrl.push(FirstRunPage);
-  }
-
-  signin() {
-    this.navCtrl.push(FirstRunPage);
   }
 
   categoryLesson(category) {

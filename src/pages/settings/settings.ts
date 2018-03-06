@@ -43,9 +43,9 @@ export class SettingsPage {
 
   _buildForm() {
     let group: any = {
-      option1: [this.options.option1],
-      option2: [this.options.option2],
-      option3: [this.options.option3]
+      language: [this.options.language],
+      autoPlayVoice: [this.options.autoPlayVoice],
+      autoContinue: [this.options.autoContinue]
     };
 
     switch (this.page) {
@@ -62,6 +62,9 @@ export class SettingsPage {
     // Watch the form for changes, and
     this.form.valueChanges.subscribe((v) => {
       this.settings.merge(this.form.value);
+      if (this.settings.allSettings.language !== this.translate.currentLang) {
+        this.translate.use(this.settings.allSettings.language);
+      }
     });
   }
 
@@ -92,4 +95,5 @@ export class SettingsPage {
   ngOnChanges() {
     console.log('Ng All Changes');
   }
+
 }
