@@ -45,7 +45,8 @@ export class SettingsPage {
     let group: any = {
       language: [this.options.language],
       autoPlayVoice: [this.options.autoPlayVoice],
-      autoContinue: [this.options.autoContinue]
+      autoContinue: [this.options.autoContinue],
+      voiceSpeedRate: [this.options.voiceSpeedRate]
     };
 
     switch (this.page) {

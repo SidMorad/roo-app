@@ -12,6 +12,7 @@ import { OAuthModule } from 'angular-oauth2-oidc';
 import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { NgProgressHttpModule } from '@ngx-progressbar/http';
+import { TextToSpeech } from '@ionic-native/text-to-speech';
 
 import { Api, Settings, User } from '../providers/providers';
 import { MyApp } from './app.component';
@@ -38,6 +39,7 @@ export function provideSettings(storage: Storage) {
     language: 'fa',
     autoPlayVoice: true,
     autoContinue: true,
+    voiceSpeedRate: 80,
     option4: 'Hello'
   });
 }
@@ -80,6 +82,7 @@ export function provideSettings(storage: Storage) {
     Camera,
     SplashScreen,
     StatusBar,
+    TextToSpeech,
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler },

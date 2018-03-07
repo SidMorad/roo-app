@@ -1,5 +1,5 @@
-<ion-header>
-  <ion-navbar>
+<ion-header no-border>
+  <ion-navbar transparent>
     <ion-title>
         <span class="app-name" [class.app-name-rtl]="platform.isRTL">{{'APP_NAME' | translate}}</span>
     </ion-title>
@@ -22,7 +22,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content class="force-ltr">
+<ion-content class="force-ltr" fullscreen>
   <ion-scroll style="width: auto; height: 100%" class="force-ltr" scrollX="true" scrollY="false" zoom="false">
     <div class="categories-index">
     <div class="content">

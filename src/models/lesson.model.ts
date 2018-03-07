@@ -9,14 +9,34 @@ export class Lesson {
   ) { }
 
   isMotherLangRTL(): boolean {
-    const langs = (this.translDir+'').split('$');
-    return langs[0] === 'FA';
+    return this.motherLanguage() === 'FA';
   }
 
   isTargetLangLTR(): boolean {
-    const langs = (this.translDir+'').split('$');
-    return langs[1] !== 'FA';
+    return this.targetLanguage() !== 'FA';
+  }
+
+  langs(): any {
+    return (this.translDir+'').split('$');
+  }
+
+  motherLanguage(): string {
+    return this.langs()[1];
+  }
+
+  targetLanguage(): string {
+    return this.langs()[1];
+  }
+
+  targetLocale(): string {
+    switch(this.targetLanguage()) {
+      case 'EN_UK':
+        return 'en-GB';
+      case 'DE':
+        return 'de';
+      default:
+        return 'en-GB';
+    }
   }
 
 }
-
