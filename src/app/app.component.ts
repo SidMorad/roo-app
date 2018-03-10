@@ -20,10 +20,11 @@ declare const window: any;
       <ion-header>
         <ion-toolbar>
           <ion-title>
-            <span style="padding-left: 4px; padding-right: 4px;"> {{account.login}} </span>
-            <button ion-button clear large (click)="signin()" *ngIf="!principal.isAuthenticated()" menuClose>
+            <span *ngIf="principal.isAuthenticated()" style="padding-left: 4px; padding-right: 4px;"> {{account.login}} </span>
+            <button ion-button clear large (click)="signin()" *ngIf="!principal.isAuthenticated()" menuClose color="dark"
+                style="padding-left: 0px; padding-right: 0px;">
               <ion-icon name="log-in"></ion-icon>
-              <span style="padding-left: 4px; padding-right: 4px;"> {{'LOGIN_BUTTON' | translate}} </span>
+              <span style="padding-left: 16px; padding-right: 16px;"> {{'LOGIN_BUTTON' | translate}} </span>
             </button>
           </ion-title>
         </ion-toolbar>

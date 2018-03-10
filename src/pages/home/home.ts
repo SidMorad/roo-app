@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, Platform } from 'ionic-angular';
 
 import { Principal } from '../../providers/auth/principal.service';
@@ -11,6 +11,7 @@ import { Category, TranslDir } from '../../models';
   templateUrl: 'home.html'
 })
 export class HomePage implements OnInit {
+  @ViewChild('panel', { read: ElementRef}) public panel: ElementRef;
   account: Account = {};
   categories: Category[];
   mapWidth: number;
@@ -28,6 +29,8 @@ export class HomePage implements OnInit {
   ngOnInit() {
     console.log('Home initalized. ', new Date());
     this.fetchCategories();
+    // this.content.enableJsScroll();
+    // this.content.resize();
   }
 
   ionViewWillEnter() {
@@ -50,6 +53,10 @@ export class HomePage implements OnInit {
       console.log("Error on getting category list, Oops we are in trouble!", error);
       this.showRetryButton = true;
     });
+  }
+
+  scrollToTheRight() {
+    this.panel.nativeElement.scrollLeft += window.screen.width;
   }
 
   isAuthenticated() {

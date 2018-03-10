@@ -20,6 +20,7 @@
   "START_LESSON": "شروع",
   "WANT_TO_EXIT_Q": "میخواهید خارج شوید؟",
   "ARE_YOU_SURE_Q_YOUR_PROGRESS_WILL_NOT_BE_SAVED": "مطمئن هستید؟ پیشرفت درسی شما از دست خواهد رفت!",
+  "SKIP_MICROPHONE_QUESTIONS_FOR_NOW": "در حال حاضر از سوالهای گفتای صرف نظر کن",
   "NO": "خیر",
   "YES": "بله",
   "CHECK": "بررسی",
@@ -67,7 +68,7 @@
 
   "EDIT_BUTTON": "ویرایش",
   "DONE_BUTTON": "انجام شد",
-  "CANCEL_BUTTON": "برگشت",
+  "CANCEL_BUTTON": "انصراف",
   "DELETE_BUTTON": "پاک کردن",
 
   "CARDS_TITLE": "همبودی",

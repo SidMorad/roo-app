@@ -64,13 +64,19 @@ only screen and (                min-resolution: 2dppx) {
   font-weight: 300;
 }
 
+html[dir="rtl"] {
+  * {
+    font-family: 'Vazir';
+  }
+}
+
 @font-face {
   font-family: UrwGothicL;
   src: url('../assets/fonts/urw-gothic-l-book.ttf') format('truetype');
   font-weight: normal;
 }
 
-/* Note: we only add this font-face to include roboto-regular and roboto-medium into production apk*/
+/* Note: we only add this font-face to include roboto-reqular and roboto-medium into production apk*/
 @font-face {
   font-family: RobotoRoo;
   src: url('../assets/fonts/roboto-reqular.woff') format('woff'),
@@ -102,6 +108,7 @@ only screen and (                min-resolution: 2dppx) {
   -moz-transform: matrix(-1, 0, 0, 1, 0, 0);
   -o-transform: matrix(-1, 0, 0, 1, 0, 0);
   transform: matrix(-1, 0, 0, 1, 0, 0);
+  text-transform: lowercase;
 }
 
 .force-ltr {

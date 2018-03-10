@@ -23,12 +23,13 @@
 </ion-header>
 
 <ion-content class="force-ltr" fullscreen>
-  <ion-scroll style="width: auto; height: 100%" class="force-ltr" scrollX="true" scrollY="false" zoom="false">
+  <!-- <ion-scroll style="width: auto; height: 100%" class="force-ltr" scrollX="true" scrollY="false" zoom="false"> -->
     <div class="categories-index">
     <div class="content">
     <div id="map-container-main" class="map-container-main">
     <div class="map-container map-wrapper">
-    <div class="map map-inner map-webview touch-action" id="map-webview" [style.width.px]="mapWidth" style="height:inherit; overflow-x:auto; display:inline-block;">
+    <div class="map map-inner map-webview touch-action" id="map-webview" #panel
+      [style.width.px]="mapWidth" style="height:100%; overflow-x:scroll; display:inline-block;">
 
       <div id="pin-daily" class="pin">
         <div class="pin-image-photo">
@@ -91,5 +92,10 @@
     </div>
     </div>
     </div>
-  </ion-scroll>
+    <!-- <ion-fab right bottom>
+      <button ion-fab color="dark" (click)="scrollToTheRight()">
+        <ion-icon name="arrow-forward"></ion-icon>
+      </button>
+    </ion-fab> -->
+  <!-- </ion-scroll> -->
 </ion-content>

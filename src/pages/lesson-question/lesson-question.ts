@@ -1,8 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
 import { IonicPage, Platform, NavParams, AlertController, ViewController,
         Content, ModalController, ToastController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { TextToSpeech } from '@ionic-native/text-to-speech';
+import { SpeechRecognition } from '@ionic-native/speech-recognition';
+import { compareTwoStrings, findBestMatch } from 'string-similarity';
+import { diffWords } from 'diff';
 
 import { Category, Lesson, Question, Score, ScoreType } from '../../models';
 import { IMAGE_ORIGIN } from '../../app/app.constants';
@@ -29,6 +32,7 @@ export class LessonQuestionPage implements OnInit {
   chosens: any[];
   choices: any[];
   twoPictures: any[];
+  fourPictures: number[];
   fourPictureCorrectIndex: number;
   twoPictureCorrectIndex: number;
   isChecking: boolean;
@@ -40,13 +44,18 @@ export class LessonQuestionPage implements OnInit {
   rightAnswerString: string;
   autoPlayVoice: boolean;
   autoContinue: boolean;
+  microphonePressed: boolean;
+  hasAudioRecordingPermission: boolean;
+  speakingAnswer: string;
+  speakingAnswerDiff: any;
+  skipSpeaking: boolean;
 
-  constructor(platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
+  constructor(private platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
               private translateService: TranslateService, private viewCtrl: ViewController,
               private principal: Principal, private loginService: LoginService,
-              private modalCtrl: ModalController, private api: Api,
+              private modalCtrl: ModalController, private api: Api, private ngZone: NgZone,
               private toastCtrl: ToastController, private settings: Settings,
-              private textToSpeech: TextToSpeech) {
+              private textToSpeech: TextToSpeech, private speechRecognition: SpeechRecognition) {
     this.dir = platform.dir();
     const l: Lesson = navParams.get('lesson');
     this.lesson = new Lesson(l.uuid, l.title, l.translDir, l.indexOrder);
@@ -74,15 +83,17 @@ export class LessonQuestionPage implements OnInit {
       this.noCorrect++;
       if (this.autoContinue) {
         setTimeout(() => {
-          this.wasCorrect = false;
-          this.goToNextQuestion();
+          if (this.isChecking) {
+            this.wasCorrect = false;
+            this.goToNextQuestion();
+          }
         }, 2000);
       }
     } else {
       this.wasWrong = true;
       this.noWrong++;
     }
-    this.resolveRightAnswerString();
+    this.resolveRightAnswerString(true);
   }
 
   continue() {
@@ -92,57 +103,68 @@ export class LessonQuestionPage implements OnInit {
   }
 
   goToNextQuestion() {
-    if (this.questionCounter >= this.questions.length) {
-      this.questionCounter++;
-      if (!this.principal.isAuthenticated()) {
-        this.alertCtrl.create({
-          title: this.labelLoginTitle,
-          message: this.labelLoginMessage,
-          buttons: [
-            {
-              text: this.labelLoginEscape,
-              role: 'cancel',
-              handler: () => { this.viewCtrl.dismiss(); }
-            },
-            {
-              text: this.labelLogin,
-              handler: () => {
-                this.loginService.appLogin((data) => {
-                  console.log('GREAT we are logged in!', this.principal.isAuthenticated());
-                }, (err) => {
-                  console.log('LOGIN FAILURE ', err);
-                });
-              }
-            }
-          ]
-        }).present();
-      } else {
-        let score: Score = new Score(ScoreType[ScoreType.LESSON.toString()], this.lesson.translDir, this.noCorrect,
-                              this.noWrong, this.lesson.uuid, this.category.uuid);
-        console.log('SCORE WAS ', score);
-        console.log('SCORE ify ', JSON.stringify(score));
-        this.api.createScore(score).subscribe((res) => {
-          this.toastCtrl.create({
-            message: 'Your score uploaded successfully!',
-            duration: 3000
-          }).present();
-          this.viewCtrl.dismiss();
-        }, (err) => {
-          console.log('OOPS upload score failed, TODO');
-        })
-      }
-    } else {
+    if (this.isType('FourPicture') && this.fourPictures.length === 3) {
+      this.fourPictureCorrectIndex = this.fourPictures[1];
+      this.fourPictures.splice(1, 1);
+      this.question.d.pics[0].answered = false;
+      this.question.d.pics[1].answered = false;
+      this.question.d.pics[2].answered = false;
+      this.question.d.pics[3].answered = false;
       this.isChecking = false;
-      if (this.noWrong === 5) {
-        this.showFailureModal();
-      } else {
+    }
+    else {
+      if (this.questionCounter >= this.questions.length) {
         this.questionCounter++;
-        this.setQuestion(this.questions[this.questionCounter-1]);
+        if (!this.principal.isAuthenticated()) {
+          this.alertCtrl.create({
+            title: this.labelLoginTitle,
+            message: this.labelLoginMessage,
+            buttons: [
+              {
+                text: this.labelLoginEscape,
+                role: 'cancel',
+                handler: () => { this.viewCtrl.dismiss(); }
+              },
+              {
+                text: this.labelLogin,
+                handler: () => {
+                  this.loginService.appLogin((data) => {
+                    console.log('GREAT we are logged in!', this.principal.isAuthenticated());
+                  }, (err) => {
+                    console.log('LOGIN FAILURE ', err);
+                  });
+                }
+              }
+            ]
+          }).present();
+        } else {
+          let score: Score = new Score(ScoreType[ScoreType.LESSON.toString()], this.lesson.translDir, this.noCorrect,
+                                this.noWrong, this.lesson.uuid, this.category.uuid);
+          console.log('SCORE ify ', JSON.stringify(score));
+          this.api.createScore(score).subscribe((res) => {
+            this.toastCtrl.create({
+              message: 'Your score uploaded successfully!',
+              duration: 3000
+            }).present();
+            this.viewCtrl.dismiss();
+          }, (err) => {
+            console.log('OOPS upload score failed, TODO');
+          })
+        }
+      } else {
+        this.isChecking = false;
+        if (this.noWrong === 5) {
+          this.showFailureModal();
+        } else {
+          this.questionCounter++;
+          this.setQuestion(this.questions[this.questionCounter-1]);
+        }
       }
     }
   }
 
   setQuestion(question: Question) {
+    this.ngZone.run(() => {
     this.question = question;
     try {
       this.question.d = JSON.parse(question.dynamicPart);
@@ -154,21 +176,36 @@ export class LessonQuestionPage implements OnInit {
     } else if (this.isType('OneCheck')) {
       this.choices = this.question.d.choices.slice();
     } else if (this.isType('FourPicture')) {
-      let fourPictures = this.shuffleArray([0, 1, 2, 3]);
-      this.fourPictureCorrectIndex = fourPictures[2];
+      this.fourPictures = this.shuffleArray([0, 1, 2, 3]);
+      this.fourPictureCorrectIndex = this.fourPictures[2];
+      this.fourPictures.splice(2, 1);
       this.content.scrollToBottom();
-    } else if (question.type.toString() === 'TwoPicture') {
+    } else if (this.isType('TwoPicture')) {
       if (Math.floor(Math.random() * 2) === 1) {
         this.twoPictureCorrectIndex  = 0;
-        this.twoPictures = [question.d.correct, question.d.wrong];
       } else {
         this.twoPictureCorrectIndex  = 1;
-        this.twoPictures = [question.d.wrong, question.d.correct];
+      }
+      this.twoPictures = [question.d.correct, question.d.wrong];
+    } else if (this.isType('Speaking')) {
+      if (this.skipSpeaking) {
+        this.goToNextQuestion();
+      }
+      else {
+        if (!this.hasAudioRecordingPermission) {
+          this.checkHasAudioRecordingPermission();
+        }
       }
     }
     if (this.autoPlayVoice) {
-      this.speak();
+      if (this.isType('Speaking') && this.skipSpeaking) {
+        // don't speak.
+      }
+      else {
+        this.speak();
+      }
     }
+    });
   }
 
   isAnswerRight() {
@@ -212,11 +249,21 @@ export class LessonQuestionPage implements OnInit {
       }
       return false;
     }
-    else if (this.isType('Writing')) {
+    else if (this.isType('Writing')) {  // TODO how many percentage answer was similar to correct answer
       let actual = this.writingAnswer.replace(/\s+/g, ' ').trim().toUpperCase();
       for (let i = 0; i < this.question.d.answers.length; i++) {
         let expected = this.question.d.answers[i].text.replace(/\s+/g, ' ').trim().toUpperCase();
         if (actual === expected) {
+          return true;
+        }
+      }
+      return false;
+    }
+    else if (this.isType('Speaking')) {
+      if (this.speakingAnswer) {
+        let correctPercentage = compareTwoStrings(this.question.d.question, this.speakingAnswer);
+        console.log('Speaking answer was ', correctPercentage, ' right.');
+        if (correctPercentage > 0.7) {
           return true;
         }
       }
@@ -267,18 +314,8 @@ export class LessonQuestionPage implements OnInit {
 
   resolveRightAnswerString(autoCorrect?:boolean): string {
     let result = '';
-    if (this.isType('MultiSelect')) {
-      for (let i = 0; i < this.question.d.answers.length; i++) {
-        result += this.question.d.answers[i].text;
-        result += " ";
-      }
-      if (autoCorrect) {
-        this.options = [];
-        this.chosens = this.question.d.answers;
-      }
-    }
-    else if (this.isType('TwoPicture')) {
-      result = this.question.d.correct.answer;
+    if (this.isType('TwoPicture')) {
+      result = this.twoPictures[this.twoPictureCorrectIndex].answer;
     }
     else if (this.isType('FourPicture')) {
       result = this.question.d.pics[this.fourPictureCorrectIndex].answer;
@@ -303,6 +340,38 @@ export class LessonQuestionPage implements OnInit {
         result += this.question.d.answers[i].text;
         if (i != this.question.d.answers.length - 1) {
           result += "<br> or <br>";
+        }
+      }
+    }
+    else if (this.isType('Speaking')) {
+      this.speakingAnswerDiff = diffWords(this.question.d.question, this.speakingAnswer, { ignoreCase: true });
+      result = this.question.d.hint;
+    }
+    else if (this.isType('MultiSelect')) {
+      for (let i = 0; i < this.question.d.answers.length; i++) {
+        result += this.question.d.answers[i].text;
+        result += " ";
+      }
+      if (autoCorrect) {
+        for (let i = 0; i < this.chosens.length; i++) {
+          let wasIn = false;
+          for (let j = 0; j < this.question.d.answers.length; j++) {
+            if (this.chosens[i].text === this.question.d.answers[j].text) {
+              wasIn = true;
+            }
+          }
+          if (wasIn) {
+            this.chosens[i].class = 'part-added';
+          } else {
+            this.chosens[i].class = 'part-removed';
+          }
+        }
+        for (let i = 0; i < this.options.length; i++) {
+          for (let j = 0; j < this.question.d.answers.length; j++) {
+            if (this.options[i].text === this.question.d.answers[j].text) {
+              this.options[i].class = 'part-added';
+            }
+          }
         }
       }
     }
@@ -361,7 +430,10 @@ export class LessonQuestionPage implements OnInit {
   }
 
   isType(type: string): boolean {
-    return this.question.type.toString() === type;
+    if (this.question) {
+      return this.question.type.toString() === type;
+    }
+    return false;
   }
 
   isNotTypes(types: string[]): boolean {
@@ -372,6 +444,53 @@ export class LessonQuestionPage implements OnInit {
       }
     }
     return result;
+  }
+
+  microphoneDown(event) {
+    this.microphonePressed = true;
+    if (this.hasAudioRecordingPermission) {
+      this.speechRecognition.startListening()
+        .subscribe(
+          (matches: Array<string>) => {
+            console.log(matches);
+            let findBest = findBestMatch(this.question.d.question, matches);
+            this.speakingAnswer = findBest.bestMatch.target;
+            this.check();
+            this.microphoneUp(event);
+          },
+          (error) => {
+            console.log('Oops: ', error);
+            this.microphoneUp(event);
+          }
+        );
+    } else {
+      this.checkHasAudioRecordingPermission();
+    }
+  }
+
+  microphoneUp(event) {
+    this.microphonePressed = false;
+    if (this.platform.is('ios')) {
+      this.speechRecognition.stopListening();
+    }
+  }
+
+  skipSpeakingQuestions() {
+    this.skipSpeaking = true;
+    this.goToNextQuestion();
+  }
+
+  checkHasAudioRecordingPermission() {
+    this.speechRecognition.hasPermission().then((hasPermission: boolean) => {
+      if (!hasPermission) {
+        this.speechRecognition.requestPermission().then(
+          () => this.hasAudioRecordingPermission = true,
+          () => this.hasAudioRecordingPermission = false
+        );
+      } else {
+        this.hasAudioRecordingPermission = true;
+      }
+    });
   }
 
   resolveImageUrl(pictureName) {

@@ -2,7 +2,7 @@
   "name": "Roo",
   "short_name": "Roo",
   "start_url": "index.html",
-  "display": "standalone",
+  "display": "fullscreen",
   "orientation": "portrait",
   "icons": [{
     "src": "assets/imgs/logo.png",

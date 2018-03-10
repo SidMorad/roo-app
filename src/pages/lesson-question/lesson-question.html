@@ -23,7 +23,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content scrollDownOnLoad="true">
   <section class="question-container">
     <div class="quesiton-part">
       <div [class.alert-success]="wasCorrect" [class.alert-error]="wasWrong" style="padding: 5px; border: 1px solid transparent; border-radius: 16px; align-items: center;">
@@ -54,23 +54,27 @@
       <div *ngIf="isType('TwoPicture')"
           [class.dir-rtl]="lesson.isMotherLangRTL() && question.d.reverse"
           [class.dir-ltr]="lesson.isTargetLangLTR() && !question.d.reverse" class="question-question">
-          {{question.d.correct.hint}}
+          {{twoPictures[twoPictureCorrectIndex].hint}}
       </div>
       <div *ngIf="isType('FourPicture')"
           [class.dir-rtl]="lesson.isMotherLangRTL() && question.d.reverse"
           [class.dir-ltr]="lesson.isTargetLangLTR() && !question.d.reverse" class="question-question">
           {{question.d.pics[fourPictureCorrectIndex].hint}}
       </div>
-      <!-- <div *ngIf="wasWrong && isNotTypes(['TwoPicture', 'FourPicture', 'MultiSelect', 'OneCheck'])" class="alert alert-info" [class.dir-rtl]="lesson.isMotherLangRTL() && !question.d.reverse">
+      <div *ngIf="(wasWrong || wasCorrect) && isNotTypes(['TwoPicture', 'FourPicture', 'OneCheck'])" class="alert alert-info"
+          [class.dir-rtl]="lesson.isMotherLangRTL() && !question.d.reverse"
+          [class.dir-ltr]="lesson.isTargetLangLTR() && question.d.reverse">
         {{rightAnswerString}}
-      </div> -->
+      </div>
 
       <div *ngIf="isType('OneCheck')">
         <ion-card [class.dir-rtl]="lesson.isMotherLangRTL() && !question.d.reverse"
                   [class.dir-ltr]="lesson.isTargetLangLTR() && question.d.reverse">
           <ion-list radio-group>
             <span *ngFor="let choice of choices; let i = index;">
-              <ion-item text-wrap [class.alert-success]="wasCorrect && choice.isCorrect" *ngIf="(!wasWrong && !wasCorrect) || choice.isCorrect">
+              <ion-item text-wrap *ngIf="(!wasWrong && !wasCorrect) || choice.isCorrect || choice.picked"
+                   [class.alert-success]="wasCorrect && choice.isCorrect"
+                   [class.alert-error]="wasWrong && choice.picked">
                 <ion-label (click)="oneChecked(i)">{{choice.text}}</ion-label>
                 <ion-radio value="{{choice.text}}" (click)="oneChecked(i)"></ion-radio>
               </ion-item>
@@ -84,16 +88,34 @@
           <div [class.dir-rtl]="lesson.isMotherLangRTL() && !question.d.reverse" [class.alert-success]="wasCorrect" padding
                [class.dir-ltr]="lesson.isTargetLangLTR() && question.d.reverse">
             <span class="answer" *ngFor="let chosen of chosens; let i = index;" (click)="moveBackToOptions(chosen)">
-              <button class="answer-contents" id="chosen-{{i}}">{{chosen.text}}</button>
+              <button class="{{chosen.class}} answer-contents" id="chosen-{{i}}">{{chosen.text}}</button>
             </span>
           </div>
         </div>
         <div [class.dir-rtl]="lesson.isMotherLangRTL() && !question.d.reverse" padding
              [class.dir-ltr]="lesson.isTargetLangLTR() && question.d.reverse">
           <span class="answer answer-container" *ngFor="let option of options; let i = index;" (click)="moveToChosen(option)">
-            <button class="answer-contents" id="option-{{i}}">{{option.text}}</button>
+            <button class="{{option.class}} answer-contents" id="option-{{i}}">{{option.text}}</button>
           </span>
         </div>
+      </div>
+
+      <div *ngIf="isType('Speaking')">
+        <div class="answer-background dir-ltr">
+          <div  padding>
+          <ion-spinner name="dots" *ngIf="microphonePressed"></ion-spinner>
+            <div *ngIf="speakingAnswerDiff">
+              <span *ngFor="let part of speakingAnswerDiff" [class.part-removed]="part.added" [class.part-added]="part.removed">{{part.value}}</span>
+            </div>
+          </div>
+        </div>
+        <a *ngIf="isType('Speaking')" (click)="skipSpeakingQuestions()" style="color:gray">{{'SKIP_MICROPHONE_QUESTIONS_FOR_NOW' | translate}}</a>
+        <ion-fab center bottom large>
+          <button ion-fab large color="{{microphonePressed ? 'danger' : 'primary'}}"
+            (touchstart)="microphoneDown($event)" (touchend)="microphoneUp($event)" [disabled]="isChecking">
+            <ion-icon name="microphone"></ion-icon>
+          </button>
+        </ion-fab>
       </div>
 
       <div *ngIf="isType('TwoPicture')">
@@ -112,15 +134,6 @@
             </ion-col>
             <ion-col col-3></ion-col>
           </ion-row>
-          <!-- <ion-row>
-            <ion-col>
-              <div text-center>
-                <button ion-button color="primary" class="button-for-two-picture" id="twoPictureButton" name="{{question.d.correct.answer}}_{{twoPictureCorrectIndex}}">
-                  {{question.d.correct.hint}}
-                </button>
-              </div>
-            </ion-col>
-          </ion-row> -->
           <ion-row (click)="twoPictureSelected(1)"
                    [class.alert-warning]="twoPictures[1].answered  && !wasCorrect && !wasWrong"
                    [class.alert-error]="wasWrong && twoPictures[1].answered"
@@ -190,14 +203,15 @@
 
     </div>
   </section>
-  <div style="position: absolute; bottom: 0px; width: 100%">
+  <div style="position: absolute; bottom: 0px; width: 100%" text-center>
     <button ion-button full color="secondary"
-            *ngIf="isNotTypes(['FourPicture', 'TwoPicture']) && !wasWrong"
-            [disabled]="!isAnswered() || isChecking" (click)="check()">
+            *ngIf="isNotTypes(['FourPicture', 'TwoPicture']) && !wasWrong && !isChecking"
+            [disabled]="!isAnswered()" (click)="check()">
       {{'CHECK' | translate}}
     </button>
+    <ion-spinner *ngIf="isChecking && autoContinue && !wasWrong" style="position:absolute; bottom: 1em; z-index: 10;" color="primary"></ion-spinner>
     <button ion-button full color="secondary"
-            *ngIf="wasWrong || (!autoContinue && wasCorrect)" (click)="continue()">
+            *ngIf="wasWrong || wasCorrect" (click)="continue()">
       {{'CONTINUE' | translate}}
     </button>
   </div>

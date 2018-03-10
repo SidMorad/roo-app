@@ -13,6 +13,7 @@ import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { NgProgressHttpModule } from '@ngx-progressbar/http';
 import { TextToSpeech } from '@ionic-native/text-to-speech';
+import { SpeechRecognition } from '@ionic-native/speech-recognition';
 
 import { Api, Settings, User } from '../providers/providers';
 import { MyApp } from './app.component';
@@ -83,6 +84,7 @@ export function provideSettings(storage: Storage) {
     SplashScreen,
     StatusBar,
     TextToSpeech,
+    SpeechRecognition,
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler },

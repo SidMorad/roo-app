@@ -14,12 +14,27 @@ page-lesson-question {
     z-index: 100;
   }
 
+  .fab {
+    width: 5em;
+    height: 5em;
+  }
+
+  .part-added {
+    color: green !important;
+    border-color: darken(green, 2) !important;
+  }
+
+  .part-removed {
+    color: red !important;
+    border-color: darken(red, 2) !important;
+  }
+
   .question-question {
     font-size: 1.2em;
     padding-left: 1em;
     padding-right: 1em;
-    padding-top: 1em;
-    padding-bottom: 1em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
   }
 
   .answer-background {

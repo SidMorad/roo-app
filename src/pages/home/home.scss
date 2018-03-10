@@ -1,5 +1,8 @@
 page-home {
 
+ion-fab button[ion-fab] {
+   background-color: transparent;
+}
 
 .pin-image {
   background-image: url(https://mars.webebook.org/static/roo/img/pins@2x-4d59d12471aa0f848148c377dbc46236.png);
@@ -1281,8 +1284,14 @@ page-home {
 .content,
 .map-container-main,
 .map-container {
-  height:inherit !important;
+  height:100% !important;
   overflow-x:auto !important;
+}
+
+ion-content.js-scroll > .scroll-content {
+  position: inherit;
+  overflow-y: hidden;
+  overflow-x: auto;
 }
 
 .map .pin .title,

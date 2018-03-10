@@ -94,4 +94,7 @@
         <variable name="ANDROID_PATHPREFIX" value="/" />
     </plugin>
     <plugin name="cordova-plugin-tts" spec="~0.2.3" />
+    <engine name="browser" spec="~4.1.0" />
+    <allow-navigation href="http://192.168.10.102:8100" />
+    <plugin name="cordova-plugin-speechrecognition" spec="~1.1.2" />
 </widget>
