@@ -2,7 +2,7 @@ import { Component, ViewChild, OnInit } from '@angular/core';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { TranslateService } from '@ngx-translate/core';
-import { Config, Nav, Platform } from 'ionic-angular';
+import { Config, Nav, Platform, Events } from 'ionic-angular';
 import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
 
 import { FirstRunPage } from '../pages/pages';
@@ -10,7 +10,7 @@ import { Settings } from '../providers/providers';
 import { Api } from '../providers/api/api';
 import { Principal } from '../providers/auth/principal.service';
 import { LoginService } from '../providers/login/login.service';
-// import { TabsPage } from '../pages/tabs/tabs';
+import { TranslDir } from '../models/';
 
 declare const window: any;
 
@@ -55,7 +55,8 @@ export class MyApp implements OnInit {
     private settings: Settings, private config: Config,
     private statusBar: StatusBar, private splashScreen: SplashScreen,
     private oauthService: OAuthService, private api: Api,
-    private principal: Principal, private loginService: LoginService) {
+    private principal: Principal, private loginService: LoginService,
+    private events: Events) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -90,7 +91,10 @@ export class MyApp implements OnInit {
               me.getAccount();
             }
           });
-          me.oauthService.getIdentityClaims();
+          const claims = me.oauthService.getIdentityClaims();
+          if (!claims) {
+            me.events.publish('LOGIN_SUCCESS', claims);
+          }
         }
       }, 0);
     };
@@ -98,12 +102,14 @@ export class MyApp implements OnInit {
 
   ngOnInit() {
     console.log('App init event.');
+    this.events.subscribe('LOGIN_SUCCESS', (cliams) => {
+      this.api.getScoreLookup(TranslDir.FA$EN_UK).subscribe();
+    });
   }
 
   initAuthentication() {
     const AUTH_CONFIG: string = 'authConfig';
     // use local storage to optimize authentication config
-    console.log('AUTH_CONFIG: ', localStorage.getItem(AUTH_CONFIG));
     if (localStorage.getItem(AUTH_CONFIG)) {
       const authConfig: AuthConfig = JSON.parse(localStorage.getItem(AUTH_CONFIG));
       this.oauthService.configure(authConfig);
@@ -140,7 +146,6 @@ export class MyApp implements OnInit {
   tryLogin() {
     this.oauthService.tokenValidationHandler = new JwksValidationHandler();
     this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
-      console.log('Trying to login was successful!');
       this.getAccount();
     }).catch(error => {
       if (error.params && error.params.error === 'unsupported_response_type') {
@@ -165,15 +170,12 @@ export class MyApp implements OnInit {
 
   getAccount() {
     this.principal.identity().then(account => {
-      console.log('getAccount: ', account);
       this.account = account !== null ? account : {};
     });
   }
 
   initTranslate() {
-    console.log('initTranslate called.');
     this.settings.load().then(() => {
-      console.log('settings Loaded.')
       this.translate.onLangChange.subscribe((data) => {
         console.log(`OnLangChange fired: ${data}`);
         this.platform.setLang(data.lang, true);
@@ -181,7 +183,6 @@ export class MyApp implements OnInit {
       });
       this.translate.setDefaultLang(this.settings.allSettings.language);
       this.translate.use(this.settings.allSettings.language);
-      console.log('Translate is using default lang: ', this.settings.allSettings.language);
       this.translate.get(['BACK_BUTTON_TEXT']).subscribe(values => {
         this.config.set('ios', 'backButtonText', values.BACK_BUTTON_TEXT);
       });

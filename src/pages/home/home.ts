@@ -3,7 +3,7 @@ import { IonicPage, NavController, Platform } from 'ionic-angular';
 
 import { Principal } from '../../providers/auth/principal.service';
 import { Api } from '../../providers/api/api';
-import { Category, TranslDir } from '../../models';
+import { Category, TranslDir, ScoreLookup } from '../../models';
 
 @IonicPage()
 @Component({
@@ -35,12 +35,25 @@ export class HomePage implements OnInit {
 
   ionViewWillEnter() {
     this.principal.identity().then((account) => {
-      console.log("Authenticated user: ", account, new Date());
       this.ngZone.run(() => {
         this.account = account === null ? {} : account;
       });
       // this.app.getRootNavs()[0].setRoot(FirstRunPage);
     });
+  }
+
+  doneLessons(category) {
+    if (this.scoreLookup().categoryMap[category.uuid]) {
+      return this.scoreLookup().categoryMap[category.uuid];
+    }
+    return 0;
+  }
+
+  scoreLookup(): ScoreLookup {
+    if (this.api.cachedScoreLookup) {
+      return this.api.cachedScoreLookup;
+    }
+    return new ScoreLookup(0, TranslDir.FA$EN_UK, {}, {});
   }
 
   fetchCategories() {
@@ -50,7 +63,6 @@ export class HomePage implements OnInit {
         this.categories = response;
       });
     }, (error) => {
-      console.log("Error on getting category list, Oops we are in trouble!", error);
       this.showRetryButton = true;
     });
   }
@@ -68,7 +80,6 @@ export class HomePage implements OnInit {
   }
 
   dailyLesson() {
-    console.log("Daily lessson clicked");
   }
 
 }

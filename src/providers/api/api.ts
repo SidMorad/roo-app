@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 
-import { TranslDir, Lesson, QuestionDifficulty, Score, Category } from '../../models';
+import { TranslDir, Lesson, QuestionDifficulty, Score, Category, ScoreLookup } from '../../models';
 
 /**
  * Api is a generic(and customized for Roo domain) REST Api handler.
@@ -11,19 +11,29 @@ import { TranslDir, Lesson, QuestionDifficulty, Score, Category } from '../../mo
 export class Api {
 
   public static API_URL: string = 'https://mars.webebook.org/';
-  cachedCategories: Category[];
 
   constructor(public http: HttpClient) {
   }
 
+  getScoreLookup(translDir: TranslDir, force?: boolean): Observable<any> {
+    if (this.cachedScoreLookup && !force) {
+      return Observable.of(this.cachedScoreLookup);
+    }
+    return Observable.create(observer => {
+      this.http.get(Api.API_URL + 'roo/api/user/score/lookup/' + TranslDir[translDir]).subscribe((scoreLookup: ScoreLookup) => {
+        this.cachedScoreLookup = scoreLookup;
+        observer.next(this.cachedScoreLookup);
+        observer.complete();
+      });
+    });
+  }
+
   getCategoryPublicList(translDir: TranslDir): Observable<any> {
     if (this.cachedCategories) {
-      console.log('Category list resolved from cache');
       return Observable.of(this.cachedCategories);
     }
     return Observable.create(observer => {
       this.http.get(Api.API_URL + 'roo/api/public/categories/' + TranslDir[translDir]).subscribe((categories: Category[]) => {
-        console.log('Category list fetched from server');
         this.cachedCategories = categories;
         observer.next(this.cachedCategories);
         observer.complete();
@@ -64,6 +74,17 @@ export class Api {
     return this.http.get(Api.API_URL + endpoint, reqOpts);
   }
 
+  updateCachedScoreLookupWith(score: Score) {
+    if (this.cachedScoreLookup) {
+      this.cachedScoreLookup.total += score.score;
+      if (this.cachedScoreLookup.lessonMap[score.lessonUuid] == null) {
+        this.cachedScoreLookup.lessonMap[score.lessonUuid] = score.noWrong;
+      } else if (this.cachedScoreLookup.lessonMap[score.lessonUuid] > score.noWrong) {
+        this.cachedScoreLookup.lessonMap[score.lessonUuid] = score.noWrong;
+      }
+    }
+  }
+
   post(endpoint: string, body: any, reqOpts?: any) {
     return this.http.post(Api.API_URL + endpoint, body, reqOpts);
   }
@@ -79,4 +100,8 @@ export class Api {
   patch(endpoint: string, body: any, reqOpts?: any) {
     return this.http.put(Api.API_URL + endpoint, body, reqOpts);
   }
+
+  cachedCategories: Category[];
+  cachedScoreLookup: ScoreLookup;
+
 }

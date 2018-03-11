@@ -22,7 +22,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content class="force-ltr" fullscreen>
+<ion-content class="force-ltr" fullscreen="true">
   <!-- <ion-scroll style="width: auto; height: 100%" class="force-ltr" scrollX="true" scrollY="false" zoom="false"> -->
     <div class="categories-index">
     <div class="content">
@@ -78,7 +78,7 @@
        </div>
        <div class="pin-image">
          <div class="completed">
-           <span *ngIf="!category.commingSoon"> 0 / {{category.nol}}</span>
+           <span *ngIf="!category.commingSoon"><span [innerHtml]="doneLessons(category)"></span> / {{category.nol}}</span>
            <span *ngIf="category.commingSoon">{{'SOON_LABEL' | translate}}</span>
          </div>
        </div>

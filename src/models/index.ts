@@ -9,3 +9,4 @@ export * from './question-difficulty';
 export * from './question.model';
 export * from './score-type';
 export * from './score.model';
+export * from './score-lookup';

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { Platform } from 'ionic-angular';
+import { Platform, Events } from 'ionic-angular';
 
 import { Principal } from '../auth/principal.service';
 
@@ -10,7 +10,8 @@ declare const window: any;
 export class LoginService {
 
     constructor(private oauthService: OAuthService, private platform: Platform,
-                private principal: Principal) {}
+                private principal: Principal,
+                private events: Events) {}
 
     redirectLogin() {
         this.oauthService.initImplicitFlow();
@@ -26,6 +27,9 @@ export class LoginService {
                 disableOAuth2StateCheck: true
             });
             const claims: any = this.oauthService.getIdentityClaims();
+            if (claims != null) {
+              this.events.publish('LOGIN_SUCCESS');
+            }
             // this.translate.use(account.langKey);
             return cb(claims);
         }, (error) => {
@@ -48,7 +52,7 @@ export class LoginService {
                     window.cordova.plugins.browsertab.isAvailable(function(result) {
                         if (result) {
                             window.cordova.plugins.browsertab.openUrl(oauthUrl,
-                                function(success) { console.log("Success ", success); },
+                                function(success) { },
                                 function(error) { reject(defaultError) }
                             );
                         } else {

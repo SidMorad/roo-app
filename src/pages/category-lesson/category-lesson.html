@@ -9,6 +9,12 @@
   <ion-slides pager="true" dir="{{platform.dir()}}" (ionSlideWillChange)="onSlideChangeStart($event)">
     <ion-slide *ngFor="let lesson of lessons; let i = index;">
       <ion-card>
+        <div  *ngIf="starLookup(lesson) != 5">
+          <span *ngFor="let i of [5, 4, 3, 2, 1]">
+            <ion-icon name="star" color="gold" *ngIf="i > starLookup(lesson)" style="zoom:2;"></ion-icon>
+            <ion-icon name="star-outline" color="gold" *ngIf="i <= starLookup(lesson)" style="zoom:2;"></ion-icon>
+          </span>
+        </div>
         <h2 class="slide-title" [innerHTML]="lesson.title"></h2>
         <br />
         <br />

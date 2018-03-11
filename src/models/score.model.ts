@@ -5,7 +5,7 @@ export class Score {
   constructor(
     public type?: ScoreType,
     public translDir?: TranslDir,
-    public noCorrect?: number,
+    public score?: number,
     public noWrong?: number,
     public lessonUuid?: string,
     public categoryUuid?: string

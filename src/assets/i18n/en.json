@@ -30,6 +30,11 @@
   "WITHOUT_STAR": "Without star!",
   "CONTINUE": "Continue",
   "END_LESSON": "End lesson",
+  "CONGRATS": "Congratulations!",
+  "TOTAL": "Total",
+  "SCORE": "Score",
+  "LESSON_COMPELETED": "Lesson completed",
+  "RETRY": "Retry",
 
   "TAB1_TITLE": "Categories",
   "TAB2_TITLE": "Lessons",

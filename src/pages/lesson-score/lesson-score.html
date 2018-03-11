@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>{{'CONGRATS' | translate}} +{{score.score}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content text-center>
+  <ion-spinner *ngIf="inProgress && !showRetry"></ion-spinner>
+  <ion-grid text-center>
+    <ion-row>
+      <ion-col>
+        <span>{{'LESSON_COMPELETED' | translate}}</span>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <span *ngFor="let i of [5, 4, 3, 2, 1]">
+          <ion-icon name="star" color="gold" *ngIf="i > score.noWrong" style="zoom:2;"></ion-icon>
+          <ion-icon name="star-outline" color="gold" *ngIf="i <= score.noWrong" style="zoom:2;"></ion-icon>
+        </span>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <h4>{{'SCORE' | translate}} +{{score.score}}</h4>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col-1>
+        <ion-icon name="ribbon" small></ion-icon>
+        {{progressLevelFrom}}
+      </ion-col>
+      <ion-col>
+        <progress max="100" value="{{progressLevelValue}}" class="level-progress"></progress>
+      </ion-col>
+      <ion-col col-1>
+        <ion-icon name="ribbon"></ion-icon>
+        {{progressLevelTo}}
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <span>{{'TOTAL' | translate}} {{total}}</span>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <!-- TODO show top 2+1 customers -->
+    </ion-row>
+    <ion-row>
+     <ion-col>
+      <button ion-button full large (click)="continue()" color="primary" *ngIf="!inProgress && !showRetry">
+        {{'CONTINUE' | translate}}
+      </button>
+      <button ion-button full large (click)="uploadScore()" color="danger" *ngIf="showRetry">
+        {{'RETRY' | translate}}
+      </button>
+    </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

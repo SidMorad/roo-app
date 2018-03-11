@@ -1,17 +1,17 @@
 import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
 import { IonicPage, Platform, NavParams, AlertController, ViewController,
-        Content, ModalController, ToastController } from 'ionic-angular';
+        Content, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { TextToSpeech } from '@ionic-native/text-to-speech';
 import { SpeechRecognition } from '@ionic-native/speech-recognition';
 import { compareTwoStrings, findBestMatch } from 'string-similarity';
 import { diffWords } from 'diff';
+import { Storage } from '@ionic/storage';
 
 import { Category, Lesson, Question, Score, ScoreType } from '../../models';
 import { IMAGE_ORIGIN } from '../../app/app.constants';
 import { Principal } from '../../providers/auth/principal.service';
 import { LoginService } from '../../providers/login/login.service';
-import { Api } from '../../providers/api/api';
 import { Settings } from '../../providers/settings/settings';
 
 @IonicPage()
@@ -53,9 +53,10 @@ export class LessonQuestionPage implements OnInit {
   constructor(private platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
               private translateService: TranslateService, private viewCtrl: ViewController,
               private principal: Principal, private loginService: LoginService,
-              private modalCtrl: ModalController, private api: Api, private ngZone: NgZone,
-              private toastCtrl: ToastController, private settings: Settings,
-              private textToSpeech: TextToSpeech, private speechRecognition: SpeechRecognition) {
+              private modalCtrl: ModalController, private ngZone: NgZone,
+              private settings: Settings,
+              private textToSpeech: TextToSpeech, private speechRecognition: SpeechRecognition,
+              private storage: Storage) {
     this.dir = platform.dir();
     const l: Lesson = navParams.get('lesson');
     this.lesson = new Lesson(l.uuid, l.title, l.translDir, l.indexOrder);
@@ -72,7 +73,7 @@ export class LessonQuestionPage implements OnInit {
   initQuestionary() {
     this.noCorrect = 0;
     this.noWrong = 0;
-    this.questionCounter = 0;
+    this.questionCounter = 12;
     this.goToNextQuestion();
   }
 
@@ -115,42 +116,7 @@ export class LessonQuestionPage implements OnInit {
     else {
       if (this.questionCounter >= this.questions.length) {
         this.questionCounter++;
-        if (!this.principal.isAuthenticated()) {
-          this.alertCtrl.create({
-            title: this.labelLoginTitle,
-            message: this.labelLoginMessage,
-            buttons: [
-              {
-                text: this.labelLoginEscape,
-                role: 'cancel',
-                handler: () => { this.viewCtrl.dismiss(); }
-              },
-              {
-                text: this.labelLogin,
-                handler: () => {
-                  this.loginService.appLogin((data) => {
-                    console.log('GREAT we are logged in!', this.principal.isAuthenticated());
-                  }, (err) => {
-                    console.log('LOGIN FAILURE ', err);
-                  });
-                }
-              }
-            ]
-          }).present();
-        } else {
-          let score: Score = new Score(ScoreType[ScoreType.LESSON.toString()], this.lesson.translDir, this.noCorrect,
-                                this.noWrong, this.lesson.uuid, this.category.uuid);
-          console.log('SCORE ify ', JSON.stringify(score));
-          this.api.createScore(score).subscribe((res) => {
-            this.toastCtrl.create({
-              message: 'Your score uploaded successfully!',
-              duration: 3000
-            }).present();
-            this.viewCtrl.dismiss();
-          }, (err) => {
-            console.log('OOPS upload score failed, TODO');
-          })
-        }
+        this.uploadScore();
       } else {
         this.isChecking = false;
         if (this.noWrong === 5) {
@@ -163,13 +129,47 @@ export class LessonQuestionPage implements OnInit {
     }
   }
 
+  uploadScore() {
+    let score: Score = new Score(ScoreType[ScoreType.LESSON.toString()], this.lesson.translDir, 10 - this.noWrong,
+                                 this.noWrong, this.lesson.uuid, this.category.uuid);
+    this.storage.set('LAST_SCORE', JSON.stringify(score));
+    if (!this.principal.isAuthenticated()) {
+      this.alertCtrl.create({
+        title: this.labelLoginTitle,
+        message: this.labelLoginMessage,
+        buttons: [
+          {
+            text: this.labelLoginEscape,
+            role: 'cancel',
+            handler: () => { this.viewCtrl.dismiss(); }
+          },
+          {
+            text: this.labelLogin,
+            handler: () => {
+              this.loginService.appLogin((data) => {
+              }, (err) => {
+              });
+            }
+          }
+        ]
+      }).present();
+    } else {
+      let modal = this.modalCtrl.create('LessonScorePage');
+      modal.onDidDismiss(data => {
+        // if (data.action === 'continue') {
+        // }
+        this.viewCtrl.dismiss();
+      });
+      modal.present();
+    }
+  }
+
   setQuestion(question: Question) {
     this.ngZone.run(() => {
     this.question = question;
     try {
       this.question.d = JSON.parse(question.dynamicPart);
-    } catch(error ) { console.log('Oops, error on parse dynamicPart ', question.dynamicPart) };
-    console.log('TYPE', question.type.toString());
+    } catch(error ) { console.log('Oops, error on parse dynamicPart') };
     if (this.isType('MultiSelect')) {
       this.options = this.question.d.options.slice();
       this.chosens = [];
@@ -387,8 +387,7 @@ export class LessonQuestionPage implements OnInit {
       text: text,
       locale: this.lesson.targetLocale(),
       rate: this.settings.allSettings.voiceSpeedRate / 100
-    }).then(() => console.log('TTS#', text))
-    .catch((error) => console.log('TTS#', error));
+    }).then().catch((error) => console.log('TTS#', error));
   }
 
   twoPictureSelected(index) {
@@ -452,7 +451,6 @@ export class LessonQuestionPage implements OnInit {
       this.speechRecognition.startListening()
         .subscribe(
           (matches: Array<string>) => {
-            console.log(matches);
             let findBest = findBestMatch(this.question.d.question, matches);
             this.speakingAnswer = findBest.bestMatch.target;
             this.check();

@@ -64,12 +64,6 @@ only screen and (                min-resolution: 2dppx) {
   font-weight: 300;
 }
 
-html[dir="rtl"] {
-  * {
-    font-family: 'Vazir';
-  }
-}
-
 @font-face {
   font-family: UrwGothicL;
   src: url('../assets/fonts/urw-gothic-l-book.ttf') format('truetype');
@@ -184,4 +178,12 @@ html[dir="rtl"] {
   color: #8a6d3b;
   background-color: #fcf8e3;
   border-color: #faebcc;
+}
+
+.gold-back {
+  background-color: gold;
+}
+
+.silver-back {
+  background-color: silver;
 }

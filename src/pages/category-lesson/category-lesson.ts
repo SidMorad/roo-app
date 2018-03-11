@@ -37,7 +37,15 @@ export class CategoryLessonPage implements OnInit {
       });
       this.slides.paginationBulletRender = (index, defaultClass) => {
         // return '<span class="' + defaultClass + '" (click)="goToSlide(' + index + ')">' + (index+1) + '</span>';
-        return '<button class="' + defaultClass + '" aria-label="Go to slide '+(index+1)+'" data-slide-index="'+index+'">'+(index+1)+'</button>';
+        let goldClass = '';
+        if (this.starLookup(this.lessons[index]) == 0) {
+          goldClass = ' gold-back';
+        } else if (this.starLookup(this.lessons[index]) != 5) {
+          goldClass = ' silver-back';
+        }
+        return '<button class="' + defaultClass + goldClass + '" aria-label="Go to slide ' + (index+1) + '" data-slide-index="' + index + '">'
+                 + (index+1) +
+                '</button>';
       };
   }
 
@@ -60,7 +68,6 @@ export class CategoryLessonPage implements OnInit {
   }
 
   goToSlide(index) {
-    console.log('goToSlide called, ', index);
     this.slides.slideTo(index);
   }
 
@@ -75,6 +82,16 @@ export class CategoryLessonPage implements OnInit {
 
   back() {
     this.slides.slidePrev();
+  }
+
+  starLookup(lesson) {
+    if (this.api.cachedScoreLookup && lesson) {
+      if (this.api.cachedScoreLookup.lessonMap[lesson.uuid] ||
+          this.api.cachedScoreLookup.lessonMap[lesson.uuid] == 0) {
+            return this.api.cachedScoreLookup.lessonMap[lesson.uuid];
+          }
+    }
+    return 5;
   }
 
 }

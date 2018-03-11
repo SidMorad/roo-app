@@ -32,7 +32,6 @@ export class LoginPage {
                 // this.navCtrl.push(TabsPage);
                 this.viewCtrl.dismiss();
             }, (err) => {
-              console.log("appLogin ERROR: ", err);
                 // Unable to log in
                 let toast = this.toastCtrl.create({
                     message: this.loginErrorString,

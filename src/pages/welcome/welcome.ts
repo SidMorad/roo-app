@@ -34,10 +34,8 @@ export class WelcomePage implements OnInit {
       const claims: any = this.oauthService.getIdentityClaims();
       if (!claims) {
         this.oauthService.loadDiscoveryDocumentAndLogin().then(() => {
-          console.log('Great we are logged in.');
           this.geAccount();
         }).catch(error => {
-          console.log('Oops login implicit flow failed!');
           this.isTryingToLogin = false;
         });
       } else {

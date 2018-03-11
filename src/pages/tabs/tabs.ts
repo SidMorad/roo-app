@@ -29,7 +29,6 @@ export class TabsPage implements OnInit {
 
   ngOnInit() {
     this.langChangeSubscription = this.translateService.onLangChange.subscribe((data) => {
-      console.log('Tabs#onLangChange', data);
       this.initTranslations();
     });
   }
