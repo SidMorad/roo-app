@@ -4,6 +4,7 @@ import { Storage } from '@ionic/storage';
 
 import { Score } from '../../models';
 import { Api } from '../../providers/api/api';
+import { ScoreUtil } from '../../providers/providers';
 
 @IonicPage()
 @Component({
@@ -19,9 +20,10 @@ export class LessonScorePage {
   progressLevelFrom: number;
   progressLevelTo: number;
   progressLevelValue: number;
+  progressLevelMax: number;
 
   constructor(private viewCtrl: ViewController, private storage: Storage,
-              private api: Api) {
+              private api: Api, private scoreUtil: ScoreUtil) {
   }
 
   ionViewWillEnter() {
@@ -59,9 +61,11 @@ export class LessonScorePage {
 
   resolveScoreStats() {
     this.total = this.api.cachedScoreLookup.total;
-    this.progressLevelFrom = Math.floor(this.total / 100);
+    let divider = this.scoreUtil.determineDivider(this.total);
+    this.progressLevelFrom = this.scoreUtil.resolveLevelFrom(this.total);
     this.progressLevelTo = this.progressLevelFrom + 1;
-    this.progressLevelValue = Math.floor(this.total - (this.progressLevelFrom * 100));
+    this.progressLevelValue = Math.floor(this.total - (this.progressLevelFrom * divider));
+    this.progressLevelMax = divider;
   }
 
   continue() {

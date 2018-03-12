@@ -15,7 +15,7 @@ import { NgProgressHttpModule } from '@ngx-progressbar/http';
 import { TextToSpeech } from '@ionic-native/text-to-speech';
 import { SpeechRecognition } from '@ionic-native/speech-recognition';
 
-import { Api, Settings, User } from '../providers/providers';
+import { Api, Settings, User, ScoreUtil } from '../providers/providers';
 import { MyApp } from './app.component';
 import { LoginService } from '../providers/login/login.service';
 import { Principal } from '../providers/auth/principal.service';
@@ -75,6 +75,7 @@ export function provideSettings(storage: Storage) {
   providers: [
     Api,
     User,
+    ScoreUtil,
     LoginService,
     Principal,
     AccountService,
