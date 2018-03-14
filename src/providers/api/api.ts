@@ -15,6 +15,10 @@ export class Api {
   constructor(public http: HttpClient) {
   }
 
+  getLast7DaysScores(): Observable<any> {
+    return this.get('roo/api/user/score/last7/FA$EN_UK');
+  }
+
   getScoreLookup(translDir: TranslDir, force?: boolean): Observable<any> {
     if (this.cachedScoreLookup && !force) {
       return Observable.of(this.cachedScoreLookup);

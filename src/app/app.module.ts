@@ -14,6 +14,7 @@ import { NgProgressModule } from '@ngx-progressbar/core';
 import { NgProgressHttpModule } from '@ngx-progressbar/http';
 import { TextToSpeech } from '@ionic-native/text-to-speech';
 import { SpeechRecognition } from '@ionic-native/speech-recognition';
+import { ChartsModule } from 'ng2-charts/ng2-charts';
 
 import { Api, Settings, User, ScoreUtil } from '../providers/providers';
 import { MyApp } from './app.component';
@@ -66,7 +67,8 @@ export function provideSettings(storage: Storage) {
     EntityPageModule,
     OAuthModule.forRoot(),
     NgProgressModule.forRoot(),
-    NgProgressHttpModule
+    NgProgressHttpModule,
+    ChartsModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [

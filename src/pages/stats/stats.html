@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>{{'STATS' | translate}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content text-center>
+  <ion-spinner *ngIf="inProgress"></ion-spinner>
+  <ion-grid text-center>
+    <ion-row>
+      <ion-col>
+        <span>{{'TOTAL' | translate}} {{total}}</span>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col-1>
+        <ion-icon name="ribbon" small></ion-icon>
+        {{progressLevelFrom}}
+      </ion-col>
+      <ion-col>
+        <progress max="{{progressLevelMax}}" value="{{progressLevelValue}}" class="level-progress"></progress>
+      </ion-col>
+      <ion-col col-1>
+        <ion-icon name="ribbon" large></ion-icon>
+        {{progressLevelTo}}
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <canvas baseChart width="100%" height="100%" *ngIf="!inProgress"
+          [datasets]="datasets"
+          [labels]="labels"
+          [options]="chartOptions"
+          [colors]="lineChartColors"
+          [chartType]="'line'"
+          >
+        </canvas>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
