@@ -10,7 +10,7 @@ import { Settings } from '../providers/providers';
 import { Api } from '../providers/api/api';
 import { Principal } from '../providers/auth/principal.service';
 import { LoginService } from '../providers/login/login.service';
-import { TranslDir } from '../models/';
+import { TranslDir, Account } from '../models/';
 
 declare const window: any;
 
@@ -49,7 +49,7 @@ export class MyApp implements OnInit {
 
   rootPage = FirstRunPage;
   @ViewChild(Nav) nav: Nav;
-  account: Account = {};
+  account: Account = new Account();
 
   constructor(private translate: TranslateService, private platform: Platform,
     private settings: Settings, private config: Config,

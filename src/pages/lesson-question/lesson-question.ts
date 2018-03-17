@@ -41,6 +41,7 @@ export class LessonQuestionPage implements OnInit {
   writingAnswer: string;
   wasCorrect: boolean;
   wasWrong: boolean;
+  wasAlmostCorrect: boolean;
   rightAnswerString: string;
   autoPlayVoice: boolean;
   autoContinue: boolean;
@@ -49,6 +50,7 @@ export class LessonQuestionPage implements OnInit {
   speakingAnswer: string;
   speakingAnswerDiff: any;
   skipSpeaking: boolean;
+  textCompareAcceptablePercentage: number = 0.7;
 
   constructor(private platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
               private translateService: TranslateService, private viewCtrl: ViewController,
@@ -73,7 +75,7 @@ export class LessonQuestionPage implements OnInit {
   initQuestionary() {
     this.noCorrect = 0;
     this.noWrong = 0;
-    this.questionCounter = 12;
+    this.questionCounter = 0;
     this.goToNextQuestion();
   }
 
@@ -82,10 +84,11 @@ export class LessonQuestionPage implements OnInit {
     if (this.isAnswerRight()) {
       this.wasCorrect = true;
       this.noCorrect++;
-      if (this.autoContinue) {
+      if (this.autoContinue && !this.wasAlmostCorrect) {
         setTimeout(() => {
           if (this.isChecking) {
             this.wasCorrect = false;
+            this.wasAlmostCorrect = false;
             this.goToNextQuestion();
           }
         }, 2000);
@@ -100,6 +103,7 @@ export class LessonQuestionPage implements OnInit {
   continue() {
     this.wasWrong = false;
     this.wasCorrect = false;
+    this.wasAlmostCorrect = false;
     this.goToNextQuestion();
   }
 
@@ -164,29 +168,31 @@ export class LessonQuestionPage implements OnInit {
     }
   }
 
-  setQuestion(question: Question) {
+  setQuestion(q: Question) {
     this.ngZone.run(() => {
-    this.question = question;
-    try {
-      this.question.d = JSON.parse(question.dynamicPart);
-    } catch(error ) { console.log('Oops, error on parse dynamicPart') };
+    let d, m, t;
+    try { d = JSON.parse(q.dynamicPart); } catch(error) { };
+    try { m = JSON.parse(q.motherPart); } catch(error) { };
+    try { t = JSON.parse(q.targetPart); } catch(error) { };
+    this.question = new Question(q.uuid, q.type, q.description, q.indexOrder, q.dynamicPart, q.motherPart, q.targetPart, d, m, t);
     if (this.isType('MultiSelect')) {
-      this.options = this.question.d.options.slice();
+      this.options = this.question.multiSelectOptions();
       this.chosens = [];
     } else if (this.isType('OneCheck')) {
-      this.choices = this.question.d.choices.slice();
+      this.choices = this.question.oneCheckChoices();
     } else if (this.isType('FourPicture')) {
       this.fourPictures = this.shuffleArray([0, 1, 2, 3]);
       this.fourPictureCorrectIndex = this.fourPictures[2];
       this.fourPictures.splice(2, 1);
       this.content.scrollToBottom();
     } else if (this.isType('TwoPicture')) {
+      this.twoPictures = [0, 1];
       if (Math.floor(Math.random() * 2) === 1) {
         this.twoPictureCorrectIndex  = 0;
       } else {
         this.twoPictureCorrectIndex  = 1;
       }
-      this.twoPictures = [question.d.correct, question.d.wrong];
+      this.content.scrollToBottom();
     } else if (this.isType('Speaking')) {
       if (this.skipSpeaking) {
         this.goToNextQuestion();
@@ -210,17 +216,18 @@ export class LessonQuestionPage implements OnInit {
 
   isAnswerRight() {
     if (this.isType('MultiSelect')) {
-      if (this.question.d.answers.length === this.chosens.length) {
-        for (let i = 0; i < this.question.d.answers.length; i++) {
-          if (this.question.d.answers[i].text !== this.chosens[i].text) {
-            return false;
-          }
-        }
+      const answers: any[] = this.question.multiSelectAnswers();
+      let expected = answers.map((x) => x.text).join(' ');
+      let actual = this.chosens.map((x) => x.text).join(' ');
+      const correctPercentage = compareTwoStrings(expected, actual);
+      console.log('Multi answer was ', correctPercentage, ' right.', expected, actual);
+      if (correctPercentage > this.textCompareAcceptablePercentage) {
+        this.wasAlmostCorrect = correctPercentage === 1 ? false : true;
         return true;
       }
     }
     else if (this.isType('TwoPicture')) {
-      return this.twoPictures[this.twoPictureCorrectIndex].answered;
+      return this.question.d.pics[this.twoPictureCorrectIndex].answered;
     }
     else if (this.isType('FourPicture')) {
       return this.question.d.pics[this.fourPictureCorrectIndex].answered;
@@ -247,27 +254,26 @@ export class LessonQuestionPage implements OnInit {
           }
         }
       }
-      return false;
     }
-    else if (this.isType('Writing')) {  // TODO how many percentage answer was similar to correct answer
-      let actual = this.writingAnswer.replace(/\s+/g, ' ').trim().toUpperCase();
-      for (let i = 0; i < this.question.d.answers.length; i++) {
-        let expected = this.question.d.answers[i].text.replace(/\s+/g, ' ').trim().toUpperCase();
-        if (actual === expected) {
-          return true;
-        }
+    else if (this.isType('Writing')) {
+      const actual = this.writingAnswer.replace(/\s+/g, ' ').trim();
+      const expected = this.question.writingAnswer();
+      const correctPercentage = compareTwoStrings(expected, actual);
+      console.log('Writing answer was ', correctPercentage, ' right.', expected, actual);
+      if (correctPercentage > this.textCompareAcceptablePercentage) {
+        this.wasAlmostCorrect = correctPercentage === 1 ? false: true;
+        return true;
       }
-      return false;
     }
     else if (this.isType('Speaking')) {
       if (this.speakingAnswer) {
-        let correctPercentage = compareTwoStrings(this.question.d.question, this.speakingAnswer);
-        console.log('Speaking answer was ', correctPercentage, ' right.');
-        if (correctPercentage > 0.7) {
+        const correctPercentage = compareTwoStrings(this.question.speakingAnswer(), this.speakingAnswer);
+        console.log('Speaking answer was ', correctPercentage, ' right.', this.question.speakingAnswer(), this.speakingAnswer);
+        if (correctPercentage > this.textCompareAcceptablePercentage) {
+          this.wasAlmostCorrect = correctPercentage === 1 ? false: true;
           return true;
         }
       }
-      return false;
     }
     return false;
   }
@@ -284,15 +290,8 @@ export class LessonQuestionPage implements OnInit {
           }
         }
       }
-      else if (this.isType('TwoPicture')) {
-        for (let i = 0; i < 2; i++) {
-          if (this.twoPictures[i].answered) {
-            return true;
-          }
-        }
-      }
-      else if (this.isType('FourPicture')) {
-        for (let i = 0; i < 4; i++) {
+      else if (this.isType('TwoPicture') || this.isType('FourPicture')) {
+        for (let i = 0; i < this.question.d.pics.length; i++) {
           if (this.question.d.pics[i].answered) {
             return true;
           }
@@ -315,10 +314,10 @@ export class LessonQuestionPage implements OnInit {
   resolveRightAnswerString(autoCorrect?:boolean): string {
     let result = '';
     if (this.isType('TwoPicture')) {
-      result = this.twoPictures[this.twoPictureCorrectIndex].answer;
+      result = this.question.pictureLabel(this.twoPictureCorrectIndex);
     }
     else if (this.isType('FourPicture')) {
-      result = this.question.d.pics[this.fourPictureCorrectIndex].answer;
+      result = this.question.pictureLabel(this.fourPictureCorrectIndex);
     }
     else if (this.isType('MultiCheck')) {
       for (let i = 0; i < this.choices.length; i++) {
@@ -336,27 +335,20 @@ export class LessonQuestionPage implements OnInit {
       }
     }
     else if (this.isType('Writing')) {
-      for (let i = 0; i < this.question.d.answers.length; i++) {
-        result += this.question.d.answers[i].text;
-        if (i != this.question.d.answers.length - 1) {
-          result += "<br> or <br>";
-        }
-      }
+      result = this.question.writingAnswer();
     }
     else if (this.isType('Speaking')) {
-      this.speakingAnswerDiff = diffWords(this.question.d.question, this.speakingAnswer, { ignoreCase: true });
-      result = this.question.d.hint;
+      this.speakingAnswerDiff = diffWords(this.question.speakingAnswer(), this.speakingAnswer, { ignoreCase: true });
+      result = this.question.speakingAnswer();
     }
     else if (this.isType('MultiSelect')) {
-      for (let i = 0; i < this.question.d.answers.length; i++) {
-        result += this.question.d.answers[i].text;
-        result += " ";
-      }
+      const answers = this.question.multiSelectAnswers();
+      result = answers.map((e) => e.text).join(' ');
       if (autoCorrect) {
         for (let i = 0; i < this.chosens.length; i++) {
           let wasIn = false;
-          for (let j = 0; j < this.question.d.answers.length; j++) {
-            if (this.chosens[i].text === this.question.d.answers[j].text) {
+          for (let j = 0; j < answers.length; j++) {
+            if (this.chosens[i].text === answers[j].text) {
               wasIn = true;
             }
           }
@@ -367,8 +359,8 @@ export class LessonQuestionPage implements OnInit {
           }
         }
         for (let i = 0; i < this.options.length; i++) {
-          for (let j = 0; j < this.question.d.answers.length; j++) {
-            if (this.options[i].text === this.question.d.answers[j].text) {
+          for (let j = 0; j < answers.length; j++) {
+            if (this.options[i].text === answers[j].text) {
               this.options[i].class = 'part-added';
             }
           }
@@ -392,9 +384,9 @@ export class LessonQuestionPage implements OnInit {
 
   twoPictureSelected(index) {
     if (!this.isChecking) {
-      this.twoPictures[0].answered = false;
-      this.twoPictures[1].answered = false;
-      this.twoPictures[index].answered = true;
+      this.question.d.pics[0].answered = false;
+      this.question.d.pics[1].answered = false;
+      this.question.d.pics[index].answered = true;
       this.check();
     }
   }
@@ -430,7 +422,7 @@ export class LessonQuestionPage implements OnInit {
 
   isType(type: string): boolean {
     if (this.question) {
-      return this.question.type.toString() === type;
+      return this.question.isType(type);
     }
     return false;
   }

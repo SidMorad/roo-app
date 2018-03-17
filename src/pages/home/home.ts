@@ -3,7 +3,7 @@ import { IonicPage, NavController, Platform } from 'ionic-angular';
 
 import { Principal } from '../../providers/auth/principal.service';
 import { Api } from '../../providers/api/api';
-import { Category, TranslDir, ScoreLookup } from '../../models';
+import { Category, TranslDir, ScoreLookup, Account } from '../../models';
 
 @IonicPage()
 @Component({
