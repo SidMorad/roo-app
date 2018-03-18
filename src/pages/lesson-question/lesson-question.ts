@@ -51,6 +51,7 @@ export class LessonQuestionPage implements OnInit {
   speakingAnswerDiff: any;
   skipSpeaking: boolean;
   textCompareAcceptablePercentage: number = 0.7;
+  private unregisterBackButtonAction: any;
 
   constructor(private platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
               private translateService: TranslateService, private viewCtrl: ViewController,
@@ -70,6 +71,14 @@ export class LessonQuestionPage implements OnInit {
 
   ngOnInit() {
     this.initQuestionary();
+  }
+
+  ionViewDidLoad() {
+    this.initalizeBackButtonCustomHandler();
+  }
+
+  ionViewWillLeave() {
+    this.unregisterBackButtonAction && this.unregisterBackButtonAction();
   }
 
   initQuestionary() {
@@ -532,6 +541,13 @@ export class LessonQuestionPage implements OnInit {
   initSettings() {
     this.autoPlayVoice = this.settings.allSettings.autoPlayVoice;
     this.autoContinue = this.settings.allSettings.autoContinue;
+  }
+
+  initalizeBackButtonCustomHandler() {
+    let that = this;
+    this.unregisterBackButtonAction = this.platform.registerBackButtonAction(function(event) {
+      that.exit();
+    }, 101);  // Priorty 101 will override back button handling (we set in app.component.ts) as it is bigger then priority 100 configured in app.component.ts file.
   }
 
   initTranslations() {

@@ -76,7 +76,7 @@ export class HomePage implements OnInit {
   }
 
   categoryLesson(category) {
-    this.navCtrl.push('CategoryLessonPage', { category: category});
+    this.navCtrl.push('CategoryLessonPage', { category: category });
   }
 
   dailyLesson() {

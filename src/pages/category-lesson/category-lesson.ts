@@ -20,6 +20,7 @@ export class CategoryLessonPage implements OnInit {
   isEnd: boolean;
   isBeginning: boolean;
   subscription: Subscription;
+  private unregisterBackButtonAction: any;
 
   constructor(public platform: Platform, navParams: NavParams, private navCtrl: NavController,
               private api: Api, public ngProgress: NgProgress) {
@@ -92,6 +93,21 @@ export class CategoryLessonPage implements OnInit {
           }
     }
     return 5;
+  }
+
+  ionViewDidLoad() {
+    this.initalizeBackButtonCustomHandler();
+  }
+
+  ionViewWillLeave() {
+    this.unregisterBackButtonAction && this.unregisterBackButtonAction();
+  }
+
+  initalizeBackButtonCustomHandler() {
+    let that = this;
+    this.unregisterBackButtonAction = this.platform.registerBackButtonAction(function(event) {
+      that.navCtrl.pop();
+    }, 101);  // Priorty 101 will override back button handling (we set in app.component.ts) as it is bigger then priority 100 configured in app.component.ts file.
   }
 
 }

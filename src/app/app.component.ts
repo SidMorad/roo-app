@@ -2,7 +2,7 @@ import { Component, ViewChild, OnInit } from '@angular/core';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { TranslateService } from '@ngx-translate/core';
-import { Config, Nav, Platform, Events } from 'ionic-angular';
+import { Config, Nav, Platform, Events, ToastController, App } from 'ionic-angular';
 import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
 
 import { FirstRunPage } from '../pages/pages';
@@ -50,19 +50,21 @@ export class MyApp implements OnInit {
   rootPage = FirstRunPage;
   @ViewChild(Nav) nav: Nav;
   account: Account = new Account();
+  exitConfirmationText: string;
 
   constructor(private translate: TranslateService, private platform: Platform,
     private settings: Settings, private config: Config,
     private statusBar: StatusBar, private splashScreen: SplashScreen,
-    private oauthService: OAuthService, private api: Api,
+    private oauthService: OAuthService, private api: Api, private app: App,
     private principal: Principal, private loginService: LoginService,
-    private events: Events) {
+    private events: Events, private toastCtrl: ToastController) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       this.initTranslate();
+      this.registerBackButtonAction();
     });
 
     const claims: any = this.oauthService.getIdentityClaims();
@@ -174,17 +176,45 @@ export class MyApp implements OnInit {
     });
   }
 
+  registerBackButtonAction() {
+    // Handle back button for exit confirmation
+    let lastTimeBackPressed = 0;
+    const timePeriodToExit = 3000;
+    const nav = this.app.getActiveNav();
+    this.platform.registerBackButtonAction(() => {
+      console.log(nav.getActive().name);
+      // if (nav.getActive().name === 'TabsPage') {
+        if (nav.canGoBack()) {
+          nav.pop();
+        }
+        else {
+          if (new Date().getTime() - lastTimeBackPressed < timePeriodToExit) {
+            this.platform.exitApp();
+          }
+          else {
+            this.toastCtrl.create({
+              message: this.exitConfirmationText,
+              duration: 3000
+            }).present();
+            lastTimeBackPressed = new Date().getTime();
+          }
+        }
+      // }
+    });
+  }
+
   initTranslate() {
     this.settings.load().then(() => {
       this.translate.onLangChange.subscribe((data) => {
-        console.log(`OnLangChange fired: ${data}`);
+        console.log('OnLangChange fired:', data);
         this.platform.setLang(data.lang, true);
         this.platform.setDir((data.lang === 'fa') ? 'rtl' : 'ltr', true);
       });
       this.translate.setDefaultLang(this.settings.allSettings.language);
       this.translate.use(this.settings.allSettings.language);
-      this.translate.get(['BACK_BUTTON_TEXT']).subscribe(values => {
+      this.translate.get(['BACK_BUTTON_TEXT', 'EXIT_CONFIRMATION_TEXT']).subscribe(values => {
         this.config.set('ios', 'backButtonText', values.BACK_BUTTON_TEXT);
+        this.exitConfirmationText = values.EXIT_CONFIRMATION_TEXT;
       });
     });
   }

@@ -1,5 +1,6 @@
 {
   "BACK_BUTTON_TEXT": "برگشت",
+  "EXIT_CONFIRMATION_TEXT": "برای خروج دوباره دکمه برگشت را بزنید.",
 
   "APP_NAME": "Roo",
 
@@ -13,7 +14,7 @@
   "NOT_NOW": "سپس تر",
   "GUEST": "مهمان",
 
-  "NEW_LABEL": "تازه",
+  "NEW_LABEL": "جدید",
   "SOON_LABEL": "به زودی",
   "DAILY_PRACTICE": "تمرین روزانه",
   "CHAT_BOT": "چت با ربات",

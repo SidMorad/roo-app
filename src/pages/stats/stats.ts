@@ -93,7 +93,7 @@ public chartOptions: ChartOptions = {
     this.inProgress = true;
     let daysInWeek = this.forwardDaysToToday();
     this.api.getLast7DaysScores().subscribe((res) => {
-      console.log('Received data: ', res);
+      // console.log('Received data: ', res);
       this.ngZone.run(() => {
         for (let i = 0; i < daysInWeek.length; i++) {
           this.datasets[0].data[i] = 0;
@@ -107,7 +107,6 @@ public chartOptions: ChartOptions = {
         }
         this.inProgress = false;
       });
-      console.log(this.labels, this.datasets);
     }, (err) => {
       console.log('OOPS fetch last 7 days scores failed.', err);
       this.inProgress = false;

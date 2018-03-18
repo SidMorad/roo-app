@@ -31,7 +31,7 @@
     <div class="map map-inner map-webview touch-action" id="map-webview" #panel
       [style.width.px]="mapWidth" style="height:100%; overflow-x:scroll; display:inline-block;">
 
-      <div id="pin-daily" class="pin">
+      <!-- <div id="pin-daily" class="pin">
         <div class="pin-image-photo">
           <a (click)="dailyLesson()">
           </a>
@@ -65,7 +65,7 @@
         </div>
       </div>
       <div class="bot-dot">
-      </div>
+      </div> -->
 
       <div class="pin" id="pin-{{i+1}}" *ngFor="let category of categories; let i = index; trackBy uuid;">
        <div class="pin-image-photo">
