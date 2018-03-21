@@ -15,8 +15,8 @@
     <ion-row>
       <ion-col>
         <span *ngFor="let i of [5, 4, 3, 2, 1]">
-          <ion-icon name="star" color="gold" *ngIf="i > score.noWrong" style="zoom:2;"></ion-icon>
-          <ion-icon name="star-outline" color="gold" *ngIf="i <= score.noWrong" style="zoom:2;"></ion-icon>
+          <ion-icon name="star" color="gold" *ngIf="i <= score.star" style="zoom:2;"></ion-icon>
+          <ion-icon name="star-outline" color="gold" *ngIf="i > score.star" style="zoom:2;"></ion-icon>
         </span>
       </ion-col>
     </ion-row>

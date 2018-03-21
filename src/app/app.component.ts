@@ -106,6 +106,12 @@ export class MyApp implements OnInit {
     console.log('App init event.');
     this.events.subscribe('LOGIN_SUCCESS', (cliams) => {
       this.api.getScoreLookup(TranslDir.FA$EN_UK).subscribe();
+      if (!this.settings.allSettings.profileFirstLoaded) {
+        let that = this;
+        setTimeout(() => {
+          that.nav.push('ProfileFirstPage');
+        }, 2000);
+      }
     });
   }
 

@@ -144,7 +144,7 @@ export class LessonQuestionPage implements OnInit {
 
   uploadScore() {
     let score: Score = new Score(ScoreType[ScoreType.LESSON.toString()], this.lesson.translDir, 10 - this.noWrong,
-                                 this.noWrong, this.lesson.uuid, this.category.uuid);
+                                 5 - this.noWrong, this.lesson.uuid, this.category.uuid);
     this.storage.set('LAST_SCORE', JSON.stringify(score));
     if (!this.principal.isAuthenticated()) {
       this.alertCtrl.create({

@@ -6,7 +6,7 @@ export class Score {
     public type?: ScoreType,
     public translDir?: TranslDir,
     public score?: number,
-    public noWrong?: number,
+    public star?: number,
     public lessonUuid?: string,
     public categoryUuid?: string
   ) { }

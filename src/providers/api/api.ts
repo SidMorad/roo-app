@@ -15,6 +15,14 @@ export class Api {
   constructor(public http: HttpClient) {
   }
 
+  updateProfile(profile) {
+    return this.post('roo/api/user/profile/update', profile);
+  }
+
+  getProfile(): Observable<any> {
+    return this.get('roo/api/user/profile/get');
+  }
+
   getLast7DaysScores(): Observable<any> {
     return this.get('roo/api/user/score/last7/FA$EN_UK');
   }
@@ -78,17 +86,6 @@ export class Api {
     return this.http.get(Api.API_URL + endpoint, reqOpts);
   }
 
-  updateCachedScoreLookupWith(score: Score) {
-    if (this.cachedScoreLookup) {
-      this.cachedScoreLookup.total += score.score;
-      if (this.cachedScoreLookup.lessonMap[score.lessonUuid] == null) {
-        this.cachedScoreLookup.lessonMap[score.lessonUuid] = score.noWrong;
-      } else if (this.cachedScoreLookup.lessonMap[score.lessonUuid] > score.noWrong) {
-        this.cachedScoreLookup.lessonMap[score.lessonUuid] = score.noWrong;
-      }
-    }
-  }
-
   post(endpoint: string, body: any, reqOpts?: any) {
     return this.http.post(Api.API_URL + endpoint, body, reqOpts);
   }
@@ -103,6 +100,22 @@ export class Api {
 
   patch(endpoint: string, body: any, reqOpts?: any) {
     return this.http.put(Api.API_URL + endpoint, body, reqOpts);
+  }
+
+  updateCachedScoreLookupWith(score: Score) {
+    if (this.cachedScoreLookup) {
+      this.cachedScoreLookup.total += score.score;
+      if (this.cachedScoreLookup.lessonMap[score.lessonUuid] == null) {
+        this.cachedScoreLookup.lessonMap[score.lessonUuid] = score.star;
+        if (this.cachedScoreLookup.categoryMap[score.categoryUuid]) {
+          this.cachedScoreLookup.categoryMap[score.categoryUuid] = this.cachedScoreLookup.categoryMap[score.categoryUuid] + 1;
+        } else {
+          this.cachedScoreLookup.categoryMap[score.categoryUuid] = 1;
+        }
+      } else if (this.cachedScoreLookup.lessonMap[score.lessonUuid] < score.star) {
+        this.cachedScoreLookup.lessonMap[score.lessonUuid] = score.star;
+      }
+    }
   }
 
   cachedCategories: Category[];

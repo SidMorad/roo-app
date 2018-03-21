@@ -13,6 +13,9 @@
   "SIGNUP": "Sign up",
   "NOT_NOW": "Not now",
   "GUEST": "Guest",
+  "PROFILE_DNAME": "Public name",
+  "PROFILE_DNAME_NOTE": "Other users will see this name.",
+  "PROFILE_LOGIN": "Username",
 
   "NEW_LABEL": "New",
   "SOON_LABEL": "Soon",

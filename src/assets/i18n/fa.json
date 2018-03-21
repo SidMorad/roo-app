@@ -13,6 +13,9 @@
   "SIGNUP": "ثبت نام",
   "NOT_NOW": "سپس تر",
   "GUEST": "مهمان",
+  "PROFILE_DNAME": "نام عمومی",
+  "PROFILE_DNAME_NOTE": "کاربرهای دیگر این نام را می بینند.",
+  "PROFILE_LOGIN": "نام کاربری",
 
   "NEW_LABEL": "جدید",
   "SOON_LABEL": "به زودی",

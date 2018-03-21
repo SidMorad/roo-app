@@ -38,11 +38,12 @@ export function provideSettings(storage: Storage) {
    * these values will not overwrite the saved values (this can be done manually if desired).
    */
   return new Settings(storage, {
+    profileFirstLoaded: false,
     language: 'fa',
     autoPlayVoice: true,
     autoContinue: true,
     voiceSpeedRate: 80,
-    option4: 'Hello'
+    dname: 'Guest'
   });
 }
 

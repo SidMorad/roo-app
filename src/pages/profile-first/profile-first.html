@@ -1,0 +1,32 @@
+<ion-header>
+
+  <ion-navbar [hideBackButton]="true">
+    <ion-buttons start>
+      <button ion-button icon-only clear small (click)="ok()" color="secondary">
+        <ion-icon name="checkmark"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>{{ pageTitle }}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+  <form [formGroup]="form" *ngIf="settingsReady">
+    <ion-list>
+      <ion-item>
+        <ion-note item-start>{{'PROFILE_DNAME_NOTE' | translate}}</ion-note>
+      </ion-item>
+      <ion-item>
+        <ion-label>{{ 'PROFILE_DNAME' | translate }}</ion-label>
+        <ion-input formControlName="dname"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>{{ 'PROFILE_LOGIN' | translate }}</ion-label>
+        <ion-input formControlName="login"></ion-input>
+      </ion-item>
+    </ion-list>
+  </form>
+
+</ion-content>

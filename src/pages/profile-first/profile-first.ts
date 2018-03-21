@@ -3,7 +3,8 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
-import { Settings, Api } from '../../providers/providers';
+import { Settings, Api, Principal } from '../../providers/providers';
+import { ProfileFirst, Account } from '../../models';
 
 /**
  * The Settings page is a simple form that syncs with a Settings provider
@@ -12,58 +13,35 @@ import { Settings, Api } from '../../providers/providers';
  */
 @IonicPage()
 @Component({
-  selector: 'page-settings',
-  templateUrl: 'settings.html'
+  selector: 'page-profile-first',
+  templateUrl: 'profile-first.html'
 })
-export class SettingsPage {
+export class ProfileFirstPage {
   // Our local settings object
-  options: any;
-
+  options: any = {};
   settingsReady = false;
-
   form: FormGroup;
-
-  profileSettings = {
-    page: 'profile',
-    pageTitleKey: 'SETTINGS_PAGE_PROFILE'
-  };
-
   page: string = 'main';
-  pageTitleKey: string = 'SETTINGS_TITLE';
+  pageTitleKey: string = 'SETTINGS_PAGE_PROFILE';
   pageTitle: string;
 
-  subSettings: any = SettingsPage;
-
-  constructor(public navCtrl: NavController, public settings: Settings,
-    public formBuilder: FormBuilder, public navParams: NavParams,
-    public translate: TranslateService, public api: Api) {
+  constructor(public navCtrl: NavController, public api: Api,
+    public settings: Settings, public formBuilder: FormBuilder,
+    public navParams: NavParams, public translate: TranslateService,
+    public principal: Principal) {
   }
 
   _buildForm() {
     let group: any = {
-      language: [this.options.language],
-      autoPlayVoice: [this.options.autoPlayVoice],
-      autoContinue: [this.options.autoContinue],
-      voiceSpeedRate: [this.options.voiceSpeedRate]
+      dname: [this.options.dname],
+      login: [{ value: this.options.login, disabled: true }]
     };
 
-    switch (this.page) {
-      case 'main':
-        break;
-      case 'profile':
-        group = {
-          dname: [this.options.dname]
-        };
-        break;
-    }
     this.form = this.formBuilder.group(group);
 
     // Watch the form for changes, and
     this.form.valueChanges.subscribe((v) => {
       this.settings.merge(this.form.value);
-      if (this.settings.allSettings.language !== this.translate.currentLang) {
-        this.translate.use(this.settings.allSettings.language);
-      }
     });
   }
 
@@ -84,15 +62,30 @@ export class SettingsPage {
     })
 
     this.settings.load().then(() => {
-      this.settingsReady = true;
-      this.options = this.settings.allSettings;
-
-      this._buildForm();
+      this.api.getProfile().subscribe((profile: ProfileFirst) => {
+        this.options.dname = profile.dname;
+        if (!this.settings.allSettings.profileFirstLoaded) {
+          const p: any = profile;
+          p.profileFirstLoaded = true;
+          this.settings.merge(p);
+        }
+        this.principal.identity().then((account: Account) => {
+          this.settingsReady = true;
+          this.options.login = account.login;
+          this._buildForm();
+        });
+      });
     });
   }
 
   ionViewWillLeave() {
-    this.api.updateProfile(this.settings.allSettings).subscribe();
+    this.api.updateProfile(this.settings.allSettings).subscribe(() => {
+      console.log('Profile updated succesfully');
+    });
+  }
+
+  ok() {
+    this.navCtrl.pop();
   }
 
   ngOnChanges() {
