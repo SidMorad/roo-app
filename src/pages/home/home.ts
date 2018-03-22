@@ -1,5 +1,7 @@
 import { Component, OnInit, NgZone, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, Platform } from 'ionic-angular';
+import { AppVersion } from '@ionic-native/app-version';
+import { Market } from '@ionic-native/market';
 
 import { Principal } from '../../providers/auth/principal.service';
 import { Api } from '../../providers/api/api';
@@ -16,11 +18,12 @@ export class HomePage implements OnInit {
   categories: Category[];
   mapWidth: number;
   showRetryButton: boolean;
+  showUpgradeButton: boolean;
 
   constructor(private navCtrl: NavController,
               private principal: Principal,
-              private ngZone: NgZone,
-              private api: Api,
+              private ngZone: NgZone, private market: Market,
+              private api: Api, private appVersion: AppVersion,
               public platform: Platform) {
     this.categories = [];
     this.mapWidth = (window.screen.height * 4.8);
@@ -31,6 +34,16 @@ export class HomePage implements OnInit {
     this.fetchCategories();
     // this.content.enableJsScroll();
     // this.content.resize();
+    this.appVersion.getVersionCode().then((versionCode) => {
+      this.api.versionCode().subscribe((remoteVersion) => {
+        console.log('App version code is ', versionCode, ' and remoteVersion ', remoteVersion);
+        if (remoteVersion > versionCode) {
+          this.ngZone.run(() => {
+            this.showUpgradeButton = true;
+          });
+        }
+      });
+    });
   }
 
   ionViewWillEnter() {
@@ -77,6 +90,10 @@ export class HomePage implements OnInit {
 
   categoryLesson(category) {
     this.navCtrl.push('CategoryLessonPage', { category: category });
+  }
+
+  upgrade() {
+    this.market.open('mars.roo');
   }
 
   dailyLesson() {

@@ -23,6 +23,10 @@ export class Api {
     return this.get('roo/api/user/profile/get');
   }
 
+  versionCode(): Observable<any> {
+    return this.get('roo/api/public/build/versionCode');
+  }
+
   getLast7DaysScores(): Observable<any> {
     return this.get('roo/api/user/score/last7/FA$EN_UK');
   }

@@ -220,6 +220,7 @@ export class LessonQuestionPage implements OnInit {
         this.speak();
       }
     }
+    console.log(this.lesson.isMotherLangRTL(), this.question.isN());
     });
   }
 

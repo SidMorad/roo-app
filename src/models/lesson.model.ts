@@ -21,7 +21,7 @@ export class Lesson {
   }
 
   motherLanguage(): string {
-    return this.langs()[1];
+    return this.langs()[0];
   }
 
   targetLanguage(): string {
