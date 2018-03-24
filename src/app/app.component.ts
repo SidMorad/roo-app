@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, ViewChild, OnInit, NgZone } from '@angular/core';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { TranslateService } from '@ngx-translate/core';
@@ -54,7 +54,7 @@ export class MyApp implements OnInit {
   exitConfirmationText: string;
 
   constructor(private translate: TranslateService, private platform: Platform,
-    private settings: Settings, private config: Config,
+    private settings: Settings, private config: Config, private ngZone: NgZone,
     private statusBar: StatusBar, private splashScreen: SplashScreen,
     private oauthService: OAuthService, private api: Api, private app: App,
     private principal: Principal, private loginService: LoginService,
@@ -211,6 +211,7 @@ export class MyApp implements OnInit {
   }
 
   initTranslate() {
+    this.ngZone.run(() => {
     this.settings.load().then(() => {
       this.translate.onLangChange.subscribe((data) => {
         console.log('OnLangChange fired:', data);
@@ -224,6 +225,7 @@ export class MyApp implements OnInit {
         this.exitConfirmationText = values.EXIT_CONFIRMATION_TEXT;
       });
       this.dname = this.settings.allSettings.dname;
+    });
     });
   }
 

@@ -1,23 +1,23 @@
-cli packages: (/home/developer/.nvm/versions/node/v7.5.0/lib/node_modules)
+cli packages: (/home/developer/.nvm/versions/node/v6.9.5/lib/node_modules)
 [2K[G
     @ionic/cli-utils  : 1.19.2
     ionic (Ionic CLI) : 3.20.0
 [2K[G
 global packages:
 [2K[G
-    cordova (Cordova CLI) : 6.5.0
+    cordova (Cordova CLI) : 8.0.0
 [2K[G
 local packages:
 [2K[G
     @ionic/app-scripts : 3.1.8
-    Cordova Platforms  : android 7.0.0 browser 4.1.0
+    Cordova Platforms  : android 7.0.0
     Ionic Framework    : ionic-angular 3.9.2
 [2K[G
 System:
 [2K[G
     Android SDK Tools : 26.0.1
-    Node              : v7.5.0
-    npm               : 5.6.0
+    Node              : v6.9.5
+    npm               : 5.7.1
     OS                : Linux 4.4
 [2K[G
 Environment Variables:
