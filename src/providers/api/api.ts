@@ -15,6 +15,10 @@ export class Api {
   constructor(public http: HttpClient) {
   }
 
+  startPayUrl(subscribeModel) {
+    return this.post('roo/api/user/zarinpal/payment/token', subscribeModel, { responseType: 'text' });
+  }
+
   updateProfile(profile) {
     return this.post('roo/api/user/profile/update', profile);
   }

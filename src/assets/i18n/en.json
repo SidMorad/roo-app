@@ -3,6 +3,7 @@
   "EXIT_CONFIRMATION_TEXT": "Press back again to exit.",
 
   "APP_NAME": "Roo",
+  "ROO_BANNER_MESSAGE": "Roo, jump your way to a new language!",
 
   "NAME": "Name",
   "EMAIL": "Email",
@@ -15,6 +16,20 @@
   "PROFILE_DNAME": "Public name",
   "PROFILE_DNAME_NOTE": "Other users will see this name.",
   "PROFILE_LOGIN": "Username",
+  "SUBSCRIBE_TITLE": "Premium account",
+  "Learn faster with Permium": "Learn faster with Permium",
+  "Unlock all content": "Unlock all content",
+  "1000 lessons and conversations": "1000 lessons & conversations",
+  "5000 words and phrases": "5000 words and phrases",
+  "14 conversational modules": "14 conversational modules",
+  "Receive unique lessons every day": "Receive unique lessons every day",
+  "365 lessons each year": "365 lessons each year",
+  "1 Month": "1 Month",
+  "10 Toman": "10 Toman",
+  "12 Months": "12 Months",
+  "50 Toman": "50 Toman",
+  "PAYMENT_DESCRIPTION": "{{month}} Month(s) subscription for {{customer}}",
+  "PLEASE_LOGIN_FIRST": "Please login first",
 
   "NEW_LABEL": "New",
   "SOON_LABEL": "Soon",
@@ -52,8 +67,6 @@
   "TAB3_TITLE": "Stats",
 
   "MAP_TITLE": "Map",
-
-  "ROO_BANNER_MESSAGE": "Roo, jump your way to a new language!",
 
   "SETTINGS_TITLE": "Settings",
   "SETTINGS_LANGUAGE": "Language",

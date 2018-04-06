@@ -30,7 +30,6 @@ export class LoginPage {
         } else {
             this.loginService.appLogin((data) => {
                 // this.navCtrl.push(TabsPage);
-                this.viewCtrl.dismiss();
             }, (err) => {
                 // Unable to log in
                 let toast = this.toastCtrl.create({
@@ -40,6 +39,10 @@ export class LoginPage {
                 });
                 toast.present();
             });
+            let that = this;
+            setTimeout(() => {
+              that.viewCtrl.dismiss();
+            }, 2000);
         }
     }
 }

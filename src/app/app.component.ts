@@ -76,27 +76,31 @@ export class MyApp implements OnInit {
     const me = this;
     window.handleOpenURL = (url) => {
       setTimeout(function() {
-        const responseParameters = (url.split('#')[1]).split('&');
-        const parsedResponse = {};
-        for (let i = 0; i < responseParameters.length; i++) {
-          parsedResponse[responseParameters[i].split('=')[0]] =
-            responseParameters[i].split('=')[1];
-        }
-        if (parsedResponse['access_token'] !== undefined &&
-          parsedResponse['access_token'] !== null) {
-          const idToken = parsedResponse['id_token'];
-          const accessToken = parsedResponse['access_token'];
-          const keyValuePair = `#id_token=${encodeURIComponent(idToken)}&access_token=${encodeURIComponent(accessToken)}`;
-          me.oauthService.tryLogin({
-            customHashFragment: keyValuePair,
-            disableOAuth2StateCheck: true,
-            onTokenReceived: context => {
-              me.getAccount();
+        if (url === 'marsroo://oauth2redirect') {
+          me.getAccount();
+        } else {
+          const responseParameters = (url.split('#')[1]).split('&');
+          const parsedResponse = {};
+          for (let i = 0; i < responseParameters.length; i++) {
+            parsedResponse[responseParameters[i].split('=')[0]] =
+              responseParameters[i].split('=')[1];
+          }
+          if (parsedResponse['access_token'] !== undefined &&
+            parsedResponse['access_token'] !== null) {
+            const idToken = parsedResponse['id_token'];
+            const accessToken = parsedResponse['access_token'];
+            const keyValuePair = `#id_token=${encodeURIComponent(idToken)}&access_token=${encodeURIComponent(accessToken)}`;
+            me.oauthService.tryLogin({
+              customHashFragment: keyValuePair,
+              disableOAuth2StateCheck: true,
+              onTokenReceived: context => {
+                me.getAccount();
+              }
+            });
+            const claims = me.oauthService.getIdentityClaims();
+            if (!claims) {
+              me.events.publish('LOGIN_SUCCESS', claims);
             }
-          });
-          const claims = me.oauthService.getIdentityClaims();
-          if (!claims) {
-            me.events.publish('LOGIN_SUCCESS', claims);
           }
         }
       }, 0);
@@ -111,7 +115,7 @@ export class MyApp implements OnInit {
         let that = this;
         setTimeout(() => {
           that.nav.push('ProfileFirstPage');
-        }, 2000);
+        }, 3000);
       }
     });
   }

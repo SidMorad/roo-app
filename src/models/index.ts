@@ -11,3 +11,4 @@ export * from './score-type';
 export * from './score.model';
 export * from './score-lookup';
 export * from './profile-first.model';
+export * from './subscribe.model';

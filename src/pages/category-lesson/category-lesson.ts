@@ -20,7 +20,7 @@ export class CategoryLessonPage implements OnInit {
   isEnd: boolean;
   isBeginning: boolean;
   subscription: Subscription;
-  private unregisterBackButtonAction: any;
+
 
   constructor(public platform: Platform, navParams: NavParams, private navCtrl: NavController,
               private api: Api, public ngProgress: NgProgress) {
@@ -98,6 +98,8 @@ export class CategoryLessonPage implements OnInit {
   ionViewDidLoad() {
     this.initalizeBackButtonCustomHandler();
   }
+
+  private unregisterBackButtonAction: any;
 
   ionViewWillLeave() {
     this.unregisterBackButtonAction && this.unregisterBackButtonAction();

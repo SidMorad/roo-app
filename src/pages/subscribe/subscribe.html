@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title class="title-container">
+      <img [src]="resolveImageUrl('crown-icon@2x-63a69072eec2068a52a3634f7ce641d3.png')" alt="Crown" class="crown"/>
+      <span class="title">{{'SUBSCRIBE_TITLE' | translate }}</span>
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button *ngIf="reCheck" icon-only clear (click)="reCheckMembership()">
+        <ion-icon name="refresh"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list text-center>
+    <ion-item>
+      <h2 bold>{{'Learn faster with Permium' | translate}}</h2>
+    </ion-item>
+    <ion-item>
+      <ion-avatar item-start>
+        <img [src]="resolveImageUrl('premium_unlock@2x-65bcd1c8113eb0b09adead0604576103.png')"/>
+      </ion-avatar>
+      <h2>{{'Unlock all content' | translate}}</h2>
+      <p>{{'1000 lessons and conversations' | translate}}</p>
+    </ion-item>
+    <ion-item>
+      <ion-avatar item-start>
+        <img [src]="resolveImageUrl('premium_bonus@2x-ea2ee2c17cd176e619d77fbf2d5a7158.png')"/>
+      </ion-avatar>
+      <h2>{{'5000 words and phrases' | translate}}</h2>
+      <p>{{'14 conversational modules' | translate}}</p>
+    </ion-item>
+    <ion-item>
+      <ion-avatar item-start>
+        <img [src]="resolveImageUrl('premium_time@2x-19361b96969241854db0ab865c2d1fd4.png')"/>
+      </ion-avatar>
+      <h2>{{'Receive unique lessons every day' | translate}}</h2>
+      <p>{{'365 lessons each year' | translate}}</p>
+    </ion-item>
+    <ion-item text-center *ngIf="!isMember">
+      <button ion-button large round color="secondary" (click)="subscribe('ONE_MONTH')" item-center [disabled]="inProgress">
+        <ion-icon name="pricetag"></ion-icon>
+        <span class="padh-10">{{'1 Month' | translate}}</span>
+        <span class="padh-10">|</span>
+        <span class="padh-10">{{'10 Toman' | translate}}</span>
+      </button>
+    </ion-item>
+    <ion-item text-center *ngIf="!isMember">
+      <button ion-button large round color="secondary" (click)="subscribe('ONE_YEAR')" item-center [disabled]="inProgress">
+        <ion-icon name="pricetag"></ion-icon>
+        <span class="padh-10">{{'12 Months' | translate}}</span>
+        <span class="padh-10">|</span>
+        <span class="padh-10">{{'50 Toman' | translate}}</span>
+      </button>
+    </ion-item>
+    <ion-item text-center *ngIf="isMember">
+      <button ion-button large round icon-only color="secondary" item-center style="min-width: 80vw">
+        <ion-icon name="checkmark"></ion-icon>
+      </button>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

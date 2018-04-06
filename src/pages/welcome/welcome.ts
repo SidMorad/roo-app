@@ -3,7 +3,7 @@ import { IonicPage, NavController, ViewController, App } from 'ionic-angular';
 import { OAuthService } from 'angular-oauth2-oidc';
 
 import { MainPage } from '../pages';
-import { Principal } from '../../providers/auth/principal.service';
+import { LoginService, Principal } from '../../providers';
 
 /**
  * The Welcome Page is a splash page that quickly describes the app,
@@ -21,32 +21,30 @@ export class WelcomePage implements OnInit {
 
   constructor(public navCtrl: NavController, public viewCtrl: ViewController,
               public principal: Principal, public app: App,
+              private loginService: LoginService,
               private oauthService: OAuthService) {
   }
 
   ngOnInit() {
     this.isTryingToLogin = true;
-    // const AUTH_CONFIG: string = 'authConfig';
-    // if (localStorage.getItem(AUTH_CONFIG)) {
-      // const authConfig: AuthConfig = JSON.parse(localStorage.getItem(AUTH_CONFIG));
-      // this.oauthService.configure(authConfig);
-      // this.oauthService.tokenValidationHandler = new JwksValidationHandler();
-      const claims: any = this.oauthService.getIdentityClaims();
-      if (!claims) {
-        this.oauthService.loadDiscoveryDocumentAndLogin().then(() => {
-          this.geAccount();
-        }).catch(error => {
-          this.isTryingToLogin = false;
-        });
-      } else {
+    const claims: any = this.oauthService.getIdentityClaims();
+    if (!claims) {
+      this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
         this.geAccount();
-      }
-    // }
+        console.log('Well loadAuthAndTryLogin succeed');
+      }).catch((error) => {
+        console.log('Well loadAuthAndTryLogin failed with error ', error);
+        this.isTryingToLogin = false;
+      });
+    } else {
+      console.log('Cliams ', claims);
+      this.geAccount();
+    }
   }
 
   geAccount() {
-    this.principal.identity().then((account) => {
-      if (account !== null) {
+    this.principal.identity(true).then((account) => {
+      if (account) {
         this.home();
       } else {
         this.isTryingToLogin = false;
@@ -55,8 +53,12 @@ export class WelcomePage implements OnInit {
   }
 
   login() {
-    this.navCtrl.push('LoginPage');
-    this.viewCtrl.dismiss();
+    this.loginService.appLogin((data) => {
+      this.home();
+      this.viewCtrl.dismiss();
+    }, (err) => {
+      console.log('WelcomePage: Login failed.');
+    });
   }
 
   home() {

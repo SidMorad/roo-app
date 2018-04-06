@@ -3,6 +3,7 @@
   "EXIT_CONFIRMATION_TEXT": "برای خروج دوباره دکمه برگشت را بزنید.",
 
   "APP_NAME": "Roo",
+  "ROO_BANNER_MESSAGE": "یادگیری یک زبان جدید با پرش!",
 
   "NAME": "نام",
   "EMAIL": "رایانامه",
@@ -15,6 +16,20 @@
   "PROFILE_DNAME": "نام عمومی",
   "PROFILE_DNAME_NOTE": "کاربرهای دیگر این نام را می بینند.",
   "PROFILE_LOGIN": "نام کاربری",
+  "SUBSCRIBE_TITLE": "حساب ویژه",
+  "Learn faster with Permium": "با حساب ویژه سریع تر یاد بگیرید",
+  "Unlock all content": "قفل گشایی از تمامی موارد",
+  "1000 lessons and conversations": "۱۰۰۰ درس و مکالمه",
+  "5000 words and phrases": "۵۰۰۰ لغت و عبارت",
+  "14 conversational modules": "۱۴ مدل مکالمه",
+  "Receive unique lessons every day": "دریافت روزانه دروس منحصر به فرد",
+  "365 lessons each year": "۳۶۵ درس در هر سال",
+  "1 Month": "۱ ماه",
+  "10 Toman": "۱۰ تومن",
+  "12 Months": "۱۲ ماه",
+  "50 Toman": "۵۰ تومن",
+  "PAYMENT_DESCRIPTION": "{{month}} ماه عضویت برای {{customer}}",
+  "PLEASE_LOGIN_FIRST": "لطفا اول وارد شوید",
 
   "NEW_LABEL": "جدید",
   "SOON_LABEL": "به زودی",
@@ -52,8 +67,6 @@
   "TAB3_TITLE": "آمار",
 
   "MAP_TITLE": "نقشه",
-
-  "ROO_BANNER_MESSAGE": "یادگیری زبان، با Roo بپر!",
 
   "SETTINGS_TITLE": "تنظیمات",
   "SETTINGS_LANGUAGE": "زبان",

@@ -84,12 +84,13 @@ export class HomePage implements OnInit {
     this.panel.nativeElement.scrollLeft += window.screen.width;
   }
 
-  isAuthenticated() {
-    return this.principal.isAuthenticated();
-  }
-
-  categoryLesson(category) {
-    this.navCtrl.push('CategoryLessonPage', { category: category });
+  categoryLesson(category: Category) {
+    if (!this.account.member && category.forSell) {
+      this.navCtrl.push('SubscribePage');
+    }
+    else {
+      this.navCtrl.push('CategoryLessonPage', { category: category });
+    }
   }
 
   upgrade() {

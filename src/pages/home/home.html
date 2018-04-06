@@ -79,7 +79,7 @@
 
       <div class="pin" id="pin-{{i+1}}" *ngFor="let category of categories; let i = index; trackBy uuid;">
        <div class="pin-image-photo">
-         <a (click)="categoryLesson(category)" [class.pin-locked]="category.forSell">
+         <a (click)="categoryLesson(category)" [class.pin-locked]="category.forSell && !account.member">
          </a>
          <div class="loader-center">
            <div class="loader">
