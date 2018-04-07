@@ -50,6 +50,10 @@ export class Question {
     return this.isNormal() ? this.m.pics[index].answer : this.t.pics[index].answer;
   }
 
+  public pictureQuestion(index): string {
+    return this.isNormal() ? this.t.pics[index].answer : this.m.pics[index].answer;
+  }
+
   public writingAnswer(): string {
     return this.isNormal() ? this.m.question : this.t.question;
   }

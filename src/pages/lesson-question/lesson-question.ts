@@ -31,7 +31,7 @@ export class LessonQuestionPage implements OnInit {
   options: any[];
   chosens: any[];
   choices: any[];
-  twoPictures: any[];
+  twoPicturesNominated: string[];
   fourPictures: number[];
   fourPictureCorrectIndex: number;
   twoPictureCorrectIndex: number;
@@ -52,6 +52,7 @@ export class LessonQuestionPage implements OnInit {
   skipSpeaking: boolean;
   textCompareAcceptablePercentage: number = 0.7;
   private unregisterBackButtonAction: any;
+  private exitAlertInstance: any;
 
   constructor(private platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
               private translateService: TranslateService, private viewCtrl: ViewController,
@@ -125,6 +126,9 @@ export class LessonQuestionPage implements OnInit {
       this.question.d.pics[2].answered = false;
       this.question.d.pics[3].answered = false;
       this.isChecking = false;
+      if (this.autoPlayVoice) {
+        this.speak();
+      }
     }
     else {
       if (this.questionCounter >= this.questions.length) {
@@ -195,12 +199,7 @@ export class LessonQuestionPage implements OnInit {
       this.fourPictures.splice(2, 1);
       this.content.scrollToBottom();
     } else if (this.isType('TwoPicture')) {
-      this.twoPictures = [0, 1];
-      if (Math.floor(Math.random() * 2) === 1) {
-        this.twoPictureCorrectIndex  = 0;
-      } else {
-        this.twoPictureCorrectIndex  = 1;
-      }
+      this.twoPictureCorrectIndex  = this.determineTwoPictureCorrectIndex();
       this.content.scrollToBottom();
     } else if (this.isType('Speaking')) {
       if (this.skipSpeaking) {
@@ -220,7 +219,7 @@ export class LessonQuestionPage implements OnInit {
         this.speak();
       }
     }
-    console.log(this.lesson.isMotherLangRTL(), this.question.isN());
+    console.log('MotherLangRTL ', this.lesson.isMotherLangRTL(), 'isNormal ' ,this.question.isN());
     });
   }
 
@@ -311,16 +310,6 @@ export class LessonQuestionPage implements OnInit {
     return false;
   }
 
-  resolveQuestionText(): string {
-    let result = '';
-    if (this.question.d.question && !this.question.d.reverse) {
-      result = this.question.d.question;
-    } else {
-      result = this.resolveRightAnswerString();
-    }
-    return result;
-  }
-
   resolveRightAnswerString(autoCorrect?:boolean): string {
     let result = '';
     if (this.isType('TwoPicture')) {
@@ -383,13 +372,28 @@ export class LessonQuestionPage implements OnInit {
 
   speak(text?: string) {
     if (!text) {
-      text = this.resolveQuestionText();
+      text = this.questionFaceForSpeak;
     }
     this.textToSpeech.speak({
       text: text,
       locale: this.lesson.targetLocale(),
       rate: this.settings.allSettings.voiceSpeedRate / 100
     }).then().catch((error) => console.log('TTS#', error));
+  }
+
+  determineTwoPictureCorrectIndex(): number {
+    for (let i = 0; i < this.question.d.pics.length; i++)  {
+      if (this.twoPicturesNominated) {
+        if (this.twoPicturesNominated.indexOf(this.question.pictureLabel(i)) <= -1) {
+          this.twoPicturesNominated.push(this.question.pictureLabel(i));
+          return i;
+        }
+      }
+      else {
+        this.twoPicturesNominated = [this.question.pictureLabel(i)];
+        return i;
+      }
+    }
   }
 
   twoPictureSelected(index) {
@@ -475,6 +479,35 @@ export class LessonQuestionPage implements OnInit {
     }
   }
 
+
+  get questionFaceForSpeak(): string {
+    if (this.question && this.question.d) {
+      if (this.isType('TwoPicture')) {
+        return this.question.pictureLabel(this.twoPictureCorrectIndex);
+      }
+      else if (this.isType('FourPicture')) {
+        return this.question.pictureLabel(this.fourPictureCorrectIndex);
+      }
+      else {
+        return this.question.t.question;
+      }
+    }
+  }
+
+  get questionFace(): string {
+    if (this.question && this.question.d) {
+      if (this.isType('TwoPicture')) {
+        return this.question.pictureQuestion(this.twoPictureCorrectIndex);
+      }
+      else if (this.isType('FourPicture')) {
+        return this.question.pictureQuestion(this.fourPictureCorrectIndex);
+      }
+      else {
+        return this.question.d.reverse ? this.question.m.question : this.question.t.question;
+      }
+    }
+  }
+
   skipSpeakingQuestions() {
     this.skipSpeaking = true;
     this.goToNextQuestion();
@@ -520,7 +553,7 @@ export class LessonQuestionPage implements OnInit {
   }
 
   exit() {
-    this.alertCtrl.create({
+    this.exitAlertInstance = this.alertCtrl.create({
       title: this.labelExitTitle,
       message: this.labelExitMessage,
       buttons: [
@@ -536,7 +569,8 @@ export class LessonQuestionPage implements OnInit {
           }
         }
       ]
-    }).present();
+    });
+    this.exitAlertInstance.present();
   }
 
   initSettings() {
@@ -547,7 +581,12 @@ export class LessonQuestionPage implements OnInit {
   initalizeBackButtonCustomHandler() {
     let that = this;
     this.unregisterBackButtonAction = this.platform.registerBackButtonAction(function(event) {
-      that.exit();
+      if (that.exitAlertInstance) {
+        that.exitAlertInstance.dismiss();
+        that.exitAlertInstance = null;
+      } else {
+        that.exit();
+      }
     }, 101);  // Priorty 101 will override back button handling (we set in app.component.ts) as it is bigger then priority 100 configured in app.component.ts file.
   }
 

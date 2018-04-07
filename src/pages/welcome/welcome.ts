@@ -31,13 +31,13 @@ export class WelcomePage implements OnInit {
     if (!claims) {
       this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
         this.geAccount();
-        console.log('Well loadAuthAndTryLogin succeed');
+        console.log('Well loadAuthAndTryLogin succeed, accessTokenExpiration is ', this.oauthService.getAccessTokenExpiration());
       }).catch((error) => {
         console.log('Well loadAuthAndTryLogin failed with error ', error);
         this.isTryingToLogin = false;
       });
     } else {
-      console.log('Cliams ', claims);
+      // console.log('Cliams ', claims);
       this.geAccount();
     }
   }

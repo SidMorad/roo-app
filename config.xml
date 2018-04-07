@@ -19,7 +19,8 @@
     <preference name="FadeSplashScreenDuration" value="300" />
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <preference name="SplashScreen" value="screen" />
-    <preference name="SplashScreenDelay" value="3000" />
+    <preference name="SplashScreenDelay" value="6000" />
+    <preference name="AutoHideSplashScreen" value="true" />
     <preference name="AndroidLaunchMode" value="singleInstance" />
     <preference name="orientation" value="portrait" />
     <platform name="android">
@@ -96,5 +97,5 @@
     <plugin name="cordova-plugin-speechrecognition" spec="~1.1.2" />
     <plugin name="cordova-plugin-app-version" spec="~0.1.9" />
     <plugin name="cordova-plugin-market" spec="~1.2.0" />
-    <engine name="android" spec="7.0.0" />
+    <engine name="android" spec="~7.0.0" />
 </widget>

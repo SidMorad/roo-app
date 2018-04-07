@@ -1,7 +1,8 @@
 import { Component, OnInit, NgZone, ViewChild, ElementRef } from '@angular/core';
-import { IonicPage, NavController, Platform } from 'ionic-angular';
+import { IonicPage, NavController, Platform, ModalController } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { Market } from '@ionic-native/market';
+import { Storage } from '@ionic/storage';
 
 import { Principal } from '../../providers/auth/principal.service';
 import { Api } from '../../providers/api/api';
@@ -24,7 +25,9 @@ export class HomePage implements OnInit {
               private principal: Principal,
               private ngZone: NgZone, private market: Market,
               private api: Api, private appVersion: AppVersion,
-              public platform: Platform) {
+              public platform: Platform,
+              private storage: Storage,
+              private modalCtrl: ModalController) {
     this.categories = [];
     this.mapWidth = (window.screen.height * 4.8);
   }
@@ -43,6 +46,11 @@ export class HomePage implements OnInit {
           });
         }
       });
+    });
+    this.storage.get('LAST_SCORE').then((scoreStr) => {
+      if (scoreStr) {
+        this.modalCtrl.create('LessonScorePage').present();
+      }
     });
   }
 

@@ -181,9 +181,13 @@ only screen and (                min-resolution: 2dppx) {
 }
 
 .gold-back {
-  background-color: gold;
+  background-color: color($colors, gold);
 }
 
 .silver-back {
   background-color: silver;
+}
+
+.blue-back {
+  background-color: color($colors, primary);
 }

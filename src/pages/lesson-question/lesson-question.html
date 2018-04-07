@@ -51,22 +51,12 @@
         </span>
         <p [class.dir-rtl]="lesson.isMotherLangRTL()">&nbsp; {{question.description}}</p>
       </div>
-      <div *ngIf="isNotTypes(['TwoPicture', 'FourPicture'])"
+      <div
           [class.dir-rtl]="lesson.isMotherLangRTL() && question.d.reverse"
           [class.dir-ltr]="lesson.isTargetLangLTR() && !question.d.reverse" class="question-question">
-          {{question.d.question}}
+          {{questionFace}}
       </div>
-      <div *ngIf="isType('TwoPicture')"
-          [class.dir-rtl]="lesson.isMotherLangRTL() && question.d.reverse"
-          [class.dir-ltr]="lesson.isTargetLangLTR() && !question.d.reverse" class="question-question">
-          {{twoPictures[twoPictureCorrectIndex].hint}}
-      </div>
-      <div *ngIf="isType('FourPicture')"
-          [class.dir-rtl]="lesson.isMotherLangRTL() && question.d.reverse"
-          [class.dir-ltr]="lesson.isTargetLangLTR() && !question.d.reverse" class="question-question">
-          {{question.d.pics[fourPictureCorrectIndex].hint}}
-      </div>
-      <div *ngIf="(wasWrong || wasCorrect) && isNotTypes(['TwoPicture', 'FourPicture', 'OneCheck'])" class="alert alert-info"
+      <div *ngIf="wasWrong && isNotTypes(['TwoPicture', 'FourPicture', 'OneCheck'])" class="alert alert-info"
           [class.dir-rtl]="lesson.isMotherLangRTL() && !question.d.reverse"
           [class.dir-ltr]="lesson.isTargetLangLTR() && question.d.reverse">
         {{rightAnswerString}}

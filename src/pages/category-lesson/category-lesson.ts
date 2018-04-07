@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
 import { IonicPage, Platform, NavParams, Slides, NavController } from 'ionic-angular';
 import { NgProgress } from '@ngx-progressbar/core';
 import { Subscription } from 'rxjs/Rx';
@@ -23,31 +23,40 @@ export class CategoryLessonPage implements OnInit {
 
 
   constructor(public platform: Platform, navParams: NavParams, private navCtrl: NavController,
-              private api: Api, public ngProgress: NgProgress) {
+              private api: Api, public ngProgress: NgProgress, private ngZone: NgZone) {
     this.category = navParams.get('category');
     this.lessons = [];
   }
 
   ngOnInit() {
     this.isBeginning = true;
-    this.api.getLessonPublicList(TranslDir.FA$EN_UK, this.category.uuid)
-      .subscribe((res) => {
-        this.lessons = res;
-      }, (error) => {
-        console.log('Oops category-lesson load failed! TODO');
-      });
-      this.slides.paginationBulletRender = (index, defaultClass) => {
-        // return '<span class="' + defaultClass + '" (click)="goToSlide(' + index + ')">' + (index+1) + '</span>';
-        let goldClass = '';
-        if (this.starLookup(this.lessons[index]) == 0) {
-          goldClass = ' gold-back';
-        } else if (this.starLookup(this.lessons[index]) != 5) {
-          goldClass = ' silver-back';
-        }
-        return '<button class="' + defaultClass + goldClass + '" aria-label="Go to slide ' + (index+1) + '" data-slide-index="' + index + '">'
-                 + (index+1) +
-                '</button>';
-      };
+    this.api.getLessonPublicList(TranslDir.FA$EN_UK, this.category.uuid).subscribe((res) => {
+      this.lessons = res;
+    }, (error) => {
+      console.log('Oops category-lesson load failed! TODO');
+    });
+    this.renderPaginationBulletRender();
+  }
+
+  ionViewWillEnter() {
+  }
+
+  renderPaginationBulletRender() {
+    this.ngZone.run(() => {
+    this.slides.paginationBulletRender = (index, defaultClass) => {
+      // return '<span class="' + defaultClass + '" (click)="goToSlide(' + index + ')">' + (index+1) + '</span>';
+      let goldClass = '';
+      if (this.starLookup(this.lessons[index]) === 5) {
+        goldClass = ' gold-back';
+      }
+      else if (this.starLookup(this.lessons[index]) !== 0) {
+        goldClass = ' silver-back';
+      }
+      return '<button class="' + defaultClass + goldClass + '" aria-label="Go to slide ' + (index+1) + '" data-slide-index="' + index + '">'
+               + (index+1) +
+              '</button>';
+    };
+    });
   }
 
   startLesson(index) {
@@ -87,12 +96,11 @@ export class CategoryLessonPage implements OnInit {
 
   starLookup(lesson) {
     if (this.api.cachedScoreLookup && lesson) {
-      if (this.api.cachedScoreLookup.lessonMap[lesson.uuid] ||
-          this.api.cachedScoreLookup.lessonMap[lesson.uuid] == 0) {
-            return this.api.cachedScoreLookup.lessonMap[lesson.uuid];
-          }
+      if (this.api.cachedScoreLookup.lessonMap[lesson.uuid]) {
+        return this.api.cachedScoreLookup.lessonMap[lesson.uuid];
+      }
     }
-    return 5;
+    return 0;
   }
 
   ionViewDidLoad() {
