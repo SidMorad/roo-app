@@ -3,6 +3,8 @@ import { IonicPage, NavController, Platform, ModalController } from 'ionic-angul
 import { AppVersion } from '@ionic-native/app-version';
 import { Market } from '@ionic-native/market';
 import { Storage } from '@ionic/storage';
+import { TranslateService } from '@ngx-translate/core';
+import introJs from 'intro.js/intro.js';
 
 import { Principal } from '../../providers/auth/principal.service';
 import { Api } from '../../providers/api/api';
@@ -27,9 +29,11 @@ export class HomePage implements OnInit {
               private api: Api, private appVersion: AppVersion,
               public platform: Platform,
               private storage: Storage,
-              private modalCtrl: ModalController) {
+              private modalCtrl: ModalController,
+              private translateService: TranslateService) {
     this.categories = [];
     this.mapWidth = (window.screen.height * 4.8);
+    this.initTranslations();
   }
 
   ngOnInit() {
@@ -105,7 +109,36 @@ export class HomePage implements OnInit {
     this.market.open('mars.roo');
   }
 
+  showHelp() {
+    let intro = introJs.introJs();
+    intro.setOptions({
+      steps: [
+        {
+          element: '#pin-1',
+          intro: this.startFromHereLabel,
+          position: 'auto'
+        }
+      ],
+      showStepNumbers: false,
+      exitOnOverlayClick: true,
+      exitOnEsc:true,
+      skipLabel: this.okLabel,
+      doneLabel: this.okLabel
+    });
+    intro.start();
+  }
+
   dailyLesson() {
+  }
+
+  okLabel: string;
+  startFromHereLabel: string;
+
+  initTranslations() {
+    this.translateService.get(['OK', 'FOR_START_CLICK_ON_THE_PICTURE']).subscribe((translated) => {
+      this.okLabel = translated.OK;
+      this.startFromHereLabel = translated.FOR_START_CLICK_ON_THE_PICTURE;
+    });
   }
 
 }

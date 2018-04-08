@@ -43,7 +43,10 @@ declare const window: any;
         </ion-list>
       </ion-content>
     </ion-menu>
-    <ion-nav #content [root]="rootPage"></ion-nav>`
+    <ion-nav #content [root]="rootPage"></ion-nav>`,
+    styleUrls: [
+      '/app/introjs.scss'
+    ]
 })
 export class MyApp implements OnInit {
 

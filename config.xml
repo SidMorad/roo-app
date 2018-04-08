@@ -97,5 +97,5 @@
     <plugin name="cordova-plugin-speechrecognition" spec="~1.1.2" />
     <plugin name="cordova-plugin-app-version" spec="~0.1.9" />
     <plugin name="cordova-plugin-market" spec="~1.2.0" />
-    <engine name="android" spec="~7.0.0" />
+    <engine name="android" spec="7.0.0" />
 </widget>

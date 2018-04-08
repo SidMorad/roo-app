@@ -7,12 +7,14 @@ import { SpeechRecognition } from '@ionic-native/speech-recognition';
 import { compareTwoStrings, findBestMatch } from 'string-similarity';
 import { diffWords } from 'diff';
 import { Storage } from '@ionic/storage';
+import introJs from 'intro.js/intro.js';
 
 import { Category, Lesson, Question, Score, ScoreType } from '../../models';
 import { IMAGE_ORIGIN } from '../../app/app.constants';
 import { Principal } from '../../providers/auth/principal.service';
 import { LoginService } from '../../providers/login/login.service';
 import { Settings } from '../../providers/settings/settings';
+
 
 @IonicPage()
 @Component({
@@ -53,6 +55,7 @@ export class LessonQuestionPage implements OnInit {
   textCompareAcceptablePercentage: number = 0.7;
   private unregisterBackButtonAction: any;
   private exitAlertInstance: any;
+  private introInstance: any;
 
   constructor(private platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
               private translateService: TranslateService, private viewCtrl: ViewController,
@@ -322,7 +325,7 @@ export class LessonQuestionPage implements OnInit {
       for (let i = 0; i < this.choices.length; i++) {
         if (this.choices[i].isCorrect) {
           result += this.choices[i].text;
-          result += "\n<br>";
+          result += '\n<br>';
         }
       }
     }
@@ -590,10 +593,122 @@ export class LessonQuestionPage implements OnInit {
     }, 101);  // Priorty 101 will override back button handling (we set in app.component.ts) as it is bigger then priority 100 configured in app.component.ts file.
   }
 
+  showHelp() {
+    // console.log('showHelp clicked', this.introInstance);
+    // if (this.introInstance) {
+    //   this.introInstance.exit();
+    //   this.introInstance = null;
+    //   return;
+    // }
+
+    let introInstance = introJs.introJs();
+    let introSteps = [];
+      if (this.isType('MultiSelect')) {
+        introSteps = [
+          {
+            element: '#optionsContainer',
+            intro: this.labelFirstChooseAnOption,
+            position: 'top'
+          },
+          {
+            element: '#answer-background',
+            intro: this.labelReviewYourAnswerHere,
+            position: 'bottom'
+          },
+          {
+            element: '#checkButton',
+            intro: this.labelClickCheckButton,
+            position: 'top'
+          }
+        ];
+      }
+      else if (this.isType('TwoPicture')) {
+        introSteps = [
+          {
+            element: '#twoPicture-' + this.twoPictureCorrectIndex,
+            intro: this.labelSelectACorrectPicture,
+            position: 'top'
+          }
+        ];
+      }
+      else if (this.isType('FourPicture')) {
+        introSteps = [
+          {
+            element: '#fourPicture-' + this.fourPictureCorrectIndex,
+            intro: this.labelSelectACorrectPicture,
+            position: 'top'
+          }
+        ];
+      }
+      else if (this.isType('MutliCheck')) {
+        introSteps = [
+          {
+            element: '#checkbox-0',
+            intro: this.labelSelectCorrectAnswers,
+            position: 'top'
+          },
+          {
+            element: '#checkButton',
+            intro: this.labelClickCheckButton,
+            position: 'top'
+          }
+        ];
+      }
+      else if (this.isType('OneCheck')) {
+        introSteps = [
+          {
+            element: '#radio-0',
+            intro: this.labelSelectACorrectAnswer,
+            position: 'top'
+          },
+          {
+            element: '#checkButton',
+            intro: this.labelClickCheckButton,
+            position: 'top'
+          }
+        ];
+      }
+      else if (this.isType('Writing')) {
+        introSteps = [
+          {
+            element: '.answer-background',
+            intro: this.labelTypeCorrectAnswerHere,
+            position: 'top'
+          }
+        ];
+      }
+      else if (this.isType('Speaking')) {
+        introSteps = [
+          {
+            element: '#speakingButton',
+            intro: this.labelHoldMicrophoneButtonAndSpeak,
+            position: 'top'
+          }
+        ];
+      }
+
+    introInstance.setOptions({
+      steps: introSteps,
+      showStepNumbers: false,
+      exitOnOverlayClick: true,
+      exitOnEsc:true,
+      nextLabel: this.labelNext,
+      pervLabel: this.labelPerv,
+      skipLabel: this.labelOk,
+      doneLabel: this.labelOk
+    });
+    introInstance.start();
+  }
+
   initTranslations() {
     this.translateService.get(['WANT_TO_EXIT_Q', 'NO', 'YES', 'LOGIN', 'PLEASE_LOGIN',
                                'ARE_YOU_SURE_Q_YOUR_PROGRESS_WILL_NOT_BE_SAVED', 'CANCEL_BUTTON',
-                                'PLEASE_LOGIN_TO_CONTINUE']).subscribe(values => {
+                               'PLEASE_LOGIN_TO_CONTINUE',
+                               'OK', 'NEXT', 'PERV', 'FIRST_CHOOSE_AN_OPTION',
+                               'SELECT_A_CORRECT_PICTURE', 'SELECT_A_CORRECT_ANSWER',
+                               'SELECT_CORRECT_ANSWERS', 'TYPE_CORRECT_ANSWER_HERE',
+                               'REVIEW_YOUR_ANSWER_HERE', 'HOLD_MICROPHONE_BUTTON_AND_SPEAK',
+                               'CLICK_CHECK_BUTTON',]).subscribe(values => {
       this.labelYes = values['YES'];
       this.labelNo = values['NO'];
       this.labelExitTitle = values['WANT_TO_EXIT_Q'];
@@ -602,6 +717,18 @@ export class LessonQuestionPage implements OnInit {
       this.labelLoginTitle = values['PLEASE_LOGIN'];
       this.labelLoginMessage = values['PLEASE_LOGIN_TO_CONTINUE'];
       this.labelLoginEscape = values['CANCEL_BUTTON'];
+
+      this.labelOk = values.OK;
+      this.labelNext = values.NEXT;
+      this.labelPerv = values.PERV;
+      this.labelFirstChooseAnOption = values.FIRST_CHOOSE_AN_OPTION;
+      this.labelSelectACorrectPicture = values.SELECT_A_CORRECT_PICTURE;
+      this.labelSelectACorrectAnswer = values.SELECT_A_CORRECT_ANSWER;
+      this.labelSelectCorrectAnswers = values.SELECT_CORRECT_ANSWERS;
+      this.labelTypeCorrectAnswerHere = values.TYPE_CORRECT_ANSWER_HERE;
+      this.labelReviewYourAnswerHere = values.REVIEW_YOUR_ANSWER_HERE;
+      this.labelClickCheckButton = values.CLICK_CHECK_BUTTON;
+      this.labelHoldMicrophoneButtonAndSpeak = values.HOLD_MICROPHONE_BUTTON_AND_SPEAK;
     });
   }
 
@@ -613,4 +740,16 @@ export class LessonQuestionPage implements OnInit {
   labelLoginEscape: string;
   labelLoginTitle: string;
   labelLoginMessage: string;
+
+  labelOk: string;
+  labelNext: string;
+  labelPerv: string;
+  labelFirstChooseAnOption: string;
+  labelSelectACorrectPicture: string;
+  labelSelectACorrectAnswer: string;
+  labelSelectCorrectAnswers: string;
+  labelTypeCorrectAnswerHere: string;
+  labelReviewYourAnswerHere: string;
+  labelClickCheckButton: string;
+  labelHoldMicrophoneButtonAndSpeak: string;
 }

@@ -20,6 +20,9 @@
       <button ion-button icon-only clear *ngIf="showUpgradeButton" (click)="upgrade()" color="danger">
         <ion-icon name="appstore"></ion-icon>
       </button>
+      <button ion-button icon-only clear (click)="showHelp()" color="secondary">
+        <ion-icon name="help-buoy"></ion-icon>
+      </button>
     </ion-buttons>
     <ion-buttons left *ngIf="platform.isRTL">
       <button ion-button icon-only clear *ngIf="showRetryButton" (click)="fetchCategories()">
@@ -27,6 +30,9 @@
       </button>
       <button ion-button icon-only clear *ngIf="showUpgradeButton" (click)="upgrade()" color="danger">
         <ion-icon name="appstore"></ion-icon>
+      </button>
+      <button ion-button icon-only clear (click)="showHelp()" color="secondary">
+        <ion-icon name="help-buoy"></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>
