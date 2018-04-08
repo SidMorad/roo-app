@@ -693,7 +693,7 @@ export class LessonQuestionPage implements OnInit {
       exitOnOverlayClick: true,
       exitOnEsc:true,
       nextLabel: this.labelNext,
-      pervLabel: this.labelPerv,
+      prevLabel: this.labelPrev,
       skipLabel: this.labelOk,
       doneLabel: this.labelOk
     });
@@ -704,7 +704,7 @@ export class LessonQuestionPage implements OnInit {
     this.translateService.get(['WANT_TO_EXIT_Q', 'NO', 'YES', 'LOGIN', 'PLEASE_LOGIN',
                                'ARE_YOU_SURE_Q_YOUR_PROGRESS_WILL_NOT_BE_SAVED', 'CANCEL_BUTTON',
                                'PLEASE_LOGIN_TO_CONTINUE',
-                               'OK', 'NEXT', 'PERV', 'FIRST_CHOOSE_AN_OPTION',
+                               'OK', 'NEXT', 'PREV', 'FIRST_CHOOSE_AN_OPTION',
                                'SELECT_A_CORRECT_PICTURE', 'SELECT_A_CORRECT_ANSWER',
                                'SELECT_CORRECT_ANSWERS', 'TYPE_CORRECT_ANSWER_HERE',
                                'REVIEW_YOUR_ANSWER_HERE', 'HOLD_MICROPHONE_BUTTON_AND_SPEAK',
@@ -720,7 +720,7 @@ export class LessonQuestionPage implements OnInit {
 
       this.labelOk = values.OK;
       this.labelNext = values.NEXT;
-      this.labelPerv = values.PERV;
+      this.labelPrev = values.PREV;
       this.labelFirstChooseAnOption = values.FIRST_CHOOSE_AN_OPTION;
       this.labelSelectACorrectPicture = values.SELECT_A_CORRECT_PICTURE;
       this.labelSelectACorrectAnswer = values.SELECT_A_CORRECT_ANSWER;
@@ -743,7 +743,7 @@ export class LessonQuestionPage implements OnInit {
 
   labelOk: string;
   labelNext: string;
-  labelPerv: string;
+  labelPrev: string;
   labelFirstChooseAnOption: string;
   labelSelectACorrectPicture: string;
   labelSelectACorrectAnswer: string;
