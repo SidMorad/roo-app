@@ -52,10 +52,11 @@ export class LessonQuestionPage implements OnInit {
   speakingAnswer: string;
   speakingAnswerDiff: any;
   skipSpeaking: boolean;
-  textCompareAcceptablePercentage: number = 0.7;
+  textCompareAcceptablePercentage: number = 0.8;
+  speakCompareAcceptablePercentage: number = 0.7;
+  writingCompareAcceptablePercentage: number = 0.7;
   private unregisterBackButtonAction: any;
   private exitAlertInstance: any;
-  private introInstance: any;
 
   constructor(private platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
               private translateService: TranslateService, private viewCtrl: ViewController,
@@ -272,7 +273,7 @@ export class LessonQuestionPage implements OnInit {
       const expected = this.question.writingAnswer();
       const correctPercentage = compareTwoStrings(expected, actual);
       console.log('Writing answer was ', correctPercentage, ' right.', expected, actual);
-      if (correctPercentage > this.textCompareAcceptablePercentage) {
+      if (correctPercentage > this.writingCompareAcceptablePercentage) {
         this.wasAlmostCorrect = correctPercentage === 1 ? false: true;
         return true;
       }
@@ -281,7 +282,7 @@ export class LessonQuestionPage implements OnInit {
       if (this.speakingAnswer) {
         const correctPercentage = compareTwoStrings(this.question.speakingAnswer(), this.speakingAnswer);
         console.log('Speaking answer was ', correctPercentage, ' right.', this.question.speakingAnswer(), this.speakingAnswer);
-        if (correctPercentage > this.textCompareAcceptablePercentage) {
+        if (correctPercentage > this.speakCompareAcceptablePercentage) {
           this.wasAlmostCorrect = correctPercentage === 1 ? false: true;
           return true;
         }
@@ -458,9 +459,10 @@ export class LessonQuestionPage implements OnInit {
     this.microphonePressed = true;
     if (this.hasAudioRecordingPermission) {
       this.speechRecognition.startListening()
-        .subscribe(
-          (matches: Array<string>) => {
-            let findBest = findBestMatch(this.question.d.question, matches);
+        .subscribe((matches: any) => {
+            console.log('Speech matches ', matches);
+            let matchesArray = matches.constructor === Array ? matches : [matches];
+            let findBest = findBestMatch(this.question.speakingAnswer(), matchesArray);
             this.speakingAnswer = findBest.bestMatch.target;
             this.check();
             this.microphoneUp(event);

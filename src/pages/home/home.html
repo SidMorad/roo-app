@@ -20,7 +20,7 @@
       <button ion-button icon-only clear *ngIf="showUpgradeButton" (click)="upgrade()" color="danger">
         <ion-icon name="appstore"></ion-icon>
       </button>
-      <button ion-button icon-only clear (click)="showHelp()" color="secondary">
+      <button ion-button icon-only clear *ngIf="showHelpButton" (click)="showHelp()" color="secondary">
         <ion-icon name="help-buoy"></ion-icon>
       </button>
     </ion-buttons>
@@ -31,7 +31,7 @@
       <button ion-button icon-only clear *ngIf="showUpgradeButton" (click)="upgrade()" color="danger">
         <ion-icon name="appstore"></ion-icon>
       </button>
-      <button ion-button icon-only clear (click)="showHelp()" color="secondary">
+      <button ion-button icon-only clear  *ngIf="showHelpButton" (click)="showHelp()" color="secondary">
         <ion-icon name="help-buoy"></ion-icon>
       </button>
     </ion-buttons>

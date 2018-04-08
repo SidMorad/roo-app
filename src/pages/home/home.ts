@@ -22,6 +22,7 @@ export class HomePage implements OnInit {
   mapWidth: number;
   showRetryButton: boolean;
   showUpgradeButton: boolean;
+  showHelpButton: boolean = true;
 
   constructor(private navCtrl: NavController,
               private principal: Principal,
@@ -69,6 +70,7 @@ export class HomePage implements OnInit {
 
   doneLessons(category) {
     if (this.scoreLookup().categoryMap[category.uuid]) {
+      this.showHelpButton = false;
       return this.scoreLookup().categoryMap[category.uuid];
     }
     return 0;
@@ -116,7 +118,7 @@ export class HomePage implements OnInit {
         {
           element: '#pin-1',
           intro: this.startFromHereLabel,
-          position: 'auto'
+          position: 'bottom-middle'
         }
       ],
       showStepNumbers: false,

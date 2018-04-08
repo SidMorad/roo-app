@@ -81,14 +81,15 @@
       <div *ngIf="isType('MultiSelect')">
         <div class="answer-background" id="answer-background">
           <div [class.dir-rtl]="lesson.isMotherLangRTL() && question.isN()" [class.alert-success]="wasCorrect && !wasAlmostCorrect" padding
-               [class.dir-ltr]="lesson.isTargetLangLTR() && question.isR()" [class.alert-warning]="wasCorrect && wasAlmostCorrect">
+               [class.dir-ltr]="lesson.isTargetLangLTR() && question.isR()" [class.alert-warning]="wasCorrect && wasAlmostCorrect"
+                                                                            [class.alert-error]="wasWrong">
             <span class="answer" *ngFor="let chosen of chosens; let i = index;" (click)="moveBackToOptions(chosen)">
               <button class="{{chosen.class}} answer-contents" id="chosen-{{i}}">{{chosen.text}}</button>
             </span>
           </div>
         </div>
         <div [class.dir-rtl]="lesson.isMotherLangRTL() && question.isN()" padding
-             [class.dir-ltr]="lesson.isTargetLangLTR() && question.isR()">
+             [class.dir-ltr]="lesson.isTargetLangLTR() && question.isR()" id="optionsContainer">
           <span class="answer answer-container" *ngFor="let option of options; let i = index;" (click)="moveToChosen(option)" id="option-{{i}}">
             <button class="{{option.class}} answer-contents">{{option.text}}</button>
           </span>

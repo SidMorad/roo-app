@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, Platform, NavController, ToastController, AlertController,
+import { IonicPage, Platform, ToastController, AlertController,
          ViewController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -27,7 +27,7 @@ export class SubscribePage {
   resumeSubscription: any;
   toastInstance: any;
 
-  constructor(private platform: Platform, private navCtrl: NavController,
+  constructor(platform: Platform,
               private principal: Principal, private toastCtrl: ToastController,
               private api: Api, private alertCtrl: AlertController, private ngZone: NgZone,
               private translateService: TranslateService, private viewCtrl: ViewController,
@@ -161,26 +161,6 @@ export class SubscribePage {
 
   ionViewDidEnter() {
     this.reCheckMembership();
-  }
-
-  ionViewDidLoad() {
-    this.initalizeBackButtonCustomHandler();
-  }
-
-  private unregisterBackButtonAction: any;
-
-  ionViewWillLeave() {
-    this.unregisterBackButtonAction && this.unregisterBackButtonAction();
-  }
-
-  initalizeBackButtonCustomHandler() {
-    let that = this;
-    this.unregisterBackButtonAction = this.platform.registerBackButtonAction(function(event) {
-      if (that.toastInstance) {
-        that.toastInstance.dismiss();
-      }
-      that.navCtrl.pop();
-    }, 101);  // Priorty 101 will override back button handling (we set in app.component.ts) as it is bigger then priority 100 configured in app.component.ts file.
   }
 
   continueLabel: string;

@@ -2,7 +2,7 @@ import { Component, ViewChild, OnInit, NgZone } from '@angular/core';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { TranslateService } from '@ngx-translate/core';
-import { Config, Nav, Platform, Events, ToastController, App } from 'ionic-angular';
+import { Config, Nav, Platform, Events, App } from 'ionic-angular';
 import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
 
 import { FirstRunPage } from '../pages/pages';
@@ -61,14 +61,13 @@ export class MyApp implements OnInit {
     private statusBar: StatusBar, private splashScreen: SplashScreen,
     private oauthService: OAuthService, private api: Api, private app: App,
     private principal: Principal, private loginService: LoginService,
-    private events: Events, private toastCtrl: ToastController) {
+    private events: Events) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       this.initTranslate();
-      this.registerBackButtonAction();
     });
 
     const claims: any = this.oauthService.getIdentityClaims();
@@ -117,7 +116,7 @@ export class MyApp implements OnInit {
       if (!this.settings.allSettings.profileFirstLoaded) {
         let that = this;
         setTimeout(() => {
-          that.nav.push('ProfileFirstPage');
+          that.openPage('ProfileFirstPage');
         }, 3000);
       }
     });
@@ -190,33 +189,6 @@ export class MyApp implements OnInit {
     });
   }
 
-  registerBackButtonAction() {
-    // Handle back button for exit confirmation
-    let lastTimeBackPressed = 0;
-    const timePeriodToExit = 3000;
-    const nav = this.app.getActiveNav();
-    this.platform.registerBackButtonAction(() => {
-      console.log(nav.getActive().name);
-      // if (nav.getActive().name === 'TabsPage') {
-        if (nav.canGoBack()) {
-          nav.pop();
-        }
-        else {
-          if (new Date().getTime() - lastTimeBackPressed < timePeriodToExit) {
-            this.platform.exitApp();
-          }
-          else {
-            this.toastCtrl.create({
-              message: this.exitConfirmationText,
-              duration: 3000
-            }).present();
-            lastTimeBackPressed = new Date().getTime();
-          }
-        }
-      // }
-    });
-  }
-
   initTranslate() {
     this.ngZone.run(() => {
     this.settings.load().then(() => {
@@ -237,7 +209,7 @@ export class MyApp implements OnInit {
   }
 
   openPage(page) {
-    this.nav.push(page);
+    this.app.getActiveNavs()[0].push(page);
   }
 
 }

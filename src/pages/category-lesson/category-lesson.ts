@@ -103,21 +103,4 @@ export class CategoryLessonPage implements OnInit {
     return 0;
   }
 
-  ionViewDidLoad() {
-    this.initalizeBackButtonCustomHandler();
-  }
-
-  private unregisterBackButtonAction: any;
-
-  ionViewWillLeave() {
-    this.unregisterBackButtonAction && this.unregisterBackButtonAction();
-  }
-
-  initalizeBackButtonCustomHandler() {
-    let that = this;
-    this.unregisterBackButtonAction = this.platform.registerBackButtonAction(function(event) {
-      that.navCtrl.pop();
-    }, 101);  // Priorty 101 will override back button handling (we set in app.component.ts) as it is bigger then priority 100 configured in app.component.ts file.
-  }
-
 }
