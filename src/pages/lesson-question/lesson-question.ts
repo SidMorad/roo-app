@@ -38,7 +38,7 @@ export class LessonQuestionPage implements OnInit {
   fourPictureCorrectIndex: number;
   twoPictureCorrectIndex: number;
   isChecking: boolean;
-  noCorrect: number;
+  noTotal: number;
   noWrong: number;
   writingAnswer: string;
   wasCorrect: boolean;
@@ -57,6 +57,7 @@ export class LessonQuestionPage implements OnInit {
   writingCompareAcceptablePercentage: number = 0.7;
   private unregisterBackButtonAction: any;
   private exitAlertInstance: any;
+  hasFirstRoleInConversation: boolean;
 
   constructor(private platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
               private translateService: TranslateService, private viewCtrl: ViewController,
@@ -87,7 +88,6 @@ export class LessonQuestionPage implements OnInit {
   }
 
   initQuestionary() {
-    this.noCorrect = 0;
     this.noWrong = 0;
     this.questionCounter = 0;
     this.goToNextQuestion();
@@ -97,7 +97,6 @@ export class LessonQuestionPage implements OnInit {
     this.isChecking = true;
     if (this.isAnswerRight()) {
       this.wasCorrect = true;
-      this.noCorrect++;
       if (this.autoContinue && !this.wasAlmostCorrect) {
         setTimeout(() => {
           if (this.isChecking) {
@@ -118,6 +117,7 @@ export class LessonQuestionPage implements OnInit {
     this.wasWrong = false;
     this.wasCorrect = false;
     this.wasAlmostCorrect = false;
+    this.speakingAnswerDiff = null;
     this.goToNextQuestion();
   }
 
@@ -134,8 +134,37 @@ export class LessonQuestionPage implements OnInit {
         this.speak();
       }
     }
+    else if (this.isType('Conversation')) {
+      this.noTotal = this.question.t.answers.length;
+      if (this.questionCounter >= this.noTotal) {
+        this.uploadScore();
+      } else {
+        if (this.noWrong === 5) {
+          this.showFailureModal();
+        } else {
+          this.questionCounter++;
+          this.speak().then(() => {
+            if (this.questionCounter >= this.noTotal) {
+              this.uploadScore();
+            } else {
+              this.isChecking = false;
+              this.questionCounter++;
+            }
+          }).catch(() => {
+            if (this.questionCounter >= this.noTotal) {
+              this.uploadScore();
+            } else {
+              this.isChecking = false;
+              this.questionCounter++;
+            }
+          });
+        }
+        this.content.scrollToBottom();
+      }
+    }
     else {
-      if (this.questionCounter >= this.questions.length) {
+      this.noTotal = this.questions.length;
+      if (this.questionCounter >= this.noTotal) {
         this.questionCounter++;
         this.uploadScore();
       } else {
@@ -214,9 +243,11 @@ export class LessonQuestionPage implements OnInit {
           this.checkHasAudioRecordingPermission();
         }
       }
+    } else if (this.isType('Conversation')) {
+      this.showConversationRoleConfirmation();
     }
     if (this.autoPlayVoice) {
-      if (this.isType('Speaking') && this.skipSpeaking) {
+      if (this.isType('Speaking') && this.skipSpeaking || this.isType('Conversation')) {
         // don't speak.
       }
       else {
@@ -283,10 +314,21 @@ export class LessonQuestionPage implements OnInit {
         const correctPercentage = compareTwoStrings(this.question.speakingAnswer(), this.speakingAnswer);
         console.log('Speaking answer was ', correctPercentage, ' right.', this.question.speakingAnswer(), this.speakingAnswer);
         if (correctPercentage > this.speakCompareAcceptablePercentage) {
-          this.wasAlmostCorrect = correctPercentage === 1 ? false: true;
+          this.wasAlmostCorrect = correctPercentage === 1 ? false : true;
           return true;
         }
       }
+    }
+    else if (this.isType('Conversation')) {
+      if (this.speakingAnswer) {
+        const correctPercentage = compareTwoStrings(this.question.conversationAnswer(this.questionCounter-1), this.speakingAnswer);
+        console.log('Speaking answer was ', correctPercentage, ' right.', this.question.conversationAnswer(this.questionCounter-1), this.speakingAnswer);
+        if (correctPercentage > this.speakCompareAcceptablePercentage) {
+          this.wasAlmostCorrect = correctPercentage === 1 ? false : true;
+          return true;
+        }
+      }
+      this.content.scrollToBottom();
     }
     return false;
   }
@@ -344,6 +386,11 @@ export class LessonQuestionPage implements OnInit {
       this.speakingAnswerDiff = diffWords(this.question.speakingAnswer(), this.speakingAnswer, { ignoreCase: true });
       result = this.question.speakingAnswer();
     }
+    else if (this.isType('Conversation')) {
+      this.speakingAnswerDiff = diffWords(this.question.conversationAnswer(this.questionCounter-1), this.speakingAnswer, { ignoreCase: true });
+      result = this.question.conversationAnswer(this.questionCounter-1);
+      this.content.scrollToBottom();
+    }
     else if (this.isType('MultiSelect')) {
       const answers = this.question.multiSelectAnswers();
       result = answers.map((e) => e.text).join(' ');
@@ -378,7 +425,7 @@ export class LessonQuestionPage implements OnInit {
     if (!text) {
       text = this.questionFaceForSpeak;
     }
-    this.textToSpeech.speak({
+    return this.textToSpeech.speak({
       text: text,
       locale: this.lesson.targetLocale(),
       rate: this.settings.allSettings.voiceSpeedRate / 100
@@ -458,20 +505,21 @@ export class LessonQuestionPage implements OnInit {
   microphoneDown(event) {
     this.microphonePressed = true;
     if (this.hasAudioRecordingPermission) {
-      this.speechRecognition.startListening()
-        .subscribe((matches: any) => {
-            console.log('Speech matches ', matches);
-            let matchesArray = matches.constructor === Array ? matches : [matches];
-            let findBest = findBestMatch(this.question.speakingAnswer(), matchesArray);
-            this.speakingAnswer = findBest.bestMatch.target;
-            this.check();
-            this.microphoneUp(event);
-          },
-          (error) => {
-            console.log('Oops: ', error);
-            this.microphoneUp(event);
-          }
-        );
+      this.speechRecognition.startListening().subscribe((matches: any) => {
+        let findBest;
+        if (this.isType('Speaking')) {
+          findBest = findBestMatch(this.question.speakingAnswer(), matches);
+        } else if (this.isType('Conversation')) {
+          findBest = findBestMatch(this.question.conversationAnswer(this.questionCounter-1), matches);
+        }
+        this.speakingAnswer = findBest.bestMatch.target;
+        this.check();
+        this.microphoneUp(event);
+      },
+      (error) => {
+        console.log('Oops: ', error);
+        this.microphoneUp(event);
+      });
     } else {
       this.checkHasAudioRecordingPermission();
     }
@@ -484,7 +532,6 @@ export class LessonQuestionPage implements OnInit {
     }
   }
 
-
   get questionFaceForSpeak(): string {
     if (this.question && this.question.d) {
       if (this.isType('TwoPicture')) {
@@ -492,6 +539,9 @@ export class LessonQuestionPage implements OnInit {
       }
       else if (this.isType('FourPicture')) {
         return this.question.pictureLabel(this.fourPictureCorrectIndex);
+      }
+      else if (this.isType('Conversation')) {
+        return this.question.conversationAnswer(this.questionCounter-1);
       }
       else {
         return this.question.t.question;
@@ -511,6 +561,10 @@ export class LessonQuestionPage implements OnInit {
         return this.question.d.reverse ? this.question.m.question : this.question.t.question;
       }
     }
+  }
+
+  get speakingAnswerDiffString(): string {
+    return this.speakingAnswerDiff.map(x => x.value).join(' ');
   }
 
   skipSpeakingQuestions() {
@@ -596,13 +650,6 @@ export class LessonQuestionPage implements OnInit {
   }
 
   showHelp() {
-    // console.log('showHelp clicked', this.introInstance);
-    // if (this.introInstance) {
-    //   this.introInstance.exit();
-    //   this.introInstance = null;
-    //   return;
-    // }
-
     let introInstance = introJs.introJs();
     let introSteps = [];
       if (this.isType('MultiSelect')) {
@@ -702,6 +749,33 @@ export class LessonQuestionPage implements OnInit {
     introInstance.start();
   }
 
+  showConversationRoleConfirmation() {
+    this.alertCtrl.create({
+      title: this.labelWhichRole,
+      message: this.labelWhichRoleYouWantToHaveInTheConversation,
+      buttons: [
+        {
+          text: this.labelFirstRole,
+          role: 'cancel',
+          handler: () => {
+            this.hasFirstRoleInConversation = true;
+          }
+        },
+        {
+          text: this.labelSecondRole,
+          handler: () => {
+            this.hasFirstRoleInConversation = false;
+            this.speak().then(() => {
+              this.questionCounter++;
+            }).catch(() => {
+              this.questionCounter++;
+            });
+          }
+        }
+      ]
+    }).present();
+  }
+
   initTranslations() {
     this.translateService.get(['WANT_TO_EXIT_Q', 'NO', 'YES', 'LOGIN', 'PLEASE_LOGIN',
                                'ARE_YOU_SURE_Q_YOUR_PROGRESS_WILL_NOT_BE_SAVED', 'CANCEL_BUTTON',
@@ -710,7 +784,9 @@ export class LessonQuestionPage implements OnInit {
                                'SELECT_A_CORRECT_PICTURE', 'SELECT_A_CORRECT_ANSWER',
                                'SELECT_CORRECT_ANSWERS', 'TYPE_CORRECT_ANSWER_HERE',
                                'REVIEW_YOUR_ANSWER_HERE', 'HOLD_MICROPHONE_BUTTON_AND_SPEAK',
-                               'CLICK_CHECK_BUTTON',]).subscribe(values => {
+                               'CLICK_CHECK_BUTTON',
+                               'WHICH_ROLE', 'WHICH_ROLE_DO_YOU_PREFER_TO_HAVE_IN_THIS_CONVERSATION',
+                               'FIRST_ROLE', 'SECOND_ROLE']).subscribe(values => {
       this.labelYes = values['YES'];
       this.labelNo = values['NO'];
       this.labelExitTitle = values['WANT_TO_EXIT_Q'];
@@ -731,6 +807,11 @@ export class LessonQuestionPage implements OnInit {
       this.labelReviewYourAnswerHere = values.REVIEW_YOUR_ANSWER_HERE;
       this.labelClickCheckButton = values.CLICK_CHECK_BUTTON;
       this.labelHoldMicrophoneButtonAndSpeak = values.HOLD_MICROPHONE_BUTTON_AND_SPEAK;
+
+      this.labelWhichRole = values.WHICH_ROLE;
+      this.labelFirstRole = values.FIRST_ROLE;
+      this.labelSecondRole = values.SECOND_ROLE;
+      this.labelWhichRoleYouWantToHaveInTheConversation = values.WHICH_ROLE_DO_YOU_PREFER_TO_HAVE_IN_THIS_CONVERSATION;
     });
   }
 
@@ -754,4 +835,9 @@ export class LessonQuestionPage implements OnInit {
   labelReviewYourAnswerHere: string;
   labelClickCheckButton: string;
   labelHoldMicrophoneButtonAndSpeak: string;
+
+  labelWhichRole: string;
+  labelWhichRoleYouWantToHaveInTheConversation: string;
+  labelFirstRole: string;
+  labelSecondRole: string;
 }

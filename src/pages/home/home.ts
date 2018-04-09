@@ -70,7 +70,9 @@ export class HomePage implements OnInit {
 
   doneLessons(category) {
     if (this.scoreLookup().categoryMap[category.uuid]) {
-      this.showHelpButton = false;
+      setTimeout(() => {
+        this.showHelpButton = false;
+      }, 0);
       return this.scoreLookup().categoryMap[category.uuid];
     }
     return 0;

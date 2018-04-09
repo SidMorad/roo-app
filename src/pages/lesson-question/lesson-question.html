@@ -10,7 +10,7 @@
             </span>
           </ion-col>
           <ion-col col-auto>
-            <progress [max]="questions.length" [value]="questionCounter-1"></progress>
+            <progress [max]="noTotal" [value]="questionCounter-1"></progress>
           </ion-col>
           <ion-col col-1>
             <button ion-button icon-only clear small (click)="exit()" [style.color]="principal.isAuthenticated()? 'black' : 'red'">
@@ -56,10 +56,41 @@
           [class.dir-ltr]="lesson.isTargetLangLTR() && !question.d.reverse" class="question-question">
           {{questionFace}}
       </div>
-      <div *ngIf="(wasWrong || wasAlmostCorrect) && isNotTypes(['TwoPicture', 'FourPicture', 'OneCheck'])" class="alert alert-info"
+      <div *ngIf="(wasWrong || wasAlmostCorrect) && isNotTypes(['TwoPicture', 'FourPicture', 'OneCheck', 'Conversation'])" class="alert alert-info"
           [class.dir-rtl]="lesson.isMotherLangRTL() && !question.d.reverse"
           [class.dir-ltr]="lesson.isTargetLangLTR() && question.d.reverse">
         {{rightAnswerString}}
+      </div>
+
+      <div *ngIf="isType('Conversation')">
+        <div *ngFor="let answer of question.m.answers; let i = index;">
+          <div *ngIf="i < questionCounter" style="overflow: scroll;">
+            <div [class.float-left]="i % 2 == 0" [class.float-right]="i % 2 == 1" class="alert"
+                 [class.alert-info]="i % 2 == 0" [class.alert-warning]="i % 2 == 1" style="width: 80%" (click)="speak(question.t.answers[i].text)">
+              <div [class.dir-ltr]="lesson.isTargetLangLTR()"   [class.dir-rtl]="!lesson.isTargetLangLTR()"
+                   [class.text-left]="lesson.isTargetLangLTR()" [class.text-right]="!lesson.isTargetLangLTR()"
+                   [class.text-unclear]="i === questionCounter-1 && !isChecking"
+                  *ngIf="question.t.answers[i]">{{question.t.answers[i].text}}</div>
+              <div [class.dir-ltr]="!lesson.isMotherLangRTL()" [class.dir-rtl]="lesson.isMotherLangRTL()"
+                   [class.text-left]="!lesson.isMotherLangRTL()" [class.text-right]="lesson.isMotherLangRTL()"
+                  *ngIf="question.m.answers[i]">{{question.m.answers[i].text}}</div>
+            </div>
+          </div>
+        </div>
+        <div  padding style="clear:both">
+          <br />
+          <div *ngIf="speakingAnswerDiff" class="alert"
+               [class.alert-success]="wasCorrect"
+               [class.alert-error]="wasWrong"
+               [class.dir-ltr]="lesson.isTargetLangLTR()"   [class.dir-rtl]="!lesson.isTargetLangLTR()"
+               [class.text-left]="lesson.isTargetLangLTR()" [class.text-right]="!lesson.isTargetLangLTR()" (click)="speak(speakingAnswerDiffString)">
+            <ion-spinner name="dots" *ngIf="microphonePressed"></ion-spinner>
+            <span *ngFor="let part of speakingAnswerDiff" [class.part-removed]="part.added" [class.part-added]="part.removed">{{part.value}}</span>
+          </div>
+          <br /><br /><br /><br />
+          <br /><br /><br /><br />
+        </div>
+
       </div>
 
       <div *ngIf="isType('OneCheck')">
@@ -201,14 +232,25 @@
   </section>
   <div style="position: absolute; bottom: 0px; width: 100%" text-center>
     <button ion-button full large color="secondary"
-            *ngIf="isNotTypes(['FourPicture', 'TwoPicture']) && !wasWrong && !wasAlmostCorrect && !isChecking"
+            *ngIf="isNotTypes(['FourPicture', 'TwoPicture', 'Speaking', 'Conversation']) && !wasWrong && !wasAlmostCorrect && !isChecking"
             [disabled]="!isAnswered()" (click)="check()" id="checkButton">
       {{'CHECK' | translate}}
     </button>
     <ion-spinner *ngIf="isChecking && autoContinue && !wasWrong && !wasAlmostCorrect" style="position:absolute; bottom: 1em; z-index: 10;" color="primary"></ion-spinner>
     <button ion-button full large color="secondary"
-            *ngIf="wasWrong || wasCorrect" (click)="continue()">
+            *ngIf="isNotTypes(['Conversation']) && (wasWrong || wasCorrect)" (click)="continue()">
       {{'CONTINUE' | translate}}
     </button>
   </div>
+  <ion-fab center bottom large *ngIf="isType('Conversation')">
+    <button ion-fab large color="{{microphonePressed ? 'danger' : 'primary'}}"
+      (touchstart)="microphoneDown($event)" (touchend)="microphoneUp($event)" [disabled]="isChecking" id="speakingButton">
+      <ion-icon name="microphone"></ion-icon>
+    </button>
+  </ion-fab>
+  <ion-fab end bottom large *ngIf="isType('Conversation') && (wasWrong || wasCorrect)">
+    <button ion-fab large color="secondary" (click)="continue()">
+      <ion-icon name="play"></ion-icon>
+    </button>
+  </ion-fab>
 </ion-content>

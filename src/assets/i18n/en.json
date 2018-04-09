@@ -75,6 +75,11 @@
   "REVIEW_YOUR_ANSWER_HERE": "Review your answer here.",
   "CLICK_CHECK_BUTTON": "Click check button.",
 
+  "WHICH_ROLE": "Which role?",
+  "FIRST_ROLE": "1th",
+  "SECOND_ROLE": "2nd",
+  "WHICH_ROLE_DO_YOU_PREFER_TO_HAVE_IN_THIS_CONVERSATION": "Which role do you prefer to have in this conversation?",
+
   "TAB1_TITLE": "Categories",
   "TAB2_TITLE": "Lessons",
   "TAB3_TITLE": "Stats",
@@ -117,4 +122,5 @@
 
   "SEARCH_TITLE": "Search",
   "SEARCH_PLACEHOLDER": "Search the items list, e.g. \"Hotel\""
+
 }

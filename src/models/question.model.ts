@@ -62,4 +62,8 @@ export class Question {
     return this.isNormal() ? this.t.question : this.m.question;
   }
 
+  public conversationAnswer(index: number): string {
+    return this.isNormal() ? this.t.answers[index].text : this.m.answers[index].text;
+  }
+
 }

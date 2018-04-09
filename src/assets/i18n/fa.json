@@ -75,6 +75,11 @@
   "REVIEW_YOUR_ANSWER_HERE": "جوابتان را در این قسمت مشاهده کنید",
   "CLICK_CHECK_BUTTON": "دکمه بررسی را بزنید.",
 
+  "WHICH_ROLE": "کدام نقش؟",
+  "FIRST_ROLE": "اول",
+  "SECOND_ROLE": "دوم",
+  "WHICH_ROLE_DO_YOU_PREFER_TO_HAVE_IN_THIS_CONVERSATION": "مایلید کدام نقش را در مکالمه داشته باشید؟",
+
   "TAB1_TITLE": "گروه ها",
   "TAB2_TITLE": "آموزه ها",
   "TAB3_TITLE": "آمار",

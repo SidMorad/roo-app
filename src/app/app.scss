@@ -15,6 +15,8 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
+@import "introjs";
+
 .hipster {
   display: inline-block;
   width: 347px;
@@ -190,6 +192,11 @@ only screen and (                min-resolution: 2dppx) {
 
 .blue-back {
   background-color: color($colors, primary);
+}
+
+.text-unclear {
+   color: transparent;
+   text-shadow: 0 0 16px rgba(0,0,0,0.8);
 }
 
 html[dir="rtl"] {
