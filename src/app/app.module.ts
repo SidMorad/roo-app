@@ -17,6 +17,7 @@ import { SpeechRecognition } from '@ionic-native/speech-recognition';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { AppVersion } from '@ionic-native/app-version';
 import { Market } from '@ionic-native/market';
+import { SwingModule } from 'angular2-swing';
 
 import { Api, Settings, User, ScoreUtil } from '../providers/providers';
 import { MyApp } from './app.component';
@@ -93,6 +94,7 @@ export function provideSettings(storage: Storage) {
     SpeechRecognition,
     AppVersion,
     Market,
+    SwingModule,
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler },

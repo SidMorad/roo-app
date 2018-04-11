@@ -1,20 +1,19 @@
-import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone, ViewChildren, QueryList } from '@angular/core';
 import { IonicPage, Platform, NavParams, AlertController, ViewController,
         Content, ModalController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { TextToSpeech } from '@ionic-native/text-to-speech';
 import { SpeechRecognition } from '@ionic-native/speech-recognition';
-import { compareTwoStrings, findBestMatch } from 'string-similarity';
-import { diffWords } from 'diff';
+import { findBestMatch } from 'string-similarity';
 import { Storage } from '@ionic/storage';
 import introJs from 'intro.js/intro.js';
+import { StackConfig, DragEvent, SwingStackComponent, SwingCardComponent } from 'angular2-swing';
 
-import { Category, Lesson, Question, Score, ScoreType } from '../../models';
+import { Category, Lesson, Question, Score, ScoreType, QuestionWord } from '../../models';
 import { IMAGE_ORIGIN } from '../../app/app.constants';
 import { Principal } from '../../providers/auth/principal.service';
 import { LoginService } from '../../providers/login/login.service';
 import { Settings } from '../../providers/settings/settings';
-
 
 @IonicPage()
 @Component({
@@ -23,6 +22,8 @@ import { Settings } from '../../providers/settings/settings';
 })
 export class LessonQuestionPage implements OnInit {
   @ViewChild(Content) content: Content;
+  @ViewChild('myswing1') swingStack: SwingStackComponent;
+  @ViewChildren('mycards1') swingCards: QueryList<SwingCardComponent>;
 
   lesson: Lesson;
   category: Category;
@@ -41,6 +42,8 @@ export class LessonQuestionPage implements OnInit {
   noTotal: number;
   noWrong: number;
   writingAnswer: string;
+  speakingAnswer: string;
+  wordAnswer: boolean;
   wasCorrect: boolean;
   wasWrong: boolean;
   wasAlmostCorrect: boolean;
@@ -49,23 +52,25 @@ export class LessonQuestionPage implements OnInit {
   autoContinue: boolean;
   microphonePressed: boolean;
   hasAudioRecordingPermission: boolean;
-  speakingAnswer: string;
   speakingAnswerDiff: any;
   skipSpeaking: boolean;
-  textCompareAcceptablePercentage: number = 0.8;
-  speakCompareAcceptablePercentage: number = 0.7;
-  writingCompareAcceptablePercentage: number = 0.7;
   private unregisterBackButtonAction: any;
   private exitAlertInstance: any;
   hasFirstRoleInConversation: boolean;
 
-  constructor(private platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
+  cards: QuestionWord[];
+  words: QuestionWord[];
+  stackConfig: StackConfig;
+  recentCard: string = '';
+  leftBackgroundColor: string;
+  rightBackgroundColor: string;
+
+  constructor(public platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
               private translateService: TranslateService, private viewCtrl: ViewController,
               private principal: Principal, private loginService: LoginService,
               private modalCtrl: ModalController, private ngZone: NgZone,
-              private settings: Settings,
               private textToSpeech: TextToSpeech, private speechRecognition: SpeechRecognition,
-              private storage: Storage) {
+              private settings: Settings, private storage: Storage) {
     this.dir = platform.dir();
     const l: Lesson = navParams.get('lesson');
     this.lesson = new Lesson(l.uuid, l.title, l.translDir, l.indexOrder);
@@ -73,6 +78,7 @@ export class LessonQuestionPage implements OnInit {
     this.questions = navParams.get('questions');
     this.initTranslations();
     this.initSettings();
+    this.initSwingStackConfig();
   }
 
   ngOnInit() {
@@ -85,6 +91,14 @@ export class LessonQuestionPage implements OnInit {
 
   ionViewWillLeave() {
     this.unregisterBackButtonAction && this.unregisterBackButtonAction();
+  }
+
+  ngAfterViewInit() {
+    if (this.swingStack) {
+      this.swingStack.throwin.subscribe((event: DragEvent) => {
+        event.target.style.background = '#ffffff';
+      });
+    }
   }
 
   initQuestionary() {
@@ -122,6 +136,7 @@ export class LessonQuestionPage implements OnInit {
   }
 
   goToNextQuestion() {
+    this.ngZone.run(() => {
     if (this.isType('FourPicture') && this.fourPictures.length === 3) {
       this.fourPictureCorrectIndex = this.fourPictures[1];
       this.fourPictures.splice(1, 1);
@@ -162,6 +177,23 @@ export class LessonQuestionPage implements OnInit {
         this.content.scrollToBottom();
       }
     }
+    else if (this.isType('Words')) {
+      this.noTotal = this.question.t.answers.length * 2;
+      if (this.questionCounter >= this.noTotal) {
+        this.uploadScore();
+      } else {
+        this.isChecking = false;
+        if (this.noWrong === 5) {
+          this.showFailureModal();
+        } else {
+            this.questionCounter++
+            this.cards = [this.words[this.questionCounter-1]];
+            if (this.autoPlayVoice) {
+              this.speak();
+            }
+        }
+      }
+    }
     else {
       this.noTotal = this.questions.length;
       if (this.questionCounter >= this.noTotal) {
@@ -177,6 +209,7 @@ export class LessonQuestionPage implements OnInit {
         }
       }
     }
+    });
   }
 
   uploadScore() {
@@ -245,6 +278,9 @@ export class LessonQuestionPage implements OnInit {
       }
     } else if (this.isType('Conversation')) {
       this.showConversationRoleConfirmation();
+    } else if (this.isType('Words')) {
+      this.words = this.setupWords();
+      this.cards = [this.words[this.questionCounter-1]];
     }
     if (this.autoPlayVoice) {
       if (this.isType('Speaking') && this.skipSpeaking || this.isType('Conversation')) {
@@ -259,166 +295,15 @@ export class LessonQuestionPage implements OnInit {
   }
 
   isAnswerRight() {
-    if (this.isType('MultiSelect')) {
-      const answers: any[] = this.question.multiSelectAnswers();
-      let expected = answers.map((x) => x.text).join(' ');
-      let actual = this.chosens.map((x) => x.text).join(' ');
-      const correctPercentage = compareTwoStrings(expected, actual);
-      console.log('Multi answer was ', correctPercentage, ' right.', expected, actual);
-      if (correctPercentage > this.textCompareAcceptablePercentage) {
-        this.wasAlmostCorrect = correctPercentage === 1 ? false : true;
-        return true;
-      }
-    }
-    else if (this.isType('TwoPicture')) {
-      return this.question.d.pics[this.twoPictureCorrectIndex].answered;
-    }
-    else if (this.isType('FourPicture')) {
-      return this.question.d.pics[this.fourPictureCorrectIndex].answered;
-    }
-    else if (this.isType('MultiCheck')) {
-      for (let i = 0; i < this.choices.length; i++) {
-        if (this.choices[i].isCorrect) {
-          if (!this.choices[i].picked) {
-            return false;
-          }
-        } else {
-          if (this.choices[i].picked) {
-            return false;
-          }
-        }
-      }
-      return true;
-    }
-    else if (this.isType('OneCheck')) {
-      for (let i = 0; i < this.choices.length; i++) {
-        if (this.choices[i].isCorrect) {
-          if (this.choices[i].picked === i + 1) {
-            return true;
-          }
-        }
-      }
-    }
-    else if (this.isType('Writing')) {
-      const actual = this.writingAnswer.replace(/\s+/g, ' ').trim();
-      const expected = this.question.writingAnswer();
-      const correctPercentage = compareTwoStrings(expected, actual);
-      console.log('Writing answer was ', correctPercentage, ' right.', expected, actual);
-      if (correctPercentage > this.writingCompareAcceptablePercentage) {
-        this.wasAlmostCorrect = correctPercentage === 1 ? false: true;
-        return true;
-      }
-    }
-    else if (this.isType('Speaking')) {
-      if (this.speakingAnswer) {
-        const correctPercentage = compareTwoStrings(this.question.speakingAnswer(), this.speakingAnswer);
-        console.log('Speaking answer was ', correctPercentage, ' right.', this.question.speakingAnswer(), this.speakingAnswer);
-        if (correctPercentage > this.speakCompareAcceptablePercentage) {
-          this.wasAlmostCorrect = correctPercentage === 1 ? false : true;
-          return true;
-        }
-      }
-    }
-    else if (this.isType('Conversation')) {
-      if (this.speakingAnswer) {
-        const correctPercentage = compareTwoStrings(this.question.conversationAnswer(this.questionCounter-1), this.speakingAnswer);
-        console.log('Speaking answer was ', correctPercentage, ' right.', this.question.conversationAnswer(this.questionCounter-1), this.speakingAnswer);
-        if (correctPercentage > this.speakCompareAcceptablePercentage) {
-          this.wasAlmostCorrect = correctPercentage === 1 ? false : true;
-          return true;
-        }
-      }
-      this.content.scrollToBottom();
-    }
-    return false;
+    return this.question.isAnswerRight(this);
   }
 
   isAnswered() {
-    if (this.question) {
-      if (this.isType('MultiSelect')) {
-        return this.chosens.length > 0
-      }
-      else if (this.isType('MultiCheck') || this.isType('OneCheck')) {
-        for (let i = 0; i < this.choices.length; i++) {
-          if (this.choices[i].picked) {
-            return true;
-          }
-        }
-      }
-      else if (this.isType('TwoPicture') || this.isType('FourPicture')) {
-        for (let i = 0; i < this.question.d.pics.length; i++) {
-          if (this.question.d.pics[i].answered) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
+    return this.question.isAnswered(this);
   }
 
   resolveRightAnswerString(autoCorrect?:boolean): string {
-    let result = '';
-    if (this.isType('TwoPicture')) {
-      result = this.question.pictureLabel(this.twoPictureCorrectIndex);
-    }
-    else if (this.isType('FourPicture')) {
-      result = this.question.pictureLabel(this.fourPictureCorrectIndex);
-    }
-    else if (this.isType('MultiCheck')) {
-      for (let i = 0; i < this.choices.length; i++) {
-        if (this.choices[i].isCorrect) {
-          result += this.choices[i].text;
-          result += '\n<br>';
-        }
-      }
-    }
-    else if (this.isType('OneCheck')) {
-      for (let i = 0; i < this.choices.length; i++) {
-        if (this.choices[i].isCorrect) {
-          result = this.choices[i].text;
-        }
-      }
-    }
-    else if (this.isType('Writing')) {
-      result = this.question.writingAnswer();
-    }
-    else if (this.isType('Speaking')) {
-      this.speakingAnswerDiff = diffWords(this.question.speakingAnswer(), this.speakingAnswer, { ignoreCase: true });
-      result = this.question.speakingAnswer();
-    }
-    else if (this.isType('Conversation')) {
-      this.speakingAnswerDiff = diffWords(this.question.conversationAnswer(this.questionCounter-1), this.speakingAnswer, { ignoreCase: true });
-      result = this.question.conversationAnswer(this.questionCounter-1);
-      this.content.scrollToBottom();
-    }
-    else if (this.isType('MultiSelect')) {
-      const answers = this.question.multiSelectAnswers();
-      result = answers.map((e) => e.text).join(' ');
-      if (autoCorrect) {
-        for (let i = 0; i < this.chosens.length; i++) {
-          let wasIn = false;
-          for (let j = 0; j < answers.length; j++) {
-            if (this.chosens[i].text === answers[j].text) {
-              wasIn = true;
-            }
-          }
-          if (wasIn) {
-            this.chosens[i].class = 'part-added';
-          } else {
-            this.chosens[i].class = 'part-removed';
-          }
-        }
-        for (let i = 0; i < this.options.length; i++) {
-          for (let j = 0; j < answers.length; j++) {
-            if (this.options[i].text === answers[j].text) {
-              this.options[i].class = 'part-added';
-            }
-          }
-        }
-      }
-    }
-    this.rightAnswerString = result;
-    return result;
+    return this.question.resolveRightAnswerString(this, autoCorrect);
   }
 
   speak(text?: string) {
@@ -532,6 +417,54 @@ export class LessonQuestionPage implements OnInit {
     }
   }
 
+  onItemSwing(element, x, y, r) {
+    // let color = '';
+    const abs = Math.abs(x);
+    const min = Math.trunc(Math.min(16*16 - abs, 16*16));
+    const hexCode = this.decimalToHex(min, 2);
+
+    if (x < 0) {
+      if (this.platform.isRTL) {
+        this.rightBackgroundColor = '#' + hexCode + hexCode + 'FF';
+        this.leftBackgroundColor = '#f4f4f4';
+      } else {
+        this.leftBackgroundColor = '#' + hexCode + hexCode + 'FF';
+        this.rightBackgroundColor = '#f4f4f4';
+      }
+    } else {
+      if (this.platform.isRTL) {
+        this.leftBackgroundColor = '#' + hexCode + hexCode + 'FF';
+        this.rightBackgroundColor = '#f4f4f4'
+      } else {
+        this.rightBackgroundColor = '#' + hexCode + hexCode + 'FF';
+        this.leftBackgroundColor = '#f4f4f4';
+      }
+    }
+
+    // element.style.background = color;
+    element.style['transform'] = `translate3d(0, 0, 0) translate(${x}px, ${y}px) rotate(${r}deg)`;
+  }
+
+  voteUp(right: boolean) {
+    if (!this.isChecking) {
+      console.log('cards ', JSON.stringify(this.cards), ' given answer: ', right);
+      this.cards.pop();
+      this.wordAnswer = this.platform.isRTL ? !right : right;
+      this.check();
+      if (this.wordAnswer) {
+        console.log('You went to the right actually!');
+      } else {
+        console.log('You went to the left actually!');
+      }
+    } else {
+      console.log('WARNING voteUp event happend in isChecking state!');
+    }
+  }
+
+  setupWords(): QuestionWord[] {
+    return QuestionWord.toQuestionWordList(this.question);
+  }
+
   get questionFaceForSpeak(): string {
     if (this.question && this.question.d) {
       if (this.isType('TwoPicture')) {
@@ -542,6 +475,14 @@ export class LessonQuestionPage implements OnInit {
       }
       else if (this.isType('Conversation')) {
         return this.question.conversationAnswer(this.questionCounter-1);
+      }
+      else if (this.isType('Words')) {
+        console.log('noTotal', this.noTotal, ' wordsInQueue', this.words.length ,' questionCounter', this.questionCounter, ' questionsLength', this.question.t.answers.length, ' targeted', this.questionCounter - this.question.t.answers.length);
+        if (this.questionCounter > this.question.t.answers.length) {
+          return this.question.t.answers[(this.questionCounter - this.question.t.answers.length)-1].text;
+        } else {
+          return this.question.t.answers[this.questionCounter-1].text;
+        }
       }
       else {
         return this.question.t.question;
@@ -572,6 +513,10 @@ export class LessonQuestionPage implements OnInit {
     this.goToNextQuestion();
   }
 
+  autoPlayVoiceReverse() {
+    this.autoPlayVoice = !this.autoPlayVoice;
+  }
+
   checkHasAudioRecordingPermission() {
     this.speechRecognition.hasPermission().then((hasPermission: boolean) => {
       if (!hasPermission) {
@@ -599,6 +544,15 @@ export class LessonQuestionPage implements OnInit {
     return array;
   }
 
+  decimalToHex(d, padding) {
+    let hex = Number(d).toString(16);
+    padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
+    while (hex.length < padding) {
+      hex = "0" + hex;
+    }
+    return hex;
+  }
+
   showFailureModal() {
     let modal = this.modalCtrl.create('LessonFailurePage');
     modal.onDidDismiss(data => {
@@ -616,18 +570,8 @@ export class LessonQuestionPage implements OnInit {
       title: this.labelExitTitle,
       message: this.labelExitMessage,
       buttons: [
-        {
-          text: this.labelNo,
-          role: 'cancel',
-          handler: () => { }
-        },
-        {
-          text: this.labelYes,
-          handler: () => {
-            this.viewCtrl.dismiss();
-          }
-        }
-      ]
+        { text: this.labelNo, role: 'cancel', handler: () => { } },
+        { text: this.labelYes, handler: () => { this.viewCtrl.dismiss(); } } ]
     });
     this.exitAlertInstance.present();
   }
@@ -635,6 +579,20 @@ export class LessonQuestionPage implements OnInit {
   initSettings() {
     this.autoPlayVoice = this.settings.allSettings.autoPlayVoice;
     this.autoContinue = this.settings.allSettings.autoContinue;
+  }
+
+  initSwingStackConfig() {
+    this.stackConfig = {
+      throwOutConfidence: (offsetX, offsetY, element) => {
+        return Math.min(Math.abs(offsetX) / (element.offsetWidth/2), 1);
+      },
+      transform: (element, x, y, r) => {
+        this.onItemSwing(element, x, y, r);
+      },
+      throwOutDistance: (d) => {
+        return 400;
+      }
+    };
   }
 
   initalizeBackButtonCustomHandler() {
@@ -647,106 +605,6 @@ export class LessonQuestionPage implements OnInit {
         that.exit();
       }
     }, 101);  // Priorty 101 will override back button handling (we set in app.component.ts) as it is bigger then priority 100 configured in app.component.ts file.
-  }
-
-  showHelp() {
-    let introInstance = introJs.introJs();
-    let introSteps = [];
-      if (this.isType('MultiSelect')) {
-        introSteps = [
-          {
-            element: '#optionsContainer',
-            intro: this.labelFirstChooseAnOption,
-            position: 'top'
-          },
-          {
-            element: '#answer-background',
-            intro: this.labelReviewYourAnswerHere,
-            position: 'bottom'
-          },
-          {
-            element: '#checkButton',
-            intro: this.labelClickCheckButton,
-            position: 'top'
-          }
-        ];
-      }
-      else if (this.isType('TwoPicture')) {
-        introSteps = [
-          {
-            element: '#twoPicture-' + this.twoPictureCorrectIndex,
-            intro: this.labelSelectACorrectPicture,
-            position: 'top'
-          }
-        ];
-      }
-      else if (this.isType('FourPicture')) {
-        introSteps = [
-          {
-            element: '#fourPicture-' + this.fourPictureCorrectIndex,
-            intro: this.labelSelectACorrectPicture,
-            position: 'top'
-          }
-        ];
-      }
-      else if (this.isType('MutliCheck')) {
-        introSteps = [
-          {
-            element: '#checkbox-0',
-            intro: this.labelSelectCorrectAnswers,
-            position: 'top'
-          },
-          {
-            element: '#checkButton',
-            intro: this.labelClickCheckButton,
-            position: 'top'
-          }
-        ];
-      }
-      else if (this.isType('OneCheck')) {
-        introSteps = [
-          {
-            element: '#radio-0',
-            intro: this.labelSelectACorrectAnswer,
-            position: 'top'
-          },
-          {
-            element: '#checkButton',
-            intro: this.labelClickCheckButton,
-            position: 'top'
-          }
-        ];
-      }
-      else if (this.isType('Writing')) {
-        introSteps = [
-          {
-            element: '.answer-background',
-            intro: this.labelTypeCorrectAnswerHere,
-            position: 'top'
-          }
-        ];
-      }
-      else if (this.isType('Speaking')) {
-        introSteps = [
-          {
-            element: '#speakingButton',
-            intro: this.labelHoldMicrophoneButtonAndSpeak,
-            position: 'top'
-          }
-        ];
-      }
-
-    introInstance.setOptions({
-      steps: introSteps,
-      showStepNumbers: false,
-      exitOnOverlayClick: true,
-      exitOnEsc:true,
-      nextLabel: this.labelNext,
-      prevLabel: this.labelPrev,
-      skipLabel: this.labelOk,
-      doneLabel: this.labelOk
-    });
-    introInstance.start();
   }
 
   showConversationRoleConfirmation() {
@@ -774,6 +632,55 @@ export class LessonQuestionPage implements OnInit {
         }
       ]
     }).present();
+  }
+
+  showHelp() {
+    let introInstance = introJs.introJs();
+    let introSteps = [];
+    if (this.isType('MultiSelect')) {
+      introSteps = [
+        { element: '#optionsContainer', intro: this.labelFirstChooseAnOption, position: 'top' },
+        { element: '#answer-background', intro: this.labelReviewYourAnswerHere, position: 'bottom' },
+        { element: '#checkButton', intro: this.labelClickCheckButton, position: 'top'} ];
+    }
+    else if (this.isType('TwoPicture')) {
+      introSteps = [
+        { element: '#twoPicture-' + this.twoPictureCorrectIndex, intro: this.labelSelectACorrectPicture, position: 'top' } ];
+    }
+    else if (this.isType('FourPicture')) {
+      introSteps = [
+        { element: '#fourPicture-' + this.fourPictureCorrectIndex, intro: this.labelSelectACorrectPicture, position: 'top' } ];
+    }
+    else if (this.isType('MutliCheck')) {
+      introSteps = [
+        { element: '#checkbox-0', intro: this.labelSelectCorrectAnswers, position: 'top' },
+        { element: '#checkButton', intro: this.labelClickCheckButton, position: 'top' } ];
+    }
+    else if (this.isType('OneCheck')) {
+      introSteps = [
+        { element: '#radio-0', intro: this.labelSelectACorrectAnswer, position: 'top' },
+        { element: '#checkButton', intro: this.labelClickCheckButton, position: 'top' } ];
+    }
+    else if (this.isType('Writing')) {
+      introSteps = [
+        { element: '.answer-background', intro: this.labelTypeCorrectAnswerHere, position: 'top' } ];
+    }
+    else if (this.isType('Speaking')) {
+      introSteps = [
+        { element: '#speakingButton', intro: this.labelHoldMicrophoneButtonAndSpeak, position: 'top' } ];
+    }
+
+    introInstance.setOptions({
+      steps: introSteps,
+      showStepNumbers: false,
+      exitOnOverlayClick: true,
+      exitOnEsc:true,
+      nextLabel: this.labelNext,
+      prevLabel: this.labelPrev,
+      skipLabel: this.labelOk,
+      doneLabel: this.labelOk
+    });
+    introInstance.start();
   }
 
   initTranslations() {

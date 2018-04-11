@@ -65,6 +65,7 @@ export class TabsPage implements OnInit, OnDestroy {
 
       if (this.menuController.isOpen()) {
         this.menuController.close();
+        console.log('Menu closed!!!');
         return;
       }
       else if (activePortal) {

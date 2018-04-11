@@ -237,4 +237,20 @@ page-lesson-question {
     padding-right: 16px;
   }
 
+  /* Swipe cards */
+  #card-stack {
+    width: 90%;
+    height: 90%;
+    background: #047915;
+    border: 10px solid #4cb338;
+    margin: auto auto 0;
+  }
+
+  #card-stack ion-card {
+    border-radius: 5px;
+    text-align: center;
+    top: 3%;
+    height: inherit;
+  }
+
 }

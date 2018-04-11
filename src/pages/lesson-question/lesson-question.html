@@ -9,8 +9,8 @@
               <ion-icon name="star-outline" color="gold" *ngIf="i <= noWrong" style="zoom:1.2;"></ion-icon>
             </span>
           </ion-col>
-          <ion-col col-auto>
-            <progress [max]="noTotal" [value]="questionCounter-1"></progress>
+          <ion-col>
+            <progress [max]="noTotal" [value]="questionCounter-1" style="width: inherit"></progress>
           </ion-col>
           <ion-col col-1>
             <button ion-button icon-only clear small (click)="exit()" [style.color]="principal.isAuthenticated()? 'black' : 'red'">
@@ -30,7 +30,7 @@
            [class.alert-warning]="wasCorrect && wasAlmostCorrect"
            [class.alert-error]="wasWrong" style="padding: 5px; border: 1px solid transparent; border-radius: 16px; align-items: center;">
         <span class="float-left">
-          <button ion-button icon-only clear color="dark" (click)="speak()">
+          <button ion-button icon-only clear color="dark" (click)="speak()" longPress (long-press)="autoPlayVoiceReverse()">
             <ion-icon name="megaphone" *ngIf="autoPlayVoice"></ion-icon>
             <ion-icon name="ios-megaphone-outline" *ngIf="!autoPlayVoice"></ion-icon>
           </button>
@@ -51,15 +51,73 @@
         </span>
         <p [class.dir-rtl]="lesson.isMotherLangRTL()">&nbsp; {{question.description}}</p>
       </div>
-      <div
+      <div *ngIf="isNotTypes(['Conversation', 'Words'])"
           [class.dir-rtl]="lesson.isMotherLangRTL() && question.d.reverse"
           [class.dir-ltr]="lesson.isTargetLangLTR() && !question.d.reverse" class="question-question">
           {{questionFace}}
       </div>
-      <div *ngIf="(wasWrong || wasAlmostCorrect) && isNotTypes(['TwoPicture', 'FourPicture', 'OneCheck', 'Conversation'])" class="alert alert-info"
+      <div *ngIf="(wasWrong || wasAlmostCorrect) && isNotTypes(['TwoPicture', 'FourPicture', 'OneCheck', 'Conversation', 'Words'])" class="alert alert-info"
           [class.dir-rtl]="lesson.isMotherLangRTL() && !question.d.reverse"
           [class.dir-ltr]="lesson.isTargetLangLTR() && question.d.reverse">
         {{rightAnswerString}}
+      </div>
+
+      <div *ngIf="isType('Words')">
+        <div swing-stack #myswing1 [stackConfig]="stackConfig" id="card-stack"
+            (throwoutleft)="voteUp(false)" (throwoutright)="voteUp(true)">
+          <ion-card swing-card #mycards1 *ngFor="let word of cards; let i = index;">
+            <ion-row text-center center padding>
+              <ion-col>
+                <ion-icon name="ios-arrow-back" class="float-right" style="padding-top: 1.5em" *ngIf="platform.isRTL"></ion-icon>
+                <ion-icon name="ios-arrow-back" class="float-left" style="padding-top: 1.5em" *ngIf="!platform.isRTL"></ion-icon>
+                <button ion-button large icon-end (click)="voteUp(platform.isRTL ? true : false)" color="light" [ngStyle]="{'background-color' : leftBackgroundColor}">
+                  {{word.option1}}
+                </button>
+              </ion-col>
+            </ion-row>
+            <ion-row text-center center>
+              <ion-col>
+                <button ion-button large color="primary" style="clear:both" (click)="speak()">
+                  {{word.question}}
+                </button>
+              </ion-col>
+            </ion-row>
+            <ion-row text-center center padding>
+              <ion-col (click)="voteUp(true)">
+                <button ion-button large icon-end (click)="voteUp(platform.isRTL ? false : true)" color="light" [ngStyle]="{'background-color' : rightBackgroundColor}">
+                  {{word.option2}}
+                </button>
+                <ion-icon name="ios-arrow-forward" class="float-left" style="padding-top: 1.5em" *ngIf="platform.isRTL"></ion-icon>
+                <ion-icon name="ios-arrow-forward" class="float-right" style="padding-top: 1.5em" *ngIf="!platform.isRTL"></ion-icon>
+              </ion-col>
+            </ion-row>
+          </ion-card>
+          <ion-card *ngIf="wasWrong || wasCorrect">
+            <ion-row text-center center padding>
+              <ion-col>
+                <button ion-button large icon-end [disabled]="true"
+                  color="{{ wasWrong && !words[questionCounter-1].isAnswerRight(false) ? 'danger' : wasCorrect && words[questionCounter-1].isAnswerRight(false) ? 'secondary' : 'light'}}">
+                  {{words[questionCounter-1].option1}}
+                </button>
+              </ion-col>
+            </ion-row>
+            <ion-row text-center center>
+              <ion-col>
+                <button ion-button large color="primary" style="clear:both" (click)="speak()">
+                  {{words[questionCounter-1].question}}
+                </button>
+              </ion-col>
+            </ion-row>
+            <ion-row text-center center padding>
+              <ion-col>
+                <button ion-button large icon-end [disabled]="true"
+                  color="{{ wasWrong && !words[questionCounter-1].isAnswerRight(true) ? 'danger' : wasCorrect && words[questionCounter-1].isAnswerRight(true) ? 'secondary' : 'light'}}">
+                  {{words[questionCounter-1].option2}}
+                </button>
+              </ion-col>
+            </ion-row>
+          </ion-card>
+        </div>
       </div>
 
       <div *ngIf="isType('Conversation')">
@@ -232,7 +290,7 @@
   </section>
   <div style="position: absolute; bottom: 0px; width: 100%" text-center>
     <button ion-button full large color="secondary"
-            *ngIf="isNotTypes(['FourPicture', 'TwoPicture', 'Speaking', 'Conversation']) && !wasWrong && !wasAlmostCorrect && !isChecking"
+            *ngIf="isNotTypes(['FourPicture', 'TwoPicture', 'Speaking', 'Conversation', 'Words']) && !wasWrong && !wasAlmostCorrect && !isChecking"
             [disabled]="!isAnswered()" (click)="check()" id="checkButton">
       {{'CHECK' | translate}}
     </button>
