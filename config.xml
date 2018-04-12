@@ -98,5 +98,5 @@
     <plugin name="cordova-plugin-app-version" spec="~0.1.9" />
     <plugin name="cordova-plugin-market" spec="~1.2.0" />
     <plugin name="cordova-plugin-statusbar" spec="^2.4.1" />
-    <engine name="android" spec="7.0.0" />
+    <engine name="android" spec="~7.0.0" />
 </widget>

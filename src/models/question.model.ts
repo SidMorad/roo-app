@@ -18,6 +18,7 @@ export class Question {
   ) { }
 
   public readonly textCompareAcceptablePercentage: number = 0.8;
+  public readonly multiSelectCompareAcceptablePercentage: number = 0.8;
   public readonly speakCompareAcceptablePercentage: number = 0.7;
   public readonly writingCompareAcceptablePercentage: number = 0.7;
 
@@ -28,8 +29,17 @@ export class Question {
       let actual = viewComp.chosens.map((x) => x.text).join(' ');
       const correctPercentage = compareTwoStrings(expected, actual);
       console.log('Multi answer was ', correctPercentage, ' right.', expected, actual);
-      if (correctPercentage > this.textCompareAcceptablePercentage) {
+      if (correctPercentage > this.multiSelectCompareAcceptablePercentage) {
         viewComp.wasAlmostCorrect = correctPercentage === 1 ? false : true;
+        if (answers.length !== viewComp.chosens.length) {
+          viewComp.wasAlmostCorrect = true;
+        } else {
+          for (let i = 0; i < answers.length; i++) {
+            if (answers[i].text !== viewComp.chosens[i].text) {
+              viewComp.wasAlmostCorrect = true;
+            }
+          }
+        }
         return true;
       }
     }
