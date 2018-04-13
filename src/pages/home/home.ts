@@ -22,18 +22,16 @@ export class HomePage implements OnInit {
   mapWidth: number;
   showRetryButton: boolean;
   showUpgradeButton: boolean;
-  showHelpButton: boolean = true;
+  showHelpHint: boolean = true;
 
-  constructor(private navCtrl: NavController,
-              private principal: Principal,
+  constructor(private navCtrl: NavController, private principal: Principal,
               private ngZone: NgZone, private market: Market,
               private api: Api, private appVersion: AppVersion,
-              public platform: Platform,
-              private storage: Storage,
-              private modalCtrl: ModalController,
+              public platform: Platform, private storage: Storage,
+              private modalCtrl: ModalController, private elementRef: ElementRef,
               private translateService: TranslateService) {
     this.categories = [];
-    this.mapWidth = (window.screen.height * 4.8);
+    this.mapWidth = (window.screen.height * 6);
     this.initTranslations();
   }
 
@@ -59,6 +57,25 @@ export class HomePage implements OnInit {
     });
   }
 
+  ngAfterViewInit() {
+    let scrollContentDiv = this.elementRef.nativeElement.querySelector('.scroll-content');
+    setTimeout(() => {
+      scrollContentDiv.style = null;  // a fix for auto padding-top and padding-bottom set value.
+    }, 400);
+    setTimeout(() => {
+      if (this.showHelpHint) {
+        const intro = introJs.introJs();
+        intro.setOptions({
+          hints: [
+            { hint: this.labelClickHereToSeeInstructions, element: '#helpButton', hintPosition: 'middle-middle'}
+          ],
+          hintButtonLabel: this.labelOk
+        });
+        intro.showHints();
+      }
+    }, 2000);
+  }
+
   ionViewWillEnter() {
     this.principal.identity().then((account) => {
       this.ngZone.run(() => {
@@ -68,10 +85,14 @@ export class HomePage implements OnInit {
     });
   }
 
+  ionViewWillLeave() {
+    introJs.introJs().hideHints();
+  }
+
   doneLessons(category) {
     if (this.scoreLookup().categoryMap[category.uuid]) {
       setTimeout(() => {
-        this.showHelpButton = false;
+        this.showHelpHint = false;
       }, 0);
       return this.scoreLookup().categoryMap[category.uuid];
     }
@@ -114,20 +135,20 @@ export class HomePage implements OnInit {
   }
 
   showHelp() {
-    let intro = introJs.introJs();
+    const intro = introJs.introJs();
     intro.setOptions({
       steps: [
-        {
-          element: '#pin-1',
-          intro: this.startFromHereLabel,
-          position: 'bottom-middle'
-        }
+        { element: '#pin-1', intro: this.labelStartFromHere, position: 'auto' },
+        { element: '#pin-22' , intro: this.labelAndContinueYourPath, position: 'auto'},
+        { element: '#pin-2' , intro: this.labelToTheRight, position: 'auto'}
       ],
       showStepNumbers: false,
       exitOnOverlayClick: true,
       exitOnEsc:true,
-      skipLabel: this.okLabel,
-      doneLabel: this.okLabel
+      nextLabel: this.labelNext,
+      prevLabel: this.labelPrev,
+      skipLabel: this.labelOk,
+      doneLabel: this.labelOk
     });
     intro.start();
   }
@@ -135,13 +156,25 @@ export class HomePage implements OnInit {
   dailyLesson() {
   }
 
-  okLabel: string;
-  startFromHereLabel: string;
+  labelOk: string;
+  labelNext: string;
+  labelPrev: string;
+  labelStartFromHere: string;
+  labelClickHereToSeeInstructions: string;
+  labelAndContinueYourPath: string;
+  labelToTheRight: string;
 
   initTranslations() {
-    this.translateService.get(['OK', 'FOR_START_CLICK_ON_THE_PICTURE']).subscribe((translated) => {
-      this.okLabel = translated.OK;
-      this.startFromHereLabel = translated.FOR_START_CLICK_ON_THE_PICTURE;
+    this.translateService.get(['OK', 'FOR_START_CLICK_ON_THE_PICTURE', 'NEXT', 'PREV',
+                               'CLICK_HERE_TO_SEE_INSTRUCTIONS', 'TO_THE_RIGHT',
+                               'AND_CONTINUE_YOUR_PATH']).subscribe((translated) => {
+      this.labelOk = translated.OK;
+      this.labelNext = translated.NEXT;
+      this.labelPrev = translated.PREV;
+      this.labelStartFromHere = translated.FOR_START_CLICK_ON_THE_PICTURE;
+      this.labelClickHereToSeeInstructions = translated.CLICK_HERE_TO_SEE_INSTRUCTIONS;
+      this.labelAndContinueYourPath = translated.AND_CONTINUE_YOUR_PATH;
+      this.labelToTheRight = translated.TO_THE_RIGHT;
     });
   }
 

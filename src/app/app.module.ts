@@ -19,7 +19,8 @@ import { AppVersion } from '@ionic-native/app-version';
 import { Market } from '@ionic-native/market';
 import { SwingModule } from 'angular2-swing';
 
-import { Api, Settings, User, ScoreUtil } from '../providers/providers';
+import { Api, Settings, User, ScoreUtil, Memory } from '../providers';
+import { DefaultSettings } from '../models';
 import { MyApp } from './app.component';
 import { LoginService } from '../providers/login/login.service';
 import { Principal } from '../providers/auth/principal.service';
@@ -40,14 +41,7 @@ export function provideSettings(storage: Storage) {
    * You can add new settings options at any time. Once the settings are saved,
    * these values will not overwrite the saved values (this can be done manually if desired).
    */
-  return new Settings(storage, {
-    profileFirstLoaded: false,
-    language: 'fa',
-    autoPlayVoice: true,
-    autoContinue: true,
-    voiceSpeedRate: 80,
-    dname: 'Guest'
-  });
+  return new Settings(storage, DefaultSettings.newInstance());
 }
 
 @NgModule({
@@ -81,6 +75,7 @@ export function provideSettings(storage: Storage) {
   providers: [
     Api,
     User,
+    Memory,
     ScoreUtil,
     LoginService,
     Principal,

@@ -1,10 +1,9 @@
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, ViewController } from 'ionic-angular';
+import { IonicPage, ViewController, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { ChartOptions, Chart } from 'chart.js';
 
-import { Api } from '../../providers/api/api';
-import { ScoreUtil } from '../../providers/providers';
+import { Api, ScoreUtil, Principal, LoginService } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -20,58 +19,11 @@ export class StatsPage {
   progressLevelValue: number;
   progressLevelMax: number;
 
-  daysOfWeek: string[] = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-  daysOfWeekTranslations;
-  public datasets: Array<any> = [
-    { data: [] }
-  ];
-  public labels: string[] = [];
-  public lineChartColors:Array<any> = [
-  { // grey
-    backgroundColor: 'rgba(148,159,177,0.2)',
-    borderColor: 'orange',
-    pointBackgroundColor: 'rgba(148,159,177,1)',
-    pointBorderColor: '#fff',
-    pointHoverBackgroundColor: '#fff',
-    pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-  }];
-public chartOptions: ChartOptions = {
-    responsive: true,
-    legend: {
-      display: false
-    },
-    elements: {
-      line: {
-        fill: false,
-        borderColor: 'orange'
-      }
-    },
-    tooltips: {
-      enabled: false
-    },
-    plugins: {
-      datalabels: {
-        display: true,
-        backgroundColor: function(context) {
-          return context.dataset.backgroundColor;
-        },
-        borderRadius: 4,
-        color: 'blue',
-        font: {
-          weight: 'bold'
-        }
-      }
-    },
-    scales: {
-      yAxes: [{
-        stacked: true
-      }]
-    }
-  };
-
   constructor(private viewCtrl: ViewController, private ngZone: NgZone,
               private api: Api, private scoreUtil: ScoreUtil,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,
+              private principal: Principal, private loginService: LoginService,
+              private navCtrl: NavController) {
     this.initLabelsTranslations();
     Chart.defaults.global['plugins'] = {
       datalabels: {
@@ -85,8 +37,10 @@ public chartOptions: ChartOptions = {
   }
 
   ionViewWillEnter() {
-    this.fetchLast7dayScore();
-    this.resolveScoreStats();
+    if (this.principal.isAuthenticated()) {
+      this.fetchLast7dayScore();
+      this.resolveScoreStats();
+    }
   }
 
   fetchLast7dayScore() {
@@ -136,8 +90,20 @@ public chartOptions: ChartOptions = {
     this.progressLevelMax = divider;
   }
 
+  isAuthenticated() {
+    return this.principal.isAuthenticated();
+  }
+
   continue() {
     this.viewCtrl.dismiss({action: 'continue'});
+  }
+
+  login() {
+    setTimeout(() => {
+      this.navCtrl.parent.select(0);
+    }, 100);
+    this.loginService.appLogin((data) => {
+    }, (error) => { });
   }
 
   initLabelsTranslations() {
@@ -145,4 +111,54 @@ public chartOptions: ChartOptions = {
       this.daysOfWeekTranslations = values;
     });
   }
+
+  daysOfWeek: string[] = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+  daysOfWeekTranslations;
+  public datasets: Array<any> = [
+    { data: [] }
+  ];
+  public labels: string[] = [];
+  public lineChartColors:Array<any> = [
+  { // grey
+    backgroundColor: 'rgba(148,159,177,0.2)',
+    borderColor: 'orange',
+    pointBackgroundColor: 'rgba(148,159,177,1)',
+    pointBorderColor: '#fff',
+    pointHoverBackgroundColor: '#fff',
+    pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+  }];
+  public chartOptions: ChartOptions = {
+    responsive: true,
+    legend: {
+      display: false
+    },
+    elements: {
+      line: {
+        fill: false,
+        borderColor: 'orange'
+      }
+    },
+    tooltips: {
+      enabled: false
+    },
+    plugins: {
+      datalabels: {
+        display: true,
+        backgroundColor: function(context) {
+          return context.dataset.backgroundColor;
+        },
+        borderRadius: 4,
+        color: 'blue',
+        font: {
+          weight: 'bold'
+        }
+      }
+    },
+    scales: {
+      yAxes: [{
+        stacked: true
+      }]
+    }
+  };
+
 }

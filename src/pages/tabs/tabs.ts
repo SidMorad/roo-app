@@ -53,7 +53,8 @@ export class TabsPage implements OnInit, OnDestroy {
   }
 
   initalizeBackButtonCustomHandler() {
-    console.log('backButtonCustomerHandlerCalled.');
+    // Handle back button for exit confirmation
+    let exitConfirmed: boolean;
     this.unregisterBackButtonAction = this.platform.registerBackButtonAction(() => {
       const activePortal = this.ionicApp._loadingPortal.getActive() || // Close If Any Loader Active
         this.ionicApp._modalPortal.getActive() ||  // Close If Any Modal Active
@@ -76,8 +77,6 @@ export class TabsPage implements OnInit, OnDestroy {
         return;
       }
 
-      // Handle back button for exit confirmation
-      let exitConfirmed: boolean;
       if (nav['root'] && nav['root'] === 'HomePage') {
         if (exitConfirmed) {
           this.platform.exitApp();

@@ -1,9 +1,12 @@
 {
-  "BACK_BUTTON_TEXT": "برگشت",
-  "EXIT_CONFIRMATION_TEXT": "برای خروج دوباره دکمه برگشت را بزنید.",
-
   "APP_NAME": "Roo",
   "ROO_BANNER_MESSAGE": "یادگیری یک زبان جدید با پرش!",
+  "BACK_BUTTON_TEXT": "برگشت",
+  "EXIT_CONFIRMATION_TEXT": "برای خروج دوباره دکمه برگشت را بزنید.",
+  "CLICK_HERE_TO_SEE_INSTRUCTIONS": "برای دیدن دستور عمل، اینجا را کلیک کنید.",
+  "FOR_START_CLICK_ON_THE_PICTURE": "برای شروع بروی یک تصویر کلیک کنید.",
+  "AND_CONTINUE_YOUR_PATH": "و به مسیرتون ادامه بدید.",
+  "TO_THE_RIGHT": "به سمت راست و به سمت راست.",
 
   "NAME": "نام",
   "EMAIL": "رایانامه",
@@ -35,7 +38,8 @@
   "SOON_LABEL": "به زودی",
   "DAILY_PRACTICE": "تمرین روزانه",
   "CHAT_BOT": "چت با ربات",
-  "START_LESSON": "شروع",
+  "START": "شروع",
+  "AGAIN": "از نو",
   "WANT_TO_EXIT_Q": "میخواهید خارج شوید؟",
   "ARE_YOU_SURE_Q_YOUR_PROGRESS_WILL_NOT_BE_SAVED": "مطمئن هستید؟ پیشرفت درسی شما از دست خواهد رفت!",
   "SKIP_MICROPHONE_QUESTIONS_FOR_NOW": "در حال حاضر از سوالهای گفتای صرف نظر کن",
@@ -55,7 +59,6 @@
   "OK": "باشه",
   "NEXT": "بعدی",
   "PREV": "قبلی",
-  "FOR_START_CLICK_ON_THE_PICTURE": "برای شروع برروی تصویر بزنید.",
   "FIRST_CHOOSE_AN_OPTION": "در ابتدا یکی از گزینه‌ها را (با لمس کردن) انتخاب کنید",
   "SELECT_A_CORRECT_PICTURE": "تصویر صحیح را (با لمس کردن) انتخاب کنید",
   "SELECT_A_CORRECT_ANSWER": "جواب درست را (با لمس کردن) انتخاب کنید",

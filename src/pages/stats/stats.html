@@ -5,8 +5,15 @@
 </ion-header>
 
 <ion-content text-center>
-  <ion-spinner *ngIf="inProgress"></ion-spinner>
-  <ion-grid text-center>
+  <ion-spinner *ngIf="inProgress && isAuthenticated()"></ion-spinner>
+  <div *ngIf="!isAuthenticated()" text-center>
+    <h3>{{'PLEASE_LOGIN_FIRST' | translate}}</h3>
+    <button ion-button clear large (click)="login()">
+      <ion-icon name="log-in"></ion-icon>
+      <span style="padding-left: 16px; padding-right: 16px;"> {{'LOGIN_BUTTON' | translate}} </span>
+    </button>
+  </div>
+  <ion-grid text-center *ngIf="isAuthenticated()">
     <ion-row>
       <ion-col>
         <span>{{'TOTAL' | translate}} {{total}}</span>

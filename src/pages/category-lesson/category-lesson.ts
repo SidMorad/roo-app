@@ -4,7 +4,7 @@ import { NgProgress } from '@ngx-progressbar/core';
 import { Subscription } from 'rxjs/Rx';
 
 import { Category, Lesson, TranslDir } from '../../models';
-import { Api } from '../../providers/api/api';
+import { Api, Memory } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -23,7 +23,8 @@ export class CategoryLessonPage implements OnInit {
 
 
   constructor(public platform: Platform, navParams: NavParams, private navCtrl: NavController,
-              private api: Api, public ngProgress: NgProgress, private ngZone: NgZone) {
+              private api: Api, public ngProgress: NgProgress, private ngZone: NgZone,
+              private memory: Memory) {
     this.category = navParams.get('category');
     this.lessons = [];
   }
@@ -39,6 +40,18 @@ export class CategoryLessonPage implements OnInit {
   }
 
   ionViewWillEnter() {
+    if (this.memory.isLessonDoneSuccessfully() && !this.isEnd) {
+      const currentIndex = this.slides.getActiveIndex();
+      setTimeout(() => {
+        if (currentIndex === this.slides.getActiveIndex()) {
+          this.slides.slideNext(1000);
+        }
+      }, 1000);
+    }
+  }
+
+  ionViewWillLeave() {
+    this.memory.setLessonDoneSuccessfully(false);
   }
 
   renderPaginationBulletRender() {

@@ -1,9 +1,13 @@
 {
-  "BACK_BUTTON_TEXT": "Back",
-  "EXIT_CONFIRMATION_TEXT": "Press back again to exit.",
 
   "APP_NAME": "Roo",
   "ROO_BANNER_MESSAGE": "Roo, jump your way to a new language!",
+  "BACK_BUTTON_TEXT": "Back",
+  "EXIT_CONFIRMATION_TEXT": "Press back again to exit.",
+  "CLICK_HERE_TO_SEE_INSTRUCTIONS": "Click here for see instructions.",
+  "FOR_START_CLICK_ON_THE_PICTURE": "For start click on a picture.",
+  "AND_CONTINUE_YOUR_PATH": "Then continue your path.",
+  "TO_THE_RIGHT": "To the right.",
 
   "NAME": "Name",
   "EMAIL": "Email",
@@ -35,7 +39,8 @@
   "SOON_LABEL": "Soon",
   "DAILY_PRACTICE": "Daily practice",
   "CHAT_BOT": "Chat bot",
-  "START_LESSON": "Start",
+  "START": "Start",
+  "AGAIN": "Again",
   "WANT_TO_EXIT_Q": "Want to exit?",
   "ARE_YOU_SURE_Q_YOUR_PROGRESS_WILL_NOT_BE_SAVED": "Are you sure? your progress will be lost!",
   "SKIP_MICROPHONE_QUESTIONS_FOR_NOW": "Skip microphone questions for now",
@@ -55,7 +60,6 @@
   "OK": "OK",
   "NEXT": "Next",
   "PREV": "Previous",
-  "FOR_START_CLICK_ON_THE_PICTURE": "For start click on the picture.",
   "FIRST_CHOOSE_AN_OPTION": "First choose an option by a click or touch them.",
   "SELECT_A_CORRECT_PICTURE": "Select the correct picture with a click or touch.",
   "SELECT_A_CORRECT_ANSWER": "Select the correct answer with a click or touch.",

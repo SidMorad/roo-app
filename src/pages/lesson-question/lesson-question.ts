@@ -14,7 +14,7 @@ import { Category, Lesson, Question, Score, ScoreType, QuestionWord } from '../.
 import { IMAGE_ORIGIN } from '../../app/app.constants';
 import { Principal } from '../../providers/auth/principal.service';
 import { LoginService } from '../../providers/login/login.service';
-import { Settings } from '../../providers/settings/settings';
+import { Settings, Memory } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -71,7 +71,8 @@ export class LessonQuestionPage implements OnInit {
               private principal: Principal, private loginService: LoginService,
               private modalCtrl: ModalController, private ngZone: NgZone, private market: Market,
               private textToSpeech: TextToSpeech, private speechRecognition: SpeechRecognition,
-              private settings: Settings, private storage: Storage, private toastCtrl: ToastController) {
+              private settings: Settings, private storage: Storage, private toastCtrl: ToastController,
+              private memory: Memory) {
     this.dir = platform.dir();
     const l: Lesson = navParams.get('lesson');
     this.lesson = new Lesson(l.uuid, l.title, l.translDir, l.indexOrder);
@@ -225,7 +226,7 @@ export class LessonQuestionPage implements OnInit {
           {
             text: this.labelLoginEscape,
             role: 'cancel',
-            handler: () => { this.viewCtrl.dismiss(); }
+            handler: () => { this.dismiss(true); }
           },
           {
             text: this.labelLogin,
@@ -242,7 +243,7 @@ export class LessonQuestionPage implements OnInit {
       modal.onDidDismiss(data => {
         // if (data.action === 'continue') {
         // }
-        this.viewCtrl.dismiss();
+        this.dismiss(true);
       });
       modal.present();
     }
@@ -586,7 +587,7 @@ export class LessonQuestionPage implements OnInit {
       if (data.action === 'continue') {
         this.initQuestionary();
       } else if (data.action === 'endLesson') {
-        this.viewCtrl.dismiss();
+        this.dismiss(false);
       }
     });
     modal.present();
@@ -598,9 +599,14 @@ export class LessonQuestionPage implements OnInit {
       message: this.labelExitMessage,
       buttons: [
         { text: this.labelNo, role: 'cancel', handler: () => { } },
-        { text: this.labelYes, handler: () => { this.viewCtrl.dismiss(); } } ]
+        { text: this.labelYes, handler: () => { this.dismiss(false); } } ]
     });
     this.exitAlertInstance.present();
+  }
+
+  dismiss(withSuccess) {
+    this.viewCtrl.dismiss();
+    this.memory.setLessonDoneSuccessfully(withSuccess);
   }
 
   initSettings() {
@@ -666,35 +672,35 @@ export class LessonQuestionPage implements OnInit {
     let introSteps = [];
     if (this.isType('MultiSelect')) {
       introSteps = [
-        { element: '#optionsContainer', intro: this.labelFirstChooseAnOption, position: 'top' },
-        { element: '#answer-background', intro: this.labelReviewYourAnswerHere, position: 'bottom' },
-        { element: '#checkButton', intro: this.labelClickCheckButton, position: 'top'} ];
+        { element: '#optionsContainer', intro: this.labelFirstChooseAnOption, position: 'auto' },
+        { element: '#answer-background', intro: this.labelReviewYourAnswerHere, position: 'auto' },
+        { element: '#checkButton', intro: this.labelClickCheckButton, position: 'auto'} ];
     }
     else if (this.isType('TwoPicture')) {
       introSteps = [
-        { element: '#twoPicture-' + this.twoPictureCorrectIndex, intro: this.labelSelectACorrectPicture, position: 'top' } ];
+        { element: '#twoPicture-' + this.twoPictureCorrectIndex, intro: this.labelSelectACorrectPicture, position: 'auto' } ];
     }
     else if (this.isType('FourPicture')) {
       introSteps = [
-        { element: '#fourPicture-' + this.fourPictureCorrectIndex, intro: this.labelSelectACorrectPicture, position: 'top' } ];
+        { element: '#fourPicture-' + this.fourPictureCorrectIndex, intro: this.labelSelectACorrectPicture, position: 'auto' } ];
     }
     else if (this.isType('MutliCheck')) {
       introSteps = [
-        { element: '#checkbox-0', intro: this.labelSelectCorrectAnswers, position: 'top' },
-        { element: '#checkButton', intro: this.labelClickCheckButton, position: 'top' } ];
+        { element: '#checkbox-0', intro: this.labelSelectCorrectAnswers, position: 'auto' },
+        { element: '#checkButton', intro: this.labelClickCheckButton, position: 'auto' } ];
     }
     else if (this.isType('OneCheck')) {
       introSteps = [
-        { element: '#radio-0', intro: this.labelSelectACorrectAnswer, position: 'top' },
-        { element: '#checkButton', intro: this.labelClickCheckButton, position: 'top' } ];
+        { element: '#radio-0', intro: this.labelSelectACorrectAnswer, position: 'auto' },
+        { element: '#checkButton', intro: this.labelClickCheckButton, position: 'auto' } ];
     }
     else if (this.isType('Writing')) {
       introSteps = [
-        { element: '.answer-background', intro: this.labelTypeCorrectAnswerHere, position: 'top' } ];
+        { element: '.answer-background', intro: this.labelTypeCorrectAnswerHere, position: 'auto' } ];
     }
     else if (this.isType('Speaking')) {
       introSteps = [
-        { element: '#speakingButton', intro: this.labelHoldMicrophoneButtonAndSpeak, position: 'top' } ];
+        { element: '#speakingButton', intro: this.labelHoldMicrophoneButtonAndSpeak, position: 'auto' } ];
     }
 
     introInstance.setOptions({

@@ -20,7 +20,7 @@
       <button ion-button icon-only clear *ngIf="showUpgradeButton" (click)="upgrade()" color="danger">
         <ion-icon name="appstore"></ion-icon>
       </button>
-      <button ion-button icon-only clear *ngIf="showHelpButton" (click)="showHelp()" color="secondary">
+      <button ion-button icon-only clear (click)="showHelp()" color="secondary" id="helpButton">
         <ion-icon name="help-buoy"></ion-icon>
       </button>
     </ion-buttons>
@@ -31,7 +31,7 @@
       <button ion-button icon-only clear *ngIf="showUpgradeButton" (click)="upgrade()" color="danger">
         <ion-icon name="appstore"></ion-icon>
       </button>
-      <button ion-button icon-only clear  *ngIf="showHelpButton" (click)="showHelp()" color="secondary">
+      <button ion-button icon-only clear (click)="showHelp()" color="secondary" id="helpButton">
         <ion-icon name="help-buoy"></ion-icon>
       </button>
     </ion-buttons>
@@ -45,7 +45,7 @@
     <div id="map-container-main" class="map-container-main">
     <div class="map-container map-wrapper">
     <div class="map map-inner map-webview touch-action" id="map-webview" #panel
-      [style.width.px]="mapWidth" style="height:100%; overflow-x:scroll; display:inline-block;">
+      [style.width.px]="mapWidth" style="height:99%; overflow-x:scroll; display:inline-block;">
 
       <!-- <div id="pin-daily" class="pin">
         <div class="pin-image-photo">

@@ -4,6 +4,14 @@ ion-fab button[ion-fab] {
    background-color: transparent;
 }
 
+.toolbar {
+  background-color: #f4f4f4;
+}
+
+.toolbar-md {
+  min-height: 50px;
+}
+
 .pin-image {
   background-image: url(https://mars.webebook.org/static/roo/img/pins@2x-4d59d12471aa0f848148c377dbc46236.png);
   background-size: 500% 100%;
