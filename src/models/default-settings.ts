@@ -1,11 +1,11 @@
 
 export class DefaultSettings {
-  constructor(profileFirstLoaded: boolean,
-      language: string,
-      autoPlayVoice: boolean,
-      autoContinue: boolean,
-      voiceSpeedRate: number,
-      dname: string) {
+  constructor(public profileFirstLoaded: boolean,
+              public language: string,
+              public autoPlayVoice: boolean,
+              public autoContinue: boolean,
+              public voiceSpeedRate: number,
+              public dname: string) {
   }
 
   public static newInstance(): DefaultSettings {
