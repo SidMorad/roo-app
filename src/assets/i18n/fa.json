@@ -52,16 +52,6 @@
   "TOTAL": "مجموع",
   "SCORE": "امتیاز",
   "LESSON_COMPELETED": "درس کامل شد",
-  "RETRY": "تلاش دوباره",
-  "SUNDAY": "یک شنبه",
-  "MONDAY": "دوشنبه",
-  "TUESDAY": "سه شنبه",
-  "WEDNESDAY": "چهارشنبه",
-  "THURSDAY": "پنجشنبه",
-  "FRIDAY": "جمعه",
-  "SATURDAY": "شنبه",
-  "STATS": "آمار",
-
   "OK": "باشه",
   "NEXT": "بعدی",
   "PREV": "قبلی",
@@ -74,11 +64,12 @@
   "HOLD_MICROPHONE_BUTTON_AND_SPEAK": "دکمه میکروفن را نگه دارید و جواب را بگویید.",
   "REVIEW_YOUR_ANSWER_HERE": "جوابتان را در این قسمت مشاهده کنید",
   "CLICK_CHECK_BUTTON": "دکمه بررسی را بزنید.",
-
   "WHICH_ROLE": "کدام نقش؟",
   "FIRST_ROLE": "اول",
   "SECOND_ROLE": "دوم",
   "WHICH_ROLE_DO_YOU_PREFER_TO_HAVE_IN_THIS_CONVERSATION": "مایلید کدام نقش را در مکالمه داشته باشید؟",
+  "PLEASE_UPDATE_THIS_OTHER_APP_FROM_MARKET": "لطفا این اپلیکیشن دیگر را به روز رسانی کنید.",
+  "MARKET": "بازار",
 
   "TAB1_TITLE": "گروه ها",
   "TAB2_TITLE": "آموزه ها",
@@ -92,11 +83,17 @@
   "SETTINGS_AUTO_CONTINUE": "ادامه به صورت خودکار",
   "SETTINGS_VOICE_SPEED_RATE": "سرعت پخش صدا",
   "SETTINGS_OPTION4": "Option 4",
-
+  "RETRY": "تلاش دوباره",
+  "SUNDAY": "یک شنبه",
+  "MONDAY": "دوشنبه",
+  "TUESDAY": "سه شنبه",
+  "WEDNESDAY": "چهارشنبه",
+  "THURSDAY": "پنجشنبه",
+  "FRIDAY": "جمعه",
+  "SATURDAY": "شنبه",
+  "STATS": "آمار",
   "SETTINGS_PROFILE_BUTTON": "ویرایش مشخصات",
-
   "SETTINGS_PAGE_PROFILE": "ویرایش مشخصات",
-
   "WELCOME_TITLE": "خوش آمدید",
 
   "LOGIN_TITLE": "ورود",

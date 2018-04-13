@@ -54,9 +54,6 @@ export class TabsPage implements OnInit, OnDestroy {
 
   initalizeBackButtonCustomHandler() {
     console.log('backButtonCustomerHandlerCalled.');
-    // Handle back button for exit confirmation
-    let lastTimeBackPressed = 0;
-    const timePeriodToExit = 3000;
     this.unregisterBackButtonAction = this.platform.registerBackButtonAction(() => {
       const activePortal = this.ionicApp._loadingPortal.getActive() || // Close If Any Loader Active
         this.ionicApp._modalPortal.getActive() ||  // Close If Any Modal Active
@@ -79,16 +76,22 @@ export class TabsPage implements OnInit, OnDestroy {
         return;
       }
 
+      // Handle back button for exit confirmation
+      let exitConfirmed: boolean;
       if (nav['root'] && nav['root'] === 'HomePage') {
-        if (new Date().getTime() - lastTimeBackPressed < timePeriodToExit) {
+        if (exitConfirmed) {
           this.platform.exitApp();
         }
         else {
-          this.toastCtrl.create({
+          const toast = this.toastCtrl.create({
             message: this.exitConfirmationText,
             duration: 3000
-          }).present();
-          lastTimeBackPressed = new Date().getTime();
+          });
+          toast.onDidDismiss((data, role) => {
+            exitConfirmed = false;
+          });
+          toast.present();
+          exitConfirmed = true;
         }
       }
       else {

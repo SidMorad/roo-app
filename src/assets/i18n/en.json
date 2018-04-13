@@ -52,16 +52,6 @@
   "TOTAL": "Total",
   "SCORE": "Score",
   "LESSON_COMPELETED": "Lesson completed",
-  "RETRY": "Retry",
-  "SUNDAY": "Sunday",
-  "MONDAY": "Monday",
-  "TUESDAY": "Tuesday",
-  "WEDNESDAY": "Wendesday",
-  "THURSDAY": "Thursday",
-  "FRIDAY": "Friday",
-  "SATURDAY": "Saturday",
-  "STATS": "Stats",
-
   "OK": "OK",
   "NEXT": "Next",
   "PREV": "Previous",
@@ -74,11 +64,12 @@
   "HOLD_MICROPHONE_BUTTON_AND_SPEAK": "Hold microphone button and say the answer.",
   "REVIEW_YOUR_ANSWER_HERE": "Review your answer here.",
   "CLICK_CHECK_BUTTON": "Click check button.",
-
   "WHICH_ROLE": "Which role?",
   "FIRST_ROLE": "1th",
   "SECOND_ROLE": "2nd",
   "WHICH_ROLE_DO_YOU_PREFER_TO_HAVE_IN_THIS_CONVERSATION": "Which role do you prefer to have in this conversation?",
+  "PLEASE_UPDATE_THIS_OTHER_APP_FROM_MARKET": "Please update this other app from market.",
+  "MARKET": "Market",
 
   "TAB1_TITLE": "Categories",
   "TAB2_TITLE": "Lessons",
@@ -92,11 +83,17 @@
   "SETTINGS_AUTO_CONTINUE": "Auto continue",
   "SETTINGS_VOICE_SPEED_RATE": "Voice speed rate",
   "SETTINGS_OPTION4": "Option 4",
-
+  "RETRY": "Retry",
+  "SUNDAY": "Sunday",
+  "MONDAY": "Monday",
+  "TUESDAY": "Tuesday",
+  "WEDNESDAY": "Wendesday",
+  "THURSDAY": "Thursday",
+  "FRIDAY": "Friday",
+  "SATURDAY": "Saturday",
+  "STATS": "Stats",
   "SETTINGS_PROFILE_BUTTON": "Edit Profile",
-
   "SETTINGS_PAGE_PROFILE": "Edit Profile",
-
   "WELCOME_TITLE": "Welcome",
 
   "LOGIN_TITLE": "Sign in",
@@ -122,5 +119,4 @@
 
   "SEARCH_TITLE": "Search",
   "SEARCH_PLACEHOLDER": "Search the items list, e.g. \"Hotel\""
-
 }

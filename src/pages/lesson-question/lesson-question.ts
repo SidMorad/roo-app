@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, NgZone, ViewChildren, QueryList } from '@angular/core';
 import { IonicPage, Platform, NavParams, AlertController, ViewController,
-        Content, ModalController } from 'ionic-angular';
+        Content, ModalController, ToastController } from 'ionic-angular';
+import { Market } from '@ionic-native/market';
 import { TranslateService } from '@ngx-translate/core';
 import { TextToSpeech } from '@ionic-native/text-to-speech';
 import { SpeechRecognition } from '@ionic-native/speech-recognition';
@@ -68,9 +69,9 @@ export class LessonQuestionPage implements OnInit {
   constructor(public platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
               private translateService: TranslateService, private viewCtrl: ViewController,
               private principal: Principal, private loginService: LoginService,
-              private modalCtrl: ModalController, private ngZone: NgZone,
+              private modalCtrl: ModalController, private ngZone: NgZone, private market: Market,
               private textToSpeech: TextToSpeech, private speechRecognition: SpeechRecognition,
-              private settings: Settings, private storage: Storage) {
+              private settings: Settings, private storage: Storage, private toastCtrl: ToastController) {
     this.dir = platform.dir();
     const l: Lesson = navParams.get('lesson');
     this.lesson = new Lesson(l.uuid, l.title, l.translDir, l.indexOrder);
@@ -314,7 +315,21 @@ export class LessonQuestionPage implements OnInit {
       text: text,
       locale: this.lesson.targetLocale(),
       rate: this.settings.allSettings.voiceSpeedRate / 100
-    }).then().catch((error) => console.log('TTS#', error));
+    }).then().catch((error) => {
+      console.log('TTS#', error);
+      const toast = this.toastCtrl.create({
+        message: this.labelPleaseUpdateThisOtherAppFromMarket,
+        duration: 4000,
+        showCloseButton: true,
+        closeButtonText: this.labelMarket
+      });
+      toast.onDidDismiss((data, role) => {
+        if (role === 'close') {
+          this.market.open('com.google.android.tts');
+        }
+      })
+      toast.present();
+    });
   }
 
   determineTwoPictureCorrectIndex(): number {
@@ -404,6 +419,18 @@ export class LessonQuestionPage implements OnInit {
       (error) => {
         console.log('Oops: ', error);
         this.microphoneUp(event);
+        const toast = this.toastCtrl.create({
+          message: this.labelPleaseUpdateThisOtherAppFromMarket,
+          duration: 4000,
+          showCloseButton: true,
+          closeButtonText: this.labelMarket
+        });
+        toast.onDidDismiss((data, role) => {
+          if (role === 'close') {
+            this.market.open('com.google.android.googlequicksearchbox');
+          }
+        })
+        toast.present();
       });
     } else {
       this.checkHasAudioRecordingPermission();
@@ -693,15 +720,16 @@ export class LessonQuestionPage implements OnInit {
                                'REVIEW_YOUR_ANSWER_HERE', 'HOLD_MICROPHONE_BUTTON_AND_SPEAK',
                                'CLICK_CHECK_BUTTON',
                                'WHICH_ROLE', 'WHICH_ROLE_DO_YOU_PREFER_TO_HAVE_IN_THIS_CONVERSATION',
-                               'FIRST_ROLE', 'SECOND_ROLE']).subscribe(values => {
-      this.labelYes = values['YES'];
-      this.labelNo = values['NO'];
-      this.labelExitTitle = values['WANT_TO_EXIT_Q'];
-      this.labelExitMessage = values['ARE_YOU_SURE_Q_YOUR_PROGRESS_WILL_NOT_BE_SAVED'];
-      this.labelLogin = values['LOGIN'];
-      this.labelLoginTitle = values['PLEASE_LOGIN'];
-      this.labelLoginMessage = values['PLEASE_LOGIN_TO_CONTINUE'];
-      this.labelLoginEscape = values['CANCEL_BUTTON'];
+                               'FIRST_ROLE', 'SECOND_ROLE',
+                               'MARKET', 'PLEASE_UPDATE_THIS_OTHER_APP_FROM_MARKET']).subscribe(values => {
+      this.labelYes = values.YES;
+      this.labelNo = values.NO;
+      this.labelExitTitle = values.WANT_TO_EXIT_Q;
+      this.labelExitMessage = values.ARE_YOU_SURE_Q_YOUR_PROGRESS_WILL_NOT_BE_SAVED;
+      this.labelLogin = values.LOGIN;
+      this.labelLoginTitle = values.PLEASE_LOGIN;
+      this.labelLoginMessage = values.PLEASE_LOGIN_TO_CONTINUE;
+      this.labelLoginEscape = values.CANCEL_BUTTON;
 
       this.labelOk = values.OK;
       this.labelNext = values.NEXT;
@@ -719,6 +747,9 @@ export class LessonQuestionPage implements OnInit {
       this.labelFirstRole = values.FIRST_ROLE;
       this.labelSecondRole = values.SECOND_ROLE;
       this.labelWhichRoleYouWantToHaveInTheConversation = values.WHICH_ROLE_DO_YOU_PREFER_TO_HAVE_IN_THIS_CONVERSATION;
+
+      this.labelPleaseUpdateThisOtherAppFromMarket = values.PLEASE_UPDATE_THIS_OTHER_APP_FROM_MARKET;
+      this.labelMarket = values.MARKET;
     });
   }
 
@@ -730,7 +761,6 @@ export class LessonQuestionPage implements OnInit {
   labelLoginEscape: string;
   labelLoginTitle: string;
   labelLoginMessage: string;
-
   labelOk: string;
   labelNext: string;
   labelPrev: string;
@@ -742,9 +772,10 @@ export class LessonQuestionPage implements OnInit {
   labelReviewYourAnswerHere: string;
   labelClickCheckButton: string;
   labelHoldMicrophoneButtonAndSpeak: string;
-
   labelWhichRole: string;
   labelWhichRoleYouWantToHaveInTheConversation: string;
   labelFirstRole: string;
   labelSecondRole: string;
+  labelPleaseUpdateThisOtherAppFromMarket: string;
+  labelMarket: string;
 }
