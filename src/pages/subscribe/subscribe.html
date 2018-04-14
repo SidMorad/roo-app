@@ -40,7 +40,7 @@
       <p>{{'365 lessons each year' | translate}}</p>
     </ion-item>
     <ion-item text-center *ngIf="!isMember">
-      <button ion-button large round color="secondary" (click)="subscribe('ONE_MONTH')" item-center [disabled]="inProgress">
+      <button ion-button large round color="secondary" (click)="subscribe('ONE_MONTH')" item-center [disabled]="true">
         <ion-icon name="pricetag"></ion-icon>
         <span class="padh-10">{{'1 Month' | translate}}</span>
         <span class="padh-10">|</span>
@@ -48,7 +48,7 @@
       </button>
     </ion-item>
     <ion-item text-center *ngIf="!isMember">
-      <button ion-button large round color="secondary" (click)="subscribe('ONE_YEAR')" item-center [disabled]="inProgress">
+      <button ion-button large round color="secondary" (click)="subscribe('ONE_YEAR')" item-center [disabled]="true">
         <ion-icon name="pricetag"></ion-icon>
         <span class="padh-10">{{'12 Months' | translate}}</span>
         <span class="padh-10">|</span>
