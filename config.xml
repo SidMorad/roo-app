@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="60" id="mars.roo" ios-CFBundleVersion="60" version="1.6.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="62" id="mars.roo" ios-CFBundleVersion="62" version="1.6.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Roo</name>
     <description>Play your way to a new language.</description>
     <author email="us@mars" href="https://mars.webebook.org/">Mars Team</author>
