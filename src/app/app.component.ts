@@ -10,7 +10,7 @@ import { Settings } from '../providers/providers';
 import { Api } from '../providers/api/api';
 import { Principal } from '../providers/auth/principal.service';
 import { LoginService } from '../providers/login/login.service';
-import { TranslDir, Account } from '../models/';
+import { Account } from '../models/';
 
 declare const window: any;
 
@@ -98,7 +98,7 @@ export class MyApp implements OnInit {
               }
             });
             const claims = me.oauthService.getIdentityClaims();
-            if (!claims) {
+            if (claims) {
               me.events.publish('LOGIN_SUCCESS', claims);
             }
           }
@@ -110,22 +110,30 @@ export class MyApp implements OnInit {
   ngOnInit() {
     console.log('App init event.');
     this.events.subscribe('LOGIN_SUCCESS', (cliams) => {
-      this.api.getScoreLookup(TranslDir.FA$EN_UK).subscribe();
-      if (!this.settings.allSettings.profileFirstLoaded) {
-        let that = this;
+      console.log('Subscribe of LOGIN_SUCCESS triggered.');
+      let that = this;
+      this.settings.load().then(() => {
         setTimeout(() => {
-          that.openPage('ProfileFirstPage');
-        }, 3000);
-      }
+          that.api.getScoreLookup(this.settings.allSettings.translDir).subscribe();
+        }, 2000);
+        if (!this.settings.allSettings.profileFirstLoaded) {
+          setTimeout(() => {
+            that.openPage('ProfileFirstPage');
+          }, 3000);
+        }
+      });
     });
   }
 
   initAuthentication() {
     const AUTH_CONFIG: string = 'authConfig';
+    this.oauthService.setStorage(localStorage);
+    this.oauthService.tokenValidationHandler = new JwksValidationHandler();
     // use local storage to optimize authentication config
     if (localStorage.getItem(AUTH_CONFIG)) {
       const authConfig: AuthConfig = JSON.parse(localStorage.getItem(AUTH_CONFIG));
       this.oauthService.configure(authConfig);
+      this.oauthService.setupAutomaticSilentRefresh();
       // localStorage.removeItem(AUTH_CONFIG);  // AuthConfig will no change oftern, so let's keep it in local storage.
       this.tryLogin();
     } else {
@@ -142,6 +150,7 @@ export class MyApp implements OnInit {
             // save in localStorage so redirect back gets config immediately
             localStorage.setItem(AUTH_CONFIG, JSON.stringify(data));
             me.oauthService.configure(data);
+            me.oauthService.setupAutomaticSilentRefresh();
             me.tryLogin();
           });
         });
@@ -150,15 +159,18 @@ export class MyApp implements OnInit {
         this.oauthService.redirectUri = 'http://localhost:8100';
         this.oauthService.clientId = 'web_app';
         this.oauthService.scope = 'openid profile email';
-        this.oauthService.issuer = 'http://localhost:9080/auth/realms/jhipster';
+        this.oauthService.issuer = 'http://localhost:9080/auth/realms/mars';
         this.tryLogin();
       });
     }
   }
 
   tryLogin() {
-    this.oauthService.tokenValidationHandler = new JwksValidationHandler();
     this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
+      const claims = this.oauthService.getIdentityClaims();
+      if (claims) {
+        this.events.publish('LOGIN_SUCCESS', claims);
+      }
       this.getAccount();
     }).catch(error => {
       if (error.params && error.params.error === 'unsupported_response_type') {

@@ -24,14 +24,17 @@ export class LoginService {
             const keyValuePair = `#id_token=${encodeURIComponent(idToken)}&access_token=${encodeURIComponent(accessToken)}`;
             this.oauthService.tryLogin({
                 customHashFragment: keyValuePair,
-                disableOAuth2StateCheck: true
+                disableOAuth2StateCheck: true,
+                onTokenReceived: context => {
+                  console.log('login.service#onTokenReceived: ', context);
+                  const claims: any = this.oauthService.getIdentityClaims();
+                  if (claims) {
+                    this.events.publish('LOGIN_SUCCESS', claims);
+                  }
+                  return cb(claims);
+                }
             });
-            const claims: any = this.oauthService.getIdentityClaims();
-            if (claims != null) {
-              this.events.publish('LOGIN_SUCCESS');
-            }
             // this.translate.use(account.langKey);
-            return cb(claims);
         }, (error) => {
             return fail(error);
         });

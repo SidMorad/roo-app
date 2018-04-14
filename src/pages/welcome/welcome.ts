@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, ViewController, App } from 'ionic-angular';
+import { IonicPage, NavController, ViewController, App, Events } from 'ionic-angular';
 import { OAuthService } from 'angular-oauth2-oidc';
 
 import { MainPage } from '../pages';
@@ -21,7 +21,7 @@ export class WelcomePage implements OnInit {
 
   constructor(public navCtrl: NavController, public viewCtrl: ViewController,
               public principal: Principal, public app: App,
-              private loginService: LoginService,
+              private loginService: LoginService, private events: Events,
               private oauthService: OAuthService) {
   }
 
@@ -38,6 +38,7 @@ export class WelcomePage implements OnInit {
       });
     } else {
       // console.log('Cliams ', claims);
+      this.events.publish('LOGIN_SUCCESS', claims);
       this.geAccount();
     }
   }

@@ -1,18 +1,23 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
+import { Storage } from '@ionic/storage';
 
 import { TranslDir, Lesson, QuestionDifficulty, Score, Category, ScoreLookup } from '../../models';
+import { Settings } from '../../providers';
 
 /**
  * Api is a generic(and customized for Roo domain) REST Api handler.
  */
 @Injectable()
 export class Api {
-
   public static API_URL: string = 'https://mars.webebook.org/';
+  public cachedCategories: Category[];
+  public cachedScoreLookup: ScoreLookup;
 
-  constructor(public http: HttpClient) {
+  constructor(private http: HttpClient, private storage: Storage,
+              private settings: Settings) {
+    this.loadCachedScoreLookups();
   }
 
   startPayUrl(subscribeModel) {
@@ -35,13 +40,14 @@ export class Api {
     return this.get('roo/api/user/score/last7/FA$EN_UK');
   }
 
-  getScoreLookup(translDir: TranslDir, force?: boolean): Observable<any> {
-    if (this.cachedScoreLookup && !force) {
+  getScoreLookup(translDir: string): Observable<any> {
+    if (this.cachedScoreLookup) {
       return Observable.of(this.cachedScoreLookup);
     }
     return Observable.create(observer => {
-      this.http.get(Api.API_URL + 'roo/api/user/score/lookup/' + TranslDir[translDir]).subscribe((scoreLookup: ScoreLookup) => {
+      this.http.get(Api.API_URL + 'roo/api/user/score/lookup/' + translDir).subscribe((scoreLookup: ScoreLookup) => {
         this.cachedScoreLookup = scoreLookup;
+        this.storeCachedScoreLookups(translDir);
         observer.next(this.cachedScoreLookup);
         observer.complete();
       });
@@ -123,10 +129,22 @@ export class Api {
       } else if (this.cachedScoreLookup.lessonMap[score.lessonUuid] < score.star) {
         this.cachedScoreLookup.lessonMap[score.lessonUuid] = score.star;
       }
+      this.storeCachedScoreLookups(this.settings.allSettings.translDir);
     }
   }
 
-  cachedCategories: Category[];
-  cachedScoreLookup: ScoreLookup;
+  private storeCachedScoreLookups(translDir: string) {
+    this.storage.set('CACHED_SCORE_LOOKUP_' + translDir, JSON.stringify(this.cachedScoreLookup))
+        .then(() => console.debug('Score lookups cached successfully.'))
+        .catch(() => console.warn('Score lookups cache failed.'));
+  }
+
+  private loadCachedScoreLookups() {
+    this.settings.load().then(() => {
+      this.storage.get('CACHED_SCORE_LOOKUP_' + this.settings.allSettings.translDir)
+        .then((res) => { this.cachedScoreLookup = JSON.parse(res) })
+        .catch((er) => { console.error('Error on lookup cahced scores.', er) });
+    });
+  }
 
 }
