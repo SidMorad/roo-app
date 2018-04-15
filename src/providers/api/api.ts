@@ -11,7 +11,7 @@ import { Settings } from '../../providers';
  */
 @Injectable()
 export class Api {
-  public static API_URL: string = 'https://mars.webebook.org/';
+  public static API_URL: string = 'http://192.168.10.106:8080/';
   public cachedCategories: Category[];
   public cachedScoreLookup: ScoreLookup;
 

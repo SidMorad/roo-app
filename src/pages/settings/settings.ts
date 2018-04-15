@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { IonicPage, NavParams } from 'ionic-angular';
+import { AppVersion } from '@ionic-native/app-version';
 import { TranslateService } from '@ngx-translate/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { Settings, Api, Principal } from '../../providers/providers';
 
@@ -16,28 +17,29 @@ import { Settings, Api, Principal } from '../../providers/providers';
   templateUrl: 'settings.html'
 })
 export class SettingsPage {
-  // Our local settings object
+
   options: any;
-
   settingsReady = false;
-
   form: FormGroup;
 
   profileSettings = {
     page: 'profile',
     pageTitleKey: 'SETTINGS_PAGE_PROFILE'
   };
+  subSettings: any = SettingsPage;
 
   page: string = 'main';
   pageTitleKey: string = 'SETTINGS_TITLE';
   pageTitle: string;
+  public versionNumber: string;
 
-  subSettings: any = SettingsPage;
-
-  constructor(public navCtrl: NavController, public settings: Settings,
-    public formBuilder: FormBuilder, public navParams: NavParams,
-    public translate: TranslateService, public api: Api,
-    public principal: Principal) {
+  constructor(private settings: Settings,
+    private formBuilder: FormBuilder, private navParams: NavParams,
+    private translate: TranslateService, private api: Api,
+    public principal: Principal, private appVersion: AppVersion) {
+      this.appVersion.getVersionNumber().then((versionNum) => {
+        this.versionNumber = versionNum;
+      }).catch((err) => { console.error('getVersionNumber ', err) });
   }
 
   _buildForm() {

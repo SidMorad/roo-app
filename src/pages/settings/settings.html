@@ -38,6 +38,10 @@
       <button ion-item [navPush]="subSettings" [navParams]="profileSettings">
         {{ 'SETTINGS_PROFILE_BUTTON' | translate }}
       </button>
+      <ion-item>
+        <ion-label>{{'APP_VERSION' | translate}}</ion-label>
+        <div item-content>{{versionNumber}}</div>
+      </ion-item>
     </ion-list>
 
     <ion-list *ngIf="page == 'profile'">
