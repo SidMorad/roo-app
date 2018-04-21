@@ -162,7 +162,9 @@ export class LessonQuestionPage implements OnInit {
       this.checkIfIsEndFailure();
       this.questionCounter++;
       this.isChecking = false;
-      this.setQuestion(this.questions[this.questionCounter-1]);
+      if (this.questions[this.questionCounter-1]) {
+        this.setQuestion(this.questions[this.questionCounter-1]);
+      }
     }
     });
   }
@@ -304,6 +306,7 @@ export class LessonQuestionPage implements OnInit {
   }
 
   oneChecked(index) {
+    if (this.isInContinueState) return;
     for (let i = 0; i < this.choices.length; i++) {
       delete this.choices[i].picked;
     }
@@ -435,45 +438,11 @@ export class LessonQuestionPage implements OnInit {
   }
 
   get questionFaceForSpeak(): string {
-    if (this.question && this.question.d) {
-      if (this.isType('TwoPicture')) {
-        return this.question.pictureLabel(this.twoPictureCorrectIndex);
-      }
-      else if (this.isType('FourPicture')) {
-        return this.question.pictureLabel(this.fourPictureCorrectIndex);
-      }
-      else if (this.isType('Conversation')) {
-        return this.question.conversationAnswer(this.questionCounter-1);
-      }
-      else if (this.isType('OneCheck')) {
-        return this.question.toneCheckAnswer ? this.question.toneCheckAnswer.text : '';
-      }
-      else if (this.isType('Words')) {
-        console.log('noTotal', this.noTotal, ' wordsInQueue', this.words.length ,' questionCounter', this.questionCounter, ' questionsLength', this.question.d.options.length, ' targeted', this.questionCounter - this.question.d.options.length);
-        if (this.questionCounter > this.question.d.options.length) {
-          return this.question.toptions[(this.questionCounter - this.question.d.options.length)-1].text;
-        } else {
-          return this.question.toptions[this.questionCounter-1].text;
-        }
-      }
-      else {
-        return this.question.face;
-      }
-    }
+    return this.question.faceForSpeak(this);
   }
 
   get questionFace(): string {
-    if (this.question && this.question.d) {
-      if (this.isType('TwoPicture')) {
-        return this.question.pictureQuestion(this.twoPictureCorrectIndex);
-      }
-      else if (this.isType('FourPicture')) {
-        return this.question.pictureQuestion(this.fourPictureCorrectIndex);
-      }
-      else {
-        return this.question.face;
-      }
-    }
+    return this.question.face(this);
   }
 
   get speakingAnswerDiffString(): string {
@@ -483,7 +452,6 @@ export class LessonQuestionPage implements OnInit {
   get writingAnswerDiffString(): string {
     return this.writingAnswerDiff.map(x => x.value).join(' ');
   }
-
 
   uploadScore() {
     let score: Score = new Score(ScoreType[ScoreType.LESSON.toString()], this.lesson.learnDir, 10 - this.noWrong,
@@ -583,8 +551,8 @@ export class LessonQuestionPage implements OnInit {
   }
 
   dismiss(withSuccess) {
-    this.viewCtrl.dismiss();
     this.memory.setLessonDoneSuccessfully(withSuccess);
+    this.viewCtrl.dismiss();
   }
 
   initSettings() {

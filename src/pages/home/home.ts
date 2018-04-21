@@ -50,11 +50,13 @@ export class HomePage implements OnInit {
         }
       });
     });
-    this.storage.get('LAST_SCORE').then((scoreStr) => {
-      if (scoreStr) {
-        this.modalCtrl.create('LessonScorePage').present();
-      }
-    });
+    if (this.principal.isAuthenticated()) {
+      this.storage.get('LAST_SCORE').then((scoreStr) => {
+        if (scoreStr) {
+          this.modalCtrl.create('LessonScorePage').present();
+        }
+      });
+    }
   }
 
   ngAfterViewInit() {

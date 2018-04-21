@@ -3,7 +3,7 @@ import { IonicPage, ViewController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { Score } from '../../models';
-import { Api } from '../../providers/api/api';
+import { Api } from '../../providers';
 import { ScoreUtil } from '../../providers/providers';
 
 @IonicPage()

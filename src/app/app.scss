@@ -182,6 +182,13 @@ only screen and (                min-resolution: 2dppx) {
   border-color: #faebcc;
 }
 
+.check-option {
+  border: 2px solid transparent;
+  border-color: #d8d8d8;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
 .gold-back {
   background-color: color($colors, gold);
 }

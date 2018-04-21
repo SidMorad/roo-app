@@ -239,13 +239,17 @@ export class Question {
   }
 
   private replaceWords(array: any[], prop: string, dir: string): any[] {
-    const result = JSON.parse(JSON.stringify(array));
-    result.forEach((row) => {
-      if (this.lookupWords[row[prop]]) {
-        row[prop] = this.lookupWords[row[prop]][dir];
-      }
-    });
-    return result;
+    try {
+      const result = JSON.parse(JSON.stringify(array));
+      result.forEach((row) => {
+        if (this.lookupWords[row[prop]]) {
+          row[prop] = this.lookupWords[row[prop]][dir];
+        }
+      });
+      return result;
+    } catch (error) {
+      console.log('Error on parse dynamicPart: ', array, prop, dir);
+    }
   }
 
   public oneCheckChoices(): any[] {
@@ -278,20 +282,54 @@ export class Question {
   }
 
   public speakingAnswer(): string {
-    return this.face;
+    return this.face(null);
   }
 
   public conversationAnswer(index: number): string {
     return this.isNormal() ? this.toptions[index].text : this.moptions[index].text;
   }
 
-  get face(): string {
-    if (this.isType('OneCheck')) {
+  public face(viewComp): string {
+    if (this.isType('TwoPicture')) {
+      return this.pictureQuestion(viewComp.twoPictureCorrectIndex);
+    }
+    else if (this.isType('FourPicture')) {
+      return this.pictureQuestion(viewComp.fourPictureCorrectIndex);
+    }
+    else if (this.isType('OneCheck')) {
       return this.isNormal() ? this.toneCheckAnswer ? this.toneCheckAnswer.text : ''
                              : this.moneCheckAnswer ? this.moneCheckAnswer.text : '';
     }
     else {
-      return this.isNormal() ? this.lookupWords[this.d.question]['target']: this.lookupWords[this.d.question]['mother'];
+      if (this.lookupWords[this.d.question]) {
+        return this.isNormal() ? this.lookupWords[this.d.question]['target']: this.lookupWords[this.d.question]['mother'];
+      }
+    }
+  }
+
+  public faceForSpeak(viewComp): string {
+    if (this.isType('TwoPicture')) {
+      return this.pictureLabel(viewComp.twoPictureCorrectIndex);
+    }
+    else if (this.isType('FourPicture')) {
+      return this.pictureLabel(viewComp.fourPictureCorrectIndex);
+    }
+    else if (this.isType('Conversation')) {
+      return this.conversationAnswer(viewComp.questionCounter-1);
+    }
+    else if (this.isType('OneCheck')) {
+      return this.toneCheckAnswer ? this.toneCheckAnswer.text : '';
+    }
+    else if (this.isType('Words')) {
+      console.log('noTotal', viewComp.noTotal, ' wordsInQueue', viewComp.words.length ,' questionCounter', viewComp.questionCounter, ' questionsLength', this.d.options.length, ' targeted', viewComp.questionCounter - this.d.options.length);
+      if (viewComp.questionCounter > this.d.options.length) {
+        return this.toptions[(viewComp.questionCounter - this.d.options.length)-1].text;
+      } else {
+        return this.toptions[viewComp.questionCounter-1].text;
+      }
+    }
+    else {
+      return this.lookupWords[this.d.question]['target'];
     }
   }
 

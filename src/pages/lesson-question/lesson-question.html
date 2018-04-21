@@ -52,7 +52,7 @@
         <p [class.dir-rtl]="platform.isRTL"
            [class.dir-ltr]="!platform.isRTL">&nbsp; {{description | translate}}</p>
       </div>
-      <div *ngIf="isNotTypes(['Conversation', 'Words'])" (click)="speak()"
+      <div *ngIf="question && isNotTypes(['Conversation', 'Words'])" (click)="speak()"
           [class.dir-rtl]="lesson.isMotherLangRTL() && question.d.reverse"
           [class.dir-ltr]="lesson.isTargetLangLTR() && !question.d.reverse" class="question-question">
           {{questionFace}}
@@ -153,19 +153,20 @@
       </div>
 
       <div *ngIf="isType('OneCheck')">
-        <ion-card [class.dir-rtl]="lesson.isMotherLangRTL() && question.isN()"
-                  [class.dir-ltr]="lesson.isTargetLangLTR() && question.isR()">
-          <ion-list radio-group>
-            <span *ngFor="let choice of choices; let i = index;">
-              <ion-item text-wrap *ngIf="(!wasWrong && !wasCorrect) || choice.isCorrect || choice.picked"
-                   [class.alert-success]="wasCorrect && choice.isCorrect"
-                   [class.alert-error]="wasWrong && choice.picked" id="radio-{{i}}">
-                <ion-label (click)="oneChecked(i)">{{choice.text}}</ion-label>
-                <ion-radio value="{{choice.text}}" (click)="oneChecked(i)"></ion-radio>
+        <ion-list radio-group [class.dir-rtl]="lesson.isMotherLangRTL() && question.isN()"
+                              [class.dir-ltr]="lesson.isTargetLangLTR() && question.isR()" padding>
+          <div *ngFor="let choice of choices; let i = index;">
+            <div *ngIf="!isInContinueState || choice.isCorrect || choice.picked" class="check-option" (click)="oneChecked(i)"
+                  [class.option-correct]="wasCorrect && choice.picked"
+                  [class.option-confuse]="wasWrong && choice.isCorrect"
+                  [class.option-wrong]="wasWrong && choice.picked">
+              <ion-item text-wrap no-lines>
+                <ion-label [ngStyle]="{'color': wasWrong && choice.picked ? '#d7d7d7' : ''}">{{choice.text}}</ion-label>
+                <ion-radio value="{{choice.text}}" (click)="oneChecked(i)" id="radio-{{i}}" *ngIf="!isInContinueState"></ion-radio>
               </ion-item>
-            </span>
-          </ion-list>
-        </ion-card>
+            </div>
+          </div>
+        </ion-list>
       </div>
 
       <div *ngIf="isType('MultiSelect')">
@@ -179,8 +180,8 @@
         </div>
         <div [class.dir-rtl]="lesson.isMotherLangRTL() && question.isN()" padding
              [class.dir-ltr]="lesson.isTargetLangLTR() && question.isR()" id="optionsContainer">
-          <span class="answer answer-container" *ngFor="let option of options; let i = index;" (click)="moveToChosen(option)" id="option-{{i}}">
-            <button class="answer-contents {{option.class}}">{{option.text}}</button>
+          <span class="answer answer-container" *ngFor="let option of options; let i = index;" id="option-{{i}}">
+            <button (click)="moveToChosen(option)" [disabled]="option.class === 'option-selected'" class="answer-contents {{option.class}}">{{option.text}}</button>
           </span>
         </div>
       </div>
