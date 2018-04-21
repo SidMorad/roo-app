@@ -7,20 +7,20 @@ export class Question {
   constructor(
     public uuid?: string,
     public type?: QuestionType,
-    public description?: string,
     public indexOrder?: number,
     public dynamicPart?: string,
-    public motherPart?: string,
-    public targetPart?: string,
     public d?: any, // dynamicPart object
-    public m?: any, // motherPart object
-    public t?: any  // targetPart object
-  ) { }
+    public lookupWords?: any
+  ) {
+  }
 
   public readonly textCompareAcceptablePercentage: number = 0.8;
   public readonly multiSelectCompareAcceptablePercentage: number = 0.8;
   public readonly speakCompareAcceptablePercentage: number = 0.7;
   public readonly writingCompareAcceptablePercentage: number = 0.7;
+  private targetOptions: any[];             private motherOptions: any[];
+  private targetMultiSelectOptions: any[];  private motherMultiSelectOptions: any[];
+  private targetOneCheckAnswer: any;         private motherOneCheckAnswer: any;
 
   isAnswerRight(viewComp) {
     if (this.isType('MultiSelect')) {
@@ -44,10 +44,10 @@ export class Question {
       }
     }
     else if (this.isType('TwoPicture')) {
-      return this.d.pics[viewComp.twoPictureCorrectIndex].answered;
+      return this.d.options[viewComp.twoPictureCorrectIndex].answered;
     }
     else if (this.isType('FourPicture')) {
-      return this.d.pics[viewComp.fourPictureCorrectIndex].answered;
+      return this.d.options[viewComp.fourPictureCorrectIndex].answered;
     }
     else if (this.isType('MultiCheck')) {
       for (let i = 0; i < viewComp.choices.length; i++) {
@@ -114,6 +114,9 @@ export class Question {
       if (this.isType('MultiSelect')) {
         return viewComp.chosens.length > 0
       }
+      else if (this.isType('Writing')) {
+        return viewComp.writingAnswer;
+      }
       else if (this.isType('MultiCheck') || this.isType('OneCheck')) {
         for (let i = 0; i < viewComp.choices.length; i++) {
           if (viewComp.choices[i].picked) {
@@ -122,8 +125,8 @@ export class Question {
         }
       }
       else if (this.isType('TwoPicture') || this.isType('FourPicture')) {
-        for (let i = 0; i < this.d.pics.length; i++) {
-          if (this.d.pics[i].answered) {
+        for (let i = 0; i < this.d.options.length; i++) {
+          if (this.d.options[i].answered) {
             return true;
           }
         }
@@ -156,6 +159,7 @@ export class Question {
       }
     }
     else if (this.isType('Writing')) {
+      viewComp.writingAnswerDiff = diffWords(this.writingAnswer(), viewComp.writingAnswer, { ignoreCase: true });
       result = this.writingAnswer();
     }
     else if (this.isType('Speaking')) {
@@ -172,25 +176,42 @@ export class Question {
       result = answers.map((e) => e.text).join(' ');
       if (autoCorrect) {
         for (let i = 0; i < viewComp.chosens.length; i++) {
-          let wasIn = false;
+          let wasIn, wasPositionCorrect = false;
           for (let j = 0; j < answers.length; j++) {
             if (viewComp.chosens[i].text === answers[j].text) {
               wasIn = true;
+              wasPositionCorrect = i === j;
             }
           }
-          if (wasIn) {
-            viewComp.chosens[i].class = 'part-added';
+          if (wasIn && wasPositionCorrect) {
+            viewComp.chosens[i].class = 'option-correct';
+          } else if (wasIn) {
+            viewComp.chosens[i].class = 'option-confuse';
           } else {
-            viewComp.chosens[i].class = 'part-removed';
+            viewComp.chosens[i].class = 'option-wrong';
           }
         }
         for (let i = 0; i < viewComp.options.length; i++) {
           for (let j = 0; j < answers.length; j++) {
             if (viewComp.options[i].text === answers[j].text) {
-              viewComp.options[i].class = 'part-added';
+              if (viewComp.options[i].class !== 'option-selected') {
+                viewComp.options[i].class = 'option-confuse';
+              }
             }
           }
+          if (viewComp.options[i].class !== 'option-confuse') {
+            viewComp.options[i].class = 'option-selected';
+          }
         }
+      }
+    }
+    if (viewComp.wasWrong) {
+      viewComp.description = 'CORRECT_ANSWER';
+    } else if (viewComp.wasCorrect) {
+      if (viewComp.wasAlmostCorrect) {
+        viewComp.description = 'ALMOST_RIGHT';
+      } else {
+        viewComp.description = 'YOU_WERE_RIGHT';
       }
     }
     viewComp.rightAnswerString = result;
@@ -217,36 +238,142 @@ export class Question {
     return !this.isReverse();
   }
 
-  public oneCheckChoices(): string[] {
-    return this.isNormal() ? this.m.choices.slice() : this.t.choices.slice();
+  private replaceWords(array: any[], prop: string, dir: string): any[] {
+    const result = JSON.parse(JSON.stringify(array));
+    result.forEach((row) => {
+      if (this.lookupWords[row[prop]]) {
+        row[prop] = this.lookupWords[row[prop]][dir];
+      }
+    });
+    return result;
+  }
+
+  public oneCheckChoices(): any[] {
+    return this.isNormal() ? this.moptions : this.toptions;
   }
 
   public multiSelectAnswers(): any[] {
-    return this.isNormal() ? this.m.answers.slice() : this.t.answers.slice();
+    const arr = this.answer.split(' ');
+    const res = [];
+    for (let i = 0; i < arr.length; i++) {
+      res[i] = { order: i, text: arr[i]};
+    }
+    return res;
   }
 
-  public multiSelectOptions(): string[] {
-    return this.isNormal() ? this.m.options.slice() : this.t.options.slice();
+  public multiSelectOptions(): any[] {
+    return this.isNormal() ? this.mmultiSelectOptions : this.tmultiSelectOptions;
   }
 
   public pictureLabel(index): string {
-    return this.isNormal() ? this.m.pics[index].answer : this.t.pics[index].answer;
+    return this.isNormal() ? this.moptions[index].text : this.toptions[index].text;
   }
 
   public pictureQuestion(index): string {
-    return this.isNormal() ? this.t.pics[index].answer : this.m.pics[index].answer;
+    return this.isNormal() ? this.toptions[index].text : this.moptions[index].text;
   }
 
   public writingAnswer(): string {
-    return this.isNormal() ? this.m.question : this.t.question;
+    return this.answer;
   }
 
   public speakingAnswer(): string {
-    return this.isNormal() ? this.t.question : this.m.question;
+    return this.face;
   }
 
   public conversationAnswer(index: number): string {
-    return this.isNormal() ? this.t.answers[index].text : this.m.answers[index].text;
+    return this.isNormal() ? this.toptions[index].text : this.moptions[index].text;
+  }
+
+  get face(): string {
+    if (this.isType('OneCheck')) {
+      return this.isNormal() ? this.toneCheckAnswer ? this.toneCheckAnswer.text : ''
+                             : this.moneCheckAnswer ? this.moneCheckAnswer.text : '';
+    }
+    else {
+      return this.isNormal() ? this.lookupWords[this.d.question]['target']: this.lookupWords[this.d.question]['mother'];
+    }
+  }
+
+  get answer(): string {
+    return this.isNormal() ? this.lookupWords[this.d.question]['mother']: this.lookupWords[this.d.question]['target'];
+  }
+
+  get tmultiSelectOptions(): any[] {
+    if (this.targetMultiSelectOptions) {
+      return this.targetMultiSelectOptions;
+    }
+    const toptions = JSON.parse(JSON.stringify(this.toptions));
+    this.targetMultiSelectOptions = this.shuffle(toptions.concat(this.multiSelectAnswers()));
+    return this.targetMultiSelectOptions;
+  }
+
+  get mmultiSelectOptions(): any[] {
+    if (this.motherMultiSelectOptions) {
+      return this.motherMultiSelectOptions;
+    }
+    const moptions = JSON.parse(JSON.stringify(this.moptions));
+    this.motherMultiSelectOptions = this.shuffle(moptions.concat(this.multiSelectAnswers()));
+    return this.motherMultiSelectOptions;
+  }
+
+  get toptions(): any[] {
+    if (this.targetOptions) {
+      return this.targetOptions;
+    }
+    this.targetOptions = this.replaceWords(this.d.options, 'text', 'target');
+    return this.targetOptions;
+  }
+
+  get moptions(): any[] {
+    if (this.motherOptions) {
+      return this.motherOptions;
+    }
+    this.motherOptions = this.replaceWords(this.d.options, 'text', 'mother');
+    return this.motherOptions;
+  }
+
+  get toneCheckAnswer(): any {
+    if (this.targetOneCheckAnswer) {
+      return this.targetOneCheckAnswer;
+    }
+    this.toptions.forEach((row) => {
+      if (row.isCorrect) {
+        this.targetOneCheckAnswer = row;
+        return this.targetOneCheckAnswer;
+      }
+    });
+  }
+
+  get moneCheckAnswer(): any {
+    if (this.motherOneCheckAnswer) {
+      return this.motherOneCheckAnswer;
+    }
+    this.moptions.forEach((row) => {
+      if (row.isCorrect) {
+        this.motherOneCheckAnswer = row;
+        return this.motherOneCheckAnswer;
+      }
+    });
+  }
+
+  public shuffle(array) {
+    let currentIndex = array.length, temporaryValue, randomIndex;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+
+    return array;
   }
 
 }

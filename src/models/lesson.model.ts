@@ -1,10 +1,9 @@
-import { TranslDir } from './transl-dir';
 
 export class Lesson {
   constructor(
     public uuid?: string,
     public title?: string,
-    public translDir?: TranslDir,
+    public learnDir?: string,
     public indexOrder?: number
   ) { }
 
@@ -17,7 +16,7 @@ export class Lesson {
   }
 
   langs(): any {
-    return (this.translDir+'').split('$');
+    return this.learnDir.split('$');
   }
 
   motherLanguage(): string {
@@ -30,13 +29,21 @@ export class Lesson {
 
   targetLocale(): string {
     switch(this.targetLanguage()) {
-      case 'EN_UK':
+      case 'EN_GB':
         return 'en-GB';
-      case 'DE':
+      case 'DE_DE':
         return 'de';
       default:
         return 'en-GB';
     }
+  }
+
+  get motherLangKey(): string {
+    return this.motherLanguage().split('_')[0];
+  }
+
+  get targetLangKey(): string {
+    return this.targetLanguage().split('_')[0];
   }
 
 }

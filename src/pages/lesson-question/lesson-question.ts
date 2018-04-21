@@ -10,7 +10,7 @@ import { Storage } from '@ionic/storage';
 import introJs from 'intro.js/intro.js';
 import { StackConfig, DragEvent, SwingStackComponent, SwingCardComponent } from 'angular2-swing';
 
-import { Category, Lesson, Question, Score, ScoreType, QuestionWord } from '../../models';
+import { Category, Lesson, Question, Score, ScoreType, TwoWord } from '../../models';
 import { IMAGE_ORIGIN } from '../../app/app.constants';
 import { Principal } from '../../providers/auth/principal.service';
 import { LoginService } from '../../providers/login/login.service';
@@ -25,46 +25,21 @@ export class LessonQuestionPage implements OnInit {
   @ViewChild(Content) content: Content;
   @ViewChild('myswing1') swingStack: SwingStackComponent;
   @ViewChildren('mycards1') swingCards: QueryList<SwingCardComponent>;
-
-  lesson: Lesson;
-  category: Category;
-  questions: Question[];
-  question: Question;
-  dir: string = 'ltr';
-  questionCounter: number;
-  options: any[];
-  chosens: any[];
-  choices: any[];
-  twoPicturesNominated: string[];
-  fourPictures: number[];
-  fourPictureCorrectIndex: number;
-  twoPictureCorrectIndex: number;
-  isChecking: boolean;
-  noTotal: number;
-  noWrong: number;
-  writingAnswer: string;
-  speakingAnswer: string;
-  wordAnswer: boolean;
-  wasCorrect: boolean;
-  wasWrong: boolean;
-  wasAlmostCorrect: boolean;
-  rightAnswerString: string;
-  autoPlayVoice: boolean;
-  autoContinue: boolean;
-  microphonePressed: boolean;
-  hasAudioRecordingPermission: boolean;
-  speakingAnswerDiff: any;
-  skipSpeaking: boolean;
-  private unregisterBackButtonAction: any;
-  private exitAlertInstance: any;
-  hasFirstRoleInConversation: boolean;
-
-  cards: QuestionWord[];
-  words: QuestionWord[];
-  stackConfig: StackConfig;
-  recentCard: string = '';
-  leftBackgroundColor: string;
-  rightBackgroundColor: string;
+  lesson: Lesson; category: Category; question: Question; questions: Question[];
+  options: any[]; chosens: any[]; choices: any[];
+  twoPicturesNominated: string[]; twoPictureCorrectIndex: number;
+  fourPictures: number[]; fourPictureCorrectIndex: number;
+  noTotal: number; noWrong: number;
+  writingAnswer: string; speakingAnswer: string; wordAnswer: boolean; rightAnswerString: string;
+  wasCorrect: boolean; wasWrong: boolean; wasAlmostCorrect: boolean;
+  isChecking: boolean; autoPlayVoice: boolean; autoContinue: boolean; skipSpeaking: boolean;
+  microphonePressed: boolean; hasAudioRecordingPermission: boolean;
+  speakingAnswerDiff: any; writingAnswerDiff: any; hasFirstRoleInConversation: boolean;
+  cards: TwoWord[]; words: TwoWord[];
+  stackConfig: StackConfig; leftBackgroundColor: string; rightBackgroundColor: string;
+  dir: string = 'ltr'; questionCounter: number; lookupWords: any; description: string; typeHere: string;
+  private unregisterBackButtonAction: any; private exitAlertInstance: any;
+  private questionStartIndex: number = 0;
 
   constructor(public platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
               private translateService: TranslateService, private viewCtrl: ViewController,
@@ -75,9 +50,10 @@ export class LessonQuestionPage implements OnInit {
               private memory: Memory) {
     this.dir = platform.dir();
     const l: Lesson = navParams.get('lesson');
-    this.lesson = new Lesson(l.uuid, l.title, l.translDir, l.indexOrder);
+    this.lesson = new Lesson(l.uuid, l.title, settings.allSettings.learnDir, l.indexOrder);
     this.category = navParams.get('category');
     this.questions = navParams.get('questions');
+    this.lookupWords = navParams.get('words');
     this.initTranslations();
     this.initSettings();
     this.initSwingStackConfig();
@@ -105,20 +81,18 @@ export class LessonQuestionPage implements OnInit {
 
   initQuestionary() {
     this.noWrong = 0;
-    this.questionCounter = 0;
+    this.questionCounter = this.questionStartIndex;
     this.goToNextQuestion();
   }
 
   check() {
     this.isChecking = true;
-    if (this.isAnswerRight()) {
+    if (this.question.isAnswerRight(this)) {
       this.wasCorrect = true;
       if (this.autoContinue && !this.wasAlmostCorrect) {
         setTimeout(() => {
           if (this.isChecking) {
-            this.wasCorrect = false;
-            this.wasAlmostCorrect = false;
-            this.goToNextQuestion();
+            this.continue();
           }
         }, 2000);
       }
@@ -126,7 +100,7 @@ export class LessonQuestionPage implements OnInit {
       this.wasWrong = true;
       this.noWrong++;
     }
-    this.resolveRightAnswerString(true);
+    this.question.resolveRightAnswerString(this, true);
   }
 
   continue() {
@@ -134,7 +108,14 @@ export class LessonQuestionPage implements OnInit {
     this.wasCorrect = false;
     this.wasAlmostCorrect = false;
     this.speakingAnswerDiff = null;
+    this.writingAnswerDiff = null;
+    this.speakingAnswer = null;
+    this.writingAnswer = null;
     this.goToNextQuestion();
+  }
+
+  get isInContinueState(): boolean {
+    return this.wasWrong || this.wasCorrect || this.wasAlmostCorrect;
   }
 
   goToNextQuestion() {
@@ -142,134 +123,92 @@ export class LessonQuestionPage implements OnInit {
     if (this.isType('FourPicture') && this.fourPictures.length === 3) {
       this.fourPictureCorrectIndex = this.fourPictures[1];
       this.fourPictures.splice(1, 1);
-      this.question.d.pics[0].answered = false;
-      this.question.d.pics[1].answered = false;
-      this.question.d.pics[2].answered = false;
-      this.question.d.pics[3].answered = false;
+      this.markPictureAsUnAnswered(4);
       this.isChecking = false;
       if (this.autoPlayVoice) {
         this.speak();
       }
     }
     else if (this.isType('Conversation')) {
-      this.noTotal = this.question.t.answers.length;
-      if (this.questionCounter >= this.noTotal) {
-        this.uploadScore();
-      } else {
-        if (this.noWrong === 5) {
-          this.showFailureModal();
-        } else {
-          this.questionCounter++;
-          this.speak().then(() => {
-            if (this.questionCounter >= this.noTotal) {
-              this.uploadScore();
-            } else {
-              this.isChecking = false;
-              this.questionCounter++;
-            }
-          }).catch(() => {
-            if (this.questionCounter >= this.noTotal) {
-              this.uploadScore();
-            } else {
-              this.isChecking = false;
-              this.questionCounter++;
-            }
-          });
-        }
-        this.content.scrollToBottom();
-      }
+      this.noTotal = this.question.d.options.length;
+      this.checkIfIsEnd();
+      this.checkIfIsEndFailure();
+      this.questionCounter++;
+      this.speak().then(() => {
+        this.checkIfIsEnd();
+        this.questionCounter++;
+        this.isChecking = false;
+      }).catch(() => {
+        this.checkIfIsEnd();
+        this.questionCounter++;
+        this.isChecking = false;
+      });
+    this.content.scrollToBottom();
     }
     else if (this.isType('Words')) {
-      this.noTotal = this.question.t.answers.length * 2;
-      if (this.questionCounter >= this.noTotal) {
-        this.uploadScore();
-      } else {
-        this.isChecking = false;
-        if (this.noWrong === 5) {
-          this.showFailureModal();
-        } else {
-            this.questionCounter++
-            this.cards = [this.words[this.questionCounter-1]];
-            if (this.autoPlayVoice) {
-              this.speak();
-            }
-        }
+      this.noTotal = this.question.d.options.length * 2;
+      this.checkIfIsEnd();
+      this.checkIfIsEndFailure();
+      this.questionCounter++
+      this.isChecking = false;
+      this.cards = [this.words[this.questionCounter-1]];
+      if (this.autoPlayVoice) {
+        this.speak();
       }
     }
     else {
       this.noTotal = this.questions.length;
-      if (this.questionCounter >= this.noTotal) {
-        this.questionCounter++;
-        this.uploadScore();
-      } else {
-        this.isChecking = false;
-        if (this.noWrong === 5) {
-          this.showFailureModal();
-        } else {
-          this.questionCounter++;
-          this.setQuestion(this.questions[this.questionCounter-1]);
-        }
-      }
+      this.checkIfIsEnd();
+      this.checkIfIsEndFailure();
+      this.questionCounter++;
+      this.isChecking = false;
+      this.setQuestion(this.questions[this.questionCounter-1]);
     }
     });
   }
 
-  uploadScore() {
-    let score: Score = new Score(ScoreType[ScoreType.LESSON.toString()], this.lesson.translDir, 10 - this.noWrong,
-                                 5 - this.noWrong, this.lesson.uuid, this.category.uuid);
-    this.storage.set('LAST_SCORE', JSON.stringify(score));
-    if (!this.principal.isAuthenticated()) {
-      this.alertCtrl.create({
-        title: this.labelLoginTitle,
-        message: this.labelLoginMessage,
-        buttons: [
-          {
-            text: this.labelLoginEscape,
-            role: 'cancel',
-            handler: () => { this.dismiss(true); }
-          },
-          {
-            text: this.labelLogin,
-            handler: () => {
-              this.loginService.appLogin((data) => {
-              }, (err) => {
-              });
-            }
-          }
-        ]
-      }).present();
-    } else {
-      let modal = this.modalCtrl.create('LessonScorePage');
-      modal.onDidDismiss(data => {
-        // if (data.action === 'continue') {
-        // }
-        this.dismiss(true);
-      });
-      modal.present();
+  checkIfIsEnd() {
+    if (this.questionCounter >= this.noTotal) {
+      this.uploadScore();
+      return;
+    }
+  }
+
+  checkIfIsEndFailure() {
+    if (this.noWrong === 5) {
+      this.showFailureModal();
+      return;
     }
   }
 
   setQuestion(q: Question) {
     this.ngZone.run(() => {
-    let d, m, t;
+    let d;
     try { d = JSON.parse(q.dynamicPart); } catch(error) { };
-    try { m = JSON.parse(q.motherPart); } catch(error) { };
-    try { t = JSON.parse(q.targetPart); } catch(error) { };
-    this.question = new Question(q.uuid, q.type, q.description, q.indexOrder, q.dynamicPart, q.motherPart, q.targetPart, d, m, t);
+    this.question = new Question(q.uuid, q.type, q.indexOrder, q.dynamicPart, d, this.lookupWords);
     if (this.isType('MultiSelect')) {
       this.options = this.question.multiSelectOptions();
       this.chosens = [];
+      this.description = 'TRANSLATE_THIS_SENTENCE';
     } else if (this.isType('OneCheck')) {
       this.choices = this.question.oneCheckChoices();
+      this.question.toneCheckAnswer;  // for initalize answer into variable and also speak function works as expected.
+      this.description = 'CHOOSE_CORRECT_TRANSLATION';
     } else if (this.isType('FourPicture')) {
       this.fourPictures = this.shuffleArray([0, 1, 2, 3]);
       this.fourPictureCorrectIndex = this.fourPictures[2];
       this.fourPictures.splice(2, 1);
       this.content.scrollToBottom();
+      this.description = 'CHOOSE_CORRECT_PICTURE';
     } else if (this.isType('TwoPicture')) {
       this.twoPictureCorrectIndex  = this.determineTwoPictureCorrectIndex();
       this.content.scrollToBottom();
+      this.description = 'CHOOSE_CORRECT_PICTURE';
+    } else if (this.isType('Writing')) {
+      this.description = 'TRANSLATE_THIS_SENTENCE';
+      this.typeHere = this.question.isN() ? 'TYPE_HERE_' + this.lesson.motherLangKey : 'TYPE_HERE_' + this.lesson.targetLangKey;
     } else if (this.isType('Speaking')) {
+      this.description = 'CLICK_MICROPHONE_AND_SAY';
       if (this.skipSpeaking) {
         this.goToNextQuestion();
       }
@@ -280,9 +219,11 @@ export class LessonQuestionPage implements OnInit {
       }
     } else if (this.isType('Conversation')) {
       this.showConversationRoleConfirmation();
+      this.description = 'CLICK_MICROPHONE_AND_SAY';
     } else if (this.isType('Words')) {
-      this.words = this.setupWords();
+      this.words = this.setupTwoWords();
       this.cards = [this.words[this.questionCounter-1]];
+      this.description = 'CHOOSE_CORRECT_TRANSLATION';
     }
     if (this.autoPlayVoice) {
       if (this.isType('Speaking') && this.skipSpeaking || this.isType('Conversation')) {
@@ -296,16 +237,8 @@ export class LessonQuestionPage implements OnInit {
     });
   }
 
-  isAnswerRight() {
-    return this.question.isAnswerRight(this);
-  }
-
   isAnswered() {
     return this.question.isAnswered(this);
-  }
-
-  resolveRightAnswerString(autoCorrect?:boolean): string {
-    return this.question.resolveRightAnswerString(this, autoCorrect);
   }
 
   speak(text?: string) {
@@ -320,7 +253,7 @@ export class LessonQuestionPage implements OnInit {
       console.log('TTS#', error);
       const toast = this.toastCtrl.create({
         message: this.labelPleaseUpdateThisOtherAppFromMarket,
-        duration: 4000,
+        duration: 10000,
         showCloseButton: true,
         closeButtonText: this.labelMarket
       });
@@ -334,7 +267,7 @@ export class LessonQuestionPage implements OnInit {
   }
 
   determineTwoPictureCorrectIndex(): number {
-    for (let i = 0; i < this.question.d.pics.length; i++)  {
+    for (let i = 0; i < this.question.d.options.length; i++)  {
       if (this.twoPicturesNominated) {
         if (this.twoPicturesNominated.indexOf(this.question.pictureLabel(i)) <= -1) {
           this.twoPicturesNominated.push(this.question.pictureLabel(i));
@@ -350,21 +283,23 @@ export class LessonQuestionPage implements OnInit {
 
   twoPictureSelected(index) {
     if (!this.isChecking) {
-      this.question.d.pics[0].answered = false;
-      this.question.d.pics[1].answered = false;
-      this.question.d.pics[index].answered = true;
+      this.markPictureAsUnAnswered(2);
+      this.question.d.options[index].answered = true;
       this.check();
     }
   }
 
   fourPictureSelected(index) {
     if (!this.isChecking) {
-      this.question.d.pics[0].answered = false;
-      this.question.d.pics[1].answered = false;
-      this.question.d.pics[2].answered = false;
-      this.question.d.pics[3].answered = false;
-      this.question.d.pics[index].answered = true;
+      this.markPictureAsUnAnswered(4);
+      this.question.d.options[index].answered = true;
       this.check();
+    }
+  }
+
+  markPictureAsUnAnswered(count) {
+    for (let i = 0; i < count; i++) {
+      this.question.d.options[i].answered = false;
     }
   }
 
@@ -377,13 +312,19 @@ export class LessonQuestionPage implements OnInit {
 
   moveToChosen(item) {
     // this.speak(item.text); // TODO
-    this.chosens.push(item);
-    this.options.splice(this.options.indexOf(item), 1);
+    if (this.isInContinueState) return;
+    this.chosens.push(JSON.parse(JSON.stringify(item)));
+    item.class = 'option-selected';
   }
 
   moveBackToOptions(item) {
-    this.options.push(item);
+    if (this.isInContinueState) return;
     this.chosens.splice(this.chosens.indexOf(item), 1);
+    this.options.forEach((option) => {
+      if (option.text === item.text) {
+        option.class = 'option-deselected';
+      }
+    });
   }
 
   isType(type: string): boolean {
@@ -422,7 +363,7 @@ export class LessonQuestionPage implements OnInit {
         this.microphoneUp(event);
         const toast = this.toastCtrl.create({
           message: this.labelPleaseUpdateThisOtherAppFromMarket,
-          duration: 4000,
+          duration: 10000,
           showCloseButton: true,
           closeButtonText: this.labelMarket
         });
@@ -489,8 +430,8 @@ export class LessonQuestionPage implements OnInit {
     }
   }
 
-  setupWords(): QuestionWord[] {
-    return QuestionWord.toQuestionWordList(this.question);
+  setupTwoWords(): TwoWord[] {
+    return TwoWord.toTwoWordList(this.question);
   }
 
   get questionFaceForSpeak(): string {
@@ -504,16 +445,19 @@ export class LessonQuestionPage implements OnInit {
       else if (this.isType('Conversation')) {
         return this.question.conversationAnswer(this.questionCounter-1);
       }
+      else if (this.isType('OneCheck')) {
+        return this.question.toneCheckAnswer ? this.question.toneCheckAnswer.text : '';
+      }
       else if (this.isType('Words')) {
-        console.log('noTotal', this.noTotal, ' wordsInQueue', this.words.length ,' questionCounter', this.questionCounter, ' questionsLength', this.question.t.answers.length, ' targeted', this.questionCounter - this.question.t.answers.length);
-        if (this.questionCounter > this.question.t.answers.length) {
-          return this.question.t.answers[(this.questionCounter - this.question.t.answers.length)-1].text;
+        console.log('noTotal', this.noTotal, ' wordsInQueue', this.words.length ,' questionCounter', this.questionCounter, ' questionsLength', this.question.d.options.length, ' targeted', this.questionCounter - this.question.d.options.length);
+        if (this.questionCounter > this.question.d.options.length) {
+          return this.question.toptions[(this.questionCounter - this.question.d.options.length)-1].text;
         } else {
-          return this.question.t.answers[this.questionCounter-1].text;
+          return this.question.toptions[this.questionCounter-1].text;
         }
       }
       else {
-        return this.question.t.question;
+        return this.question.face;
       }
     }
   }
@@ -527,13 +471,53 @@ export class LessonQuestionPage implements OnInit {
         return this.question.pictureQuestion(this.fourPictureCorrectIndex);
       }
       else {
-        return this.question.d.reverse ? this.question.m.question : this.question.t.question;
+        return this.question.face;
       }
     }
   }
 
   get speakingAnswerDiffString(): string {
     return this.speakingAnswerDiff.map(x => x.value).join(' ');
+  }
+
+  get writingAnswerDiffString(): string {
+    return this.writingAnswerDiff.map(x => x.value).join(' ');
+  }
+
+
+  uploadScore() {
+    let score: Score = new Score(ScoreType[ScoreType.LESSON.toString()], this.lesson.learnDir, 10 - this.noWrong,
+                                 5 - this.noWrong, this.lesson.uuid, this.category.uuid);
+    this.storage.set('LAST_SCORE', JSON.stringify(score));
+    if (!this.principal.isAuthenticated()) {
+      this.alertCtrl.create({
+        title: this.labelLoginTitle,
+        message: this.labelLoginMessage,
+        buttons: [
+          {
+            text: this.labelLoginEscape,
+            role: 'cancel',
+            handler: () => { this.dismiss(true); }
+          },
+          {
+            text: this.labelLogin,
+            handler: () => {
+              this.loginService.appLogin((data) => {
+              }, (err) => {
+              });
+            }
+          }
+        ]
+      }).present();
+    } else {
+      let modal = this.modalCtrl.create('LessonScorePage');
+      modal.onDidDismiss(data => {
+        // if (data.action === 'continue') {
+        // }
+        this.dismiss(true);
+      });
+      modal.present();
+    }
   }
 
   skipSpeakingQuestions() {
@@ -563,13 +547,7 @@ export class LessonQuestionPage implements OnInit {
   }
 
   shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      let j = Math.floor(Math.random() * (i + 1));
-      let temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
-    }
-    return array;
+    return this.question.shuffle(array);
   }
 
   decimalToHex(d, padding) {
@@ -759,29 +737,13 @@ export class LessonQuestionPage implements OnInit {
     });
   }
 
-  labelYes: string;
-  labelNo: string;
-  labelExitMessage: string;
-  labelExitTitle: string;
-  labelLogin: string;
-  labelLoginEscape: string;
-  labelLoginTitle: string;
-  labelLoginMessage: string;
-  labelOk: string;
-  labelNext: string;
-  labelPrev: string;
-  labelFirstChooseAnOption: string;
-  labelSelectACorrectPicture: string;
-  labelSelectACorrectAnswer: string;
-  labelSelectCorrectAnswers: string;
-  labelTypeCorrectAnswerHere: string;
-  labelReviewYourAnswerHere: string;
-  labelClickCheckButton: string;
-  labelHoldMicrophoneButtonAndSpeak: string;
-  labelWhichRole: string;
-  labelWhichRoleYouWantToHaveInTheConversation: string;
-  labelFirstRole: string;
-  labelSecondRole: string;
-  labelPleaseUpdateThisOtherAppFromMarket: string;
-  labelMarket: string;
+  labelYes: string; labelNo: string; labelOk: string; labelNext: string; labelPrev: string;
+  labelExitTitle: string; labelExitMessage: string;
+  labelLogin: string; labelLoginEscape: string; labelLoginTitle: string; labelLoginMessage: string;
+  labelFirstChooseAnOption: string; labelSelectACorrectPicture: string; labelSelectACorrectAnswer: string;
+  labelSelectCorrectAnswers: string; labelTypeCorrectAnswerHere: string; labelReviewYourAnswerHere: string;
+  labelClickCheckButton: string; labelHoldMicrophoneButtonAndSpeak: string;
+  labelWhichRole: string; labelWhichRoleYouWantToHaveInTheConversation: string;
+  labelFirstRole: string; labelSecondRole: string;
+  labelMarket: string; labelPleaseUpdateThisOtherAppFromMarket: string;
 }

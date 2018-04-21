@@ -52,6 +52,8 @@ export class MyApp implements OnInit {
   account: Account = new Account();
   dname: string;
   exitConfirmationText: string;
+  // fallbackAuthBaseUrl: string = 'http://192.168.10.106:9080';
+  fallbackAuthBaseUrl: string = 'https://mars.webebook.org';
 
   constructor(private translate: TranslateService, private platform: Platform,
     private settings: Settings, private config: Config, private ngZone: NgZone,
@@ -114,7 +116,7 @@ export class MyApp implements OnInit {
       let that = this;
       this.settings.load().then(() => {
         setTimeout(() => {
-          that.api.getScoreLookup(this.settings.allSettings.translDir).subscribe();
+          that.api.getScoreLookup().subscribe();
         }, 2000);
         if (!this.settings.allSettings.profileFirstLoaded) {
           setTimeout(() => {
@@ -138,7 +140,7 @@ export class MyApp implements OnInit {
       this.tryLogin();
     } else {
       // Try to get the oauth settings from the server
-      this.api.get('/api/auth-info').subscribe((data: any) => {
+      this.api.get('api/auth-info').subscribe((data: any) => {
         const me = this;
         this.platform.ready().then(() => {
           window.cordova.plugins.browsertab.isAvailable(function(result) {
@@ -156,10 +158,10 @@ export class MyApp implements OnInit {
         });
       }, error => {
         console.error('ERROR fetching authentication information, defaulting to Keycloak settings');
-        this.oauthService.redirectUri = 'http://localhost:8100';
+        this.oauthService.redirectUri = 'marsroo://oauth2redirect';
         this.oauthService.clientId = 'web_app';
         this.oauthService.scope = 'openid profile email';
-        this.oauthService.issuer = 'http://localhost:9080/auth/realms/mars';
+        this.oauthService.issuer = this.fallbackAuthBaseUrl + '/auth/realms/mars';
         this.tryLogin();
       });
     }

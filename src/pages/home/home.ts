@@ -7,8 +7,8 @@ import { TranslateService } from '@ngx-translate/core';
 import introJs from 'intro.js/intro.js';
 
 import { Principal } from '../../providers/auth/principal.service';
-import { Api } from '../../providers/api/api';
-import { Category, TranslDir, ScoreLookup, Account } from '../../models';
+import { Api } from '../../providers';
+import { Category, ScoreLookup, Account } from '../../models';
 
 @IonicPage()
 @Component({
@@ -103,12 +103,12 @@ export class HomePage implements OnInit {
     if (this.api.cachedScoreLookup) {
       return this.api.cachedScoreLookup;
     }
-    return new ScoreLookup(0, TranslDir.FA$EN_UK, {}, {});
+    return new ScoreLookup(0, null, {}, {});
   }
 
   fetchCategories() {
     this.showRetryButton = false;
-    this.api.getCategoryPublicList(TranslDir.FA$EN_UK).subscribe((response) => {
+    this.api.getCategoryPublicList().subscribe((response) => {
       this.ngZone.run(() => {
         this.categories = response;
       });
@@ -166,13 +166,13 @@ export class HomePage implements OnInit {
 
   initTranslations() {
     this.translateService.get(['OK', 'FOR_START_CLICK_ON_THE_PICTURE', 'NEXT', 'PREV',
-                               'CLICK_HERE_TO_SEE_INSTRUCTIONS', 'TO_THE_RIGHT',
+                               'CLICK_HERE_TO_SEE_GUIDE', 'TO_THE_RIGHT',
                                'AND_CONTINUE_YOUR_PATH']).subscribe((translated) => {
       this.labelOk = translated.OK;
       this.labelNext = translated.NEXT;
       this.labelPrev = translated.PREV;
       this.labelStartFromHere = translated.FOR_START_CLICK_ON_THE_PICTURE;
-      this.labelClickHereToSeeInstructions = translated.CLICK_HERE_TO_SEE_INSTRUCTIONS;
+      this.labelClickHereToSeeInstructions = translated.CLICK_HERE_TO_SEE_GUIDE;
       this.labelAndContinueYourPath = translated.AND_CONTINUE_YOUR_PATH;
       this.labelToTheRight = translated.TO_THE_RIGHT;
     });

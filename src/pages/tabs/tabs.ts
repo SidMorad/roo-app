@@ -68,7 +68,7 @@ export class TabsPage implements OnInit, OnDestroy {
       }
       else if (activePortal) {
         activePortal.dismiss();
-        console.log('Horrary!!!');
+        console.log('Portal closed!!!');
         return;
       }
       else if (nav.canGoBack()) {

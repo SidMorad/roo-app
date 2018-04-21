@@ -3,8 +3,8 @@ import { IonicPage, Platform, NavParams, Slides, NavController } from 'ionic-ang
 import { NgProgress } from '@ngx-progressbar/core';
 import { Subscription } from 'rxjs/Rx';
 
-import { Category, Lesson, TranslDir } from '../../models';
-import { Api, Memory } from '../../providers';
+import { Category, Lesson } from '../../models';
+import { Api, Memory, Settings } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -24,14 +24,14 @@ export class CategoryLessonPage implements OnInit {
 
   constructor(public platform: Platform, navParams: NavParams, private navCtrl: NavController,
               private api: Api, public ngProgress: NgProgress, private ngZone: NgZone,
-              private memory: Memory) {
+              private memory: Memory, private settings: Settings) {
     this.category = navParams.get('category');
     this.lessons = [];
   }
 
   ngOnInit() {
     this.isBeginning = true;
-    this.api.getLessonPublicList(TranslDir.FA$EN_UK, this.category.uuid).subscribe((res) => {
+    this.api.getLessonPublicList(this.settings.allSettings.difficultyLevel, this.category.uuid).subscribe((res) => {
       this.lessons = res;
     }, (error) => {
       console.log('Oops category-lesson load failed! TODO');
@@ -74,7 +74,11 @@ export class CategoryLessonPage implements OnInit {
 
   startLesson(index) {
     this.subscription = this.api.getQuestions(this.lessons[index]).subscribe((res) => {
-      this.navCtrl.push('LessonQuestionPage', {category: this.category, lesson: this.lessons[index], questions: res});
+      this.navCtrl.push('LessonQuestionPage', {
+        category: this.category,
+        lesson: this.lessons[index],
+        questions: res.questions,
+        words: res.words});
     }, (error) => {
       console.log('Oops this should not happend, TODO');
     });

@@ -1,7 +1,7 @@
 import { Question } from './question.model';
 
 
-export class QuestionWord {
+export class TwoWord {
   constructor(public question?: string,
               public option1?: string,
               public option2?: string,
@@ -12,23 +12,23 @@ export class QuestionWord {
     return this.was1or2 !== answer;
   }
 
-  public static toQuestionWordList(question: Question): QuestionWord[] {
-    const result: QuestionWord[] = [];
-    for (let i = 0; i < question.m.answers.length; i++) {
-      const answer = question.m.answers[i];
+  public static toTwoWordList(question: Question): TwoWord[] {
+    const result: TwoWord[] = [];
+    for (let i = 0; i < question.moptions.length; i++) {
+      const answer = question.moptions[i];
       const option0 = this.randomTargetOption(i, question);
       const bool = this.randomBoolean();
-      const option1 = bool ? question.t.answers[i].text : option0;
-      const option2 = bool ? option0 : question.t.answers[i].text;
-      result.push(new QuestionWord(answer.text, option1, option2, bool));
+      const option1 = bool ? question.toptions[i].text : option0;
+      const option2 = bool ? option0 : question.toptions[i].text;
+      result.push(new TwoWord(answer.text, option1, option2, bool));
     }
-    for (let i = 0; i < question.t.answers.length; i++) {
-      const tAnswer = question.t.answers[i];
+    for (let i = 0; i < question.toptions.length; i++) {
+      const tAnswer = question.toptions[i];
       const tOption0 = this.randomMotherOption(i, question);
       const tBool = this.randomBoolean();
-      const tOption1 = tBool ? question.m.answers[i].text : tOption0;
-      const tOption2 = tBool ? tOption0 : question.m.answers[i].text;
-      result.push(new QuestionWord(tAnswer.text, tOption1, tOption2, tBool));
+      const tOption1 = tBool ? question.moptions[i].text : tOption0;
+      const tOption2 = tBool ? tOption0 : question.moptions[i].text;
+      result.push(new TwoWord(tAnswer.text, tOption1, tOption2, tBool));
     }
     return result;
   }
@@ -36,19 +36,19 @@ export class QuestionWord {
   public static randomTargetOption(forbiddenIndex: number, question: Question): string {
     let randomIndex = forbiddenIndex;
     while (randomIndex === forbiddenIndex) {
-      randomIndex = this.randomBeetween(0, question.t.answers.length-1);
+      randomIndex = this.randomBeetween(0, question.toptions.length-1);
     }
     console.log('forbiddenIndex', forbiddenIndex, 'randomIndex', randomIndex);
-    return question.t.answers[randomIndex].text;
+    return question.toptions[randomIndex].text;
   }
 
   public static randomMotherOption(forbiddenIndex: number, question: Question): string {
     let randomIndex = forbiddenIndex;
     while (randomIndex === forbiddenIndex) {
-      randomIndex = this.randomBeetween(0, question.m.answers.length-1);
+      randomIndex = this.randomBeetween(0, question.moptions.length-1);
     }
     console.log('forbiddenIndex', forbiddenIndex, 'randomIndex', randomIndex);
-    return question.m.answers[randomIndex].text;
+    return question.moptions[randomIndex].text;
   }
 
   public static randomBoolean(): boolean {

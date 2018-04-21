@@ -1,7 +1,7 @@
 export * from './base-entity';
 export * from './account.model';
 export * from './user.model';
-export * from './transl-dir';
+export * from './learn-dir';
 export * from './category.model';
 export * from './lesson.model';
 export * from './question-type';
@@ -12,5 +12,6 @@ export * from './score.model';
 export * from './score-lookup';
 export * from './profile-first.model';
 export * from './subscribe.model';
-export * from './question.word';
+export * from './two.word';
 export * from './default-settings';
+export * from './difficulty-level';

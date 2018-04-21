@@ -1,9 +1,9 @@
-import { TranslDir } from './transl-dir';
+import { LearnDir } from './learn-dir';
 
 export class ScoreLookup {
   constructor(
     public total?: number,
-    public translDir?: TranslDir,
+    public learnDir?: LearnDir,
     public categoryMap?: any,
     public lessonMap?: any
   ) { }

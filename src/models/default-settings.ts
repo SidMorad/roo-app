@@ -6,11 +6,12 @@ export class DefaultSettings {
               public autoContinue: boolean,
               public voiceSpeedRate: number,
               public dname: string,
-              public translDir: string) {
+              public learnDir: string,
+              public difficultyLevel: string) {
   }
 
   public static newInstance(): DefaultSettings {
-    return new DefaultSettings(false, 'fa', true, true, 80, 'Guest', 'FA$EN_UK');
+    return new DefaultSettings(false, 'fa', true, true, 80, 'Guest', 'FA_IR$EN_GB', 'Beginner');
   }
 
 }

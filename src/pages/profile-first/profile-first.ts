@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { Settings, Api, Principal } from '../../providers/providers';
-import { ProfileFirst, Account } from '../../models';
+import { DefaultSettings, Account } from '../../models';
 
 /**
  * The Settings page is a simple form that syncs with a Settings provider
@@ -62,12 +62,11 @@ export class ProfileFirstPage {
     })
 
     this.settings.load().then(() => {
-      this.api.getProfile().subscribe((profile: ProfileFirst) => {
+      this.api.getProfile().subscribe((profile: DefaultSettings) => {
         this.options.dname = profile.dname;
         if (!this.settings.allSettings.profileFirstLoaded) {
-          const p: any = profile;
-          p.profileFirstLoaded = true;
-          this.settings.merge(p);
+          profile.profileFirstLoaded = true;
+          this.settings.merge(profile);
         }
         this.principal.identity().then((account: Account) => {
           this.settingsReady = true;
