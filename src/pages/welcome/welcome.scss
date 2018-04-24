@@ -1,9 +1,13 @@
 page-welcome {
+  .hipster {
+    width: 80vw;
+    height: 58vh;
+    margin: 2vh auto;
+    display: block;
+  }
 
-    .hipster {
-        width: 209px;
-        height: 300px;
-        margin: 20px auto;
-        display: block;
-    }
+  .toolbar-title {
+    text-overflow: unset;
+    white-space: unset;
+  }
 }

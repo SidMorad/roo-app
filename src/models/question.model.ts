@@ -12,15 +12,44 @@ export class Question {
     public d?: any, // dynamicPart object
     public lookupWords?: any
   ) {
+    try { this.d = JSON.parse(this.dynamicPart); }
+    catch(error) { console.warn('Parsing dynamicPart failed!'); };
+    switch(this.type.toString()) {
+      case 'MultiSelect':
+        this.initOptions(false);
+        this.multiSelectOptions();
+        break;
+      case 'OneCheck':
+        this.initOptions(false);
+        this.oneCheckChoices();
+        this.toneCheckAnswer;  // for initalize answer into variable and also speak function works as expected.
+        break;
+      case 'Words':
+        this.initOptions(true);
+        break;
+      case 'FourPicture':
+      case 'TwoPicture':
+      case 'Writing':
+      case 'Speaking':
+      case 'Conversation':
+        this.initOptions(false);
+        break;
+    }
+
   }
 
   public readonly textCompareAcceptablePercentage: number = 0.8;
-  public readonly multiSelectCompareAcceptablePercentage: number = 0.8;
+  public readonly multiSelectCompareAcceptablePercentage: number = 0.9;
   public readonly speakCompareAcceptablePercentage: number = 0.7;
   public readonly writingCompareAcceptablePercentage: number = 0.7;
-  private targetOptions: any[];             private motherOptions: any[];
+  public targetOptions: any[];             public motherOptions: any[];
   private targetMultiSelectOptions: any[];  private motherMultiSelectOptions: any[];
   private targetOneCheckAnswer: any;         private motherOneCheckAnswer: any;
+
+  initOptions(removeDot: boolean) {
+    this.toptions(removeDot);
+    this.moptions(removeDot);
+  }
 
   isAnswerRight(viewComp) {
     if (this.isType('MultiSelect')) {
@@ -238,22 +267,22 @@ export class Question {
     return !this.isReverse();
   }
 
-  private replaceWords(array: any[], prop: string, dir: string): any[] {
+  private replaceWords(array: any[], dir: string, removeDot?:boolean): any[] {
     try {
       const result = JSON.parse(JSON.stringify(array));
-      result.forEach((row) => {
-        if (this.lookupWords[row[prop]]) {
-          row[prop] = this.lookupWords[row[prop]][dir];
+      result.forEach((option) => {
+        if (this.lookupWords[option.text]) {
+          option.text = this.determineOptionValue(option, dir, removeDot);
         }
       });
       return result;
     } catch (error) {
-      console.log('Error on parse dynamicPart: ', array, prop, dir);
+      console.log('Error on parse dynamicPart: ', array, dir);
     }
   }
 
   public oneCheckChoices(): any[] {
-    return this.isNormal() ? this.moptions : this.toptions;
+    return this.isNormal() ? this.motherOptions : this.targetOptions;
   }
 
   public multiSelectAnswers(): any[] {
@@ -270,11 +299,11 @@ export class Question {
   }
 
   public pictureLabel(index): string {
-    return this.isNormal() ? this.moptions[index].text : this.toptions[index].text;
+    return this.isNormal() ? this.motherOptions[index].text : this.targetOptions[index].text;
   }
 
   public pictureQuestion(index): string {
-    return this.isNormal() ? this.toptions[index].text : this.moptions[index].text;
+    return this.isNormal() ? this.targetOptions[index].text : this.motherOptions[index].text;
   }
 
   public writingAnswer(): string {
@@ -282,11 +311,14 @@ export class Question {
   }
 
   public speakingAnswer(): string {
-    return this.face(null);
+    let answer: string = this.face(null);
+    answer = answer && answer.indexOf('.') > -1 ? this.replaceAll(answer, '.', ' .') : answer;
+    answer = answer && answer.indexOf('?') > -1 ? this.replaceAll(answer, '?', ' ?') : answer;
+    return answer;
   }
 
   public conversationAnswer(index: number): string {
-    return this.isNormal() ? this.toptions[index].text : this.moptions[index].text;
+    return this.isNormal() ? this.targetOptions[index].text : this.motherOptions[index].text;
   }
 
   public face(viewComp): string {
@@ -323,9 +355,9 @@ export class Question {
     else if (this.isType('Words')) {
       console.log('noTotal', viewComp.noTotal, ' wordsInQueue', viewComp.words.length ,' questionCounter', viewComp.questionCounter, ' questionsLength', this.d.options.length, ' targeted', viewComp.questionCounter - this.d.options.length);
       if (viewComp.questionCounter > this.d.options.length) {
-        return this.toptions[(viewComp.questionCounter - this.d.options.length)-1].text;
+        return this.targetOptions[(viewComp.questionCounter - this.d.options.length)-1].text;
       } else {
-        return this.toptions[viewComp.questionCounter-1].text;
+        return this.targetOptions[viewComp.questionCounter-1].text;
       }
     }
     else {
@@ -341,7 +373,7 @@ export class Question {
     if (this.targetMultiSelectOptions) {
       return this.targetMultiSelectOptions;
     }
-    const toptions = JSON.parse(JSON.stringify(this.toptions));
+    const toptions = JSON.parse(JSON.stringify(this.targetOptions));
     this.targetMultiSelectOptions = this.shuffle(toptions.concat(this.multiSelectAnswers()));
     return this.targetMultiSelectOptions;
   }
@@ -350,24 +382,24 @@ export class Question {
     if (this.motherMultiSelectOptions) {
       return this.motherMultiSelectOptions;
     }
-    const moptions = JSON.parse(JSON.stringify(this.moptions));
+    const moptions = JSON.parse(JSON.stringify(this.motherOptions));
     this.motherMultiSelectOptions = this.shuffle(moptions.concat(this.multiSelectAnswers()));
     return this.motherMultiSelectOptions;
   }
 
-  get toptions(): any[] {
+  private toptions(removeDot?: boolean): any[] {
     if (this.targetOptions) {
       return this.targetOptions;
     }
-    this.targetOptions = this.replaceWords(this.d.options, 'text', 'target');
+    this.targetOptions = this.replaceWords(this.d.options, 'target', removeDot);
     return this.targetOptions;
   }
 
-  get moptions(): any[] {
+  private moptions(removeDot?: boolean): any[] {
     if (this.motherOptions) {
       return this.motherOptions;
     }
-    this.motherOptions = this.replaceWords(this.d.options, 'text', 'mother');
+    this.motherOptions = this.replaceWords(this.d.options, 'mother', removeDot);
     return this.motherOptions;
   }
 
@@ -375,7 +407,7 @@ export class Question {
     if (this.targetOneCheckAnswer) {
       return this.targetOneCheckAnswer;
     }
-    this.toptions.forEach((row) => {
+    this.targetOptions.forEach((row) => {
       if (row.isCorrect) {
         this.targetOneCheckAnswer = row;
         return this.targetOneCheckAnswer;
@@ -387,7 +419,7 @@ export class Question {
     if (this.motherOneCheckAnswer) {
       return this.motherOneCheckAnswer;
     }
-    this.moptions.forEach((row) => {
+    this.motherOptions.forEach((row) => {
       if (row.isCorrect) {
         this.motherOneCheckAnswer = row;
         return this.motherOneCheckAnswer;
@@ -412,6 +444,23 @@ export class Question {
     }
 
     return array;
+  }
+
+  private determineOptionValue(option: any, dir: string, removeDot?: boolean): string {
+    const result = this.lookupWords[option.text].c ? this.capitalizeFirstLetter(this.lookupWords[option.text][dir]) : this.lookupWords[option.text][dir];
+    return removeDot ? this.replaceAll(result, '.', '') : result;
+  }
+
+  public capitalizeFirstLetter(string): string {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  public escapeRegExp(str) {
+      return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+  }
+
+  public replaceAll(str, find, replace) {
+      return str.replace(new RegExp(this.escapeRegExp(find), 'g'), replace);
   }
 
 }

@@ -14,20 +14,20 @@ export class TwoWord {
 
   public static toTwoWordList(question: Question): TwoWord[] {
     const result: TwoWord[] = [];
-    for (let i = 0; i < question.moptions.length; i++) {
-      const answer = question.moptions[i];
+    for (let i = 0; i < question.motherOptions.length; i++) {
+      const answer = question.motherOptions[i];
       const option0 = this.randomTargetOption(i, question);
       const bool = this.randomBoolean();
-      const option1 = bool ? question.toptions[i].text : option0;
-      const option2 = bool ? option0 : question.toptions[i].text;
+      const option1 = bool ? question.targetOptions[i].text : option0;
+      const option2 = bool ? option0 : question.targetOptions[i].text;
       result.push(new TwoWord(answer.text, option1, option2, bool));
     }
-    for (let i = 0; i < question.toptions.length; i++) {
-      const tAnswer = question.toptions[i];
+    for (let i = 0; i < question.targetOptions.length; i++) {
+      const tAnswer = question.targetOptions[i];
       const tOption0 = this.randomMotherOption(i, question);
       const tBool = this.randomBoolean();
-      const tOption1 = tBool ? question.moptions[i].text : tOption0;
-      const tOption2 = tBool ? tOption0 : question.moptions[i].text;
+      const tOption1 = tBool ? question.motherOptions[i].text : tOption0;
+      const tOption2 = tBool ? tOption0 : question.motherOptions[i].text;
       result.push(new TwoWord(tAnswer.text, tOption1, tOption2, tBool));
     }
     return result;
@@ -36,19 +36,19 @@ export class TwoWord {
   public static randomTargetOption(forbiddenIndex: number, question: Question): string {
     let randomIndex = forbiddenIndex;
     while (randomIndex === forbiddenIndex) {
-      randomIndex = this.randomBeetween(0, question.toptions.length-1);
+      randomIndex = this.randomBeetween(0, question.targetOptions.length-1);
     }
     console.log('forbiddenIndex', forbiddenIndex, 'randomIndex', randomIndex);
-    return question.toptions[randomIndex].text;
+    return question.targetOptions[randomIndex].text;
   }
 
   public static randomMotherOption(forbiddenIndex: number, question: Question): string {
     let randomIndex = forbiddenIndex;
     while (randomIndex === forbiddenIndex) {
-      randomIndex = this.randomBeetween(0, question.moptions.length-1);
+      randomIndex = this.randomBeetween(0, question.motherOptions.length-1);
     }
     console.log('forbiddenIndex', forbiddenIndex, 'randomIndex', randomIndex);
-    return question.moptions[randomIndex].text;
+    return question.motherOptions[randomIndex].text;
   }
 
   public static randomBoolean(): boolean {

@@ -1,5 +1,5 @@
 
-export enum QuestionType {
+export const enum QuestionType {
   'MultiSelect',
   'TwoPicture',
   'FourPicture',

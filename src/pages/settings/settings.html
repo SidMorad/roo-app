@@ -10,13 +10,9 @@
 
   <form [formGroup]="form" *ngIf="settingsReady">
     <ion-list *ngIf="page == 'main'">
-      <ion-item>
-        <ion-label>{{ 'SETTINGS_LANGUAGE' | translate }}</ion-label>
-        <ion-select formControlName="language">
-          <ion-option value="en">English</ion-option>
-          <ion-option value="fa">پارسی</ion-option>
-        </ion-select>
-      </ion-item>
+      <button ion-item [navPush]="subSettings" [navParams]="learnSettings">
+        {{ 'SETTINGS_PAGE_LANGUAGE' | translate }}
+      </button>
       <ion-item>
         <ion-label>{{ 'SETTINGS_AUTO_PLAY_VOICE' | translate }}</ion-label>
         <ion-toggle formControlName="autoPlayVoice"></ion-toggle>
@@ -34,17 +30,23 @@
            <ion-icon range-right name="speedometer"></ion-icon>
         </ion-range>
       </ion-item>
-
       <button ion-item [navPush]="subSettings" [navParams]="profileSettings">
-        {{ 'SETTINGS_PROFILE_BUTTON' | translate }}
+        {{ 'SETTINGS_PAGE_PROFILE' | translate }}
       </button>
+      <ion-item>
+        <ion-label>{{ 'SETTINGS_LANGUAGE' | translate }}</ion-label>
+        <ion-select formControlName="language">
+          <ion-option value="en">English</ion-option>
+          <ion-option value="fa">پارسی</ion-option>
+        </ion-select>
+      </ion-item>
       <ion-item>
         <ion-label>{{'APP_VERSION' | translate}}</ion-label>
         <div item-content>{{versionNumber}}</div>
       </ion-item>
     </ion-list>
 
-    <ion-list *ngIf="page == 'profile'">
+    <ion-list *ngIf="page === 'profile'">
       <ion-item>
         <ion-label>{{ 'PROFILE_DNAME' | translate }}</ion-label>
         <ion-input formControlName="dname"></ion-input>
@@ -52,6 +54,40 @@
       <ion-item>
         <ion-label>{{ 'PROFILE_LOGIN' | translate }}</ion-label>
         <ion-input formControlName="login"></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="page === 'learn'">
+      <ion-item>
+        <ion-label>{{'LANGUAGE_I_SPEAK' | translate}}</ion-label>
+        <ion-select formControlName="motherLanguage">
+          <ion-option value="FA_IR">{{'LANG_PARSI' | translate}}</ion-option>
+          <ion-option value="EN_GB">{{'LANG_ENGLISH' | translate}}</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label>{{'LANGUAGE_I_LEARN' | translate}}</ion-label>
+        <ion-select formControlName="targetLanguage">
+          <ion-option value="EN_GB">{{'LANG_ENGLISH' | translate}}</ion-option>
+          <ion-option value="DE_DE">{{'LANG_GERMAN' | translate}}</ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+    <ion-list radio-group formControlName="difficultyLevel" *ngIf="page === 'learn'">
+      <ion-list-header>
+        {{'LEVEL_DIFFICULTY' | translate}}
+      </ion-list-header>
+      <ion-item>
+        <ion-label>{{'LEVEL_BEGINNER' | translate}}</ion-label>
+        <ion-radio value="Beginner"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label>{{'LEVEL_INTERMEDIATE' | translate}}</ion-label>
+        <ion-radio value="Intermediate"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label>{{'LEVEL_ADVANCED' | translate}}</ion-label>
+        <ion-radio value="Advanced"></ion-radio>
       </ion-item>
     </ion-list>
   </form>

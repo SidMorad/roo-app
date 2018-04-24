@@ -125,14 +125,14 @@
         <div *ngFor="let answer of question.d.options; let i = index;">
           <div *ngIf="i < questionCounter" style="overflow: scroll;">
             <div [class.float-left]="i % 2 == 0" [class.float-right]="i % 2 == 1" class="alert"
-                 [class.alert-info]="i % 2 == 0" [class.alert-warning]="i % 2 == 1" style="width: 80%" (click)="speak(question.toptions[i].text)">
+                 [class.alert-info]="i % 2 == 0" [class.alert-warning]="i % 2 == 1" style="width: 80%" (click)="speak(question.targetOptions[i].text)">
               <div [class.dir-ltr]="lesson.isTargetLangLTR()"   [class.dir-rtl]="!lesson.isTargetLangLTR()"
                    [class.text-left]="lesson.isTargetLangLTR()" [class.text-right]="!lesson.isTargetLangLTR()"
                    [class.text-unclear]="i === questionCounter-1 && !isChecking"
-                  *ngIf="question.toptions[i]">{{question.toptions[i].text}}</div>
+                  *ngIf="question.targetOptions[i]">{{question.targetOptions[i].text}}</div>
               <div [class.dir-ltr]="!lesson.isMotherLangRTL()" [class.dir-rtl]="lesson.isMotherLangRTL()"
                    [class.text-left]="!lesson.isMotherLangRTL()" [class.text-right]="lesson.isMotherLangRTL()"
-                  *ngIf="question.moptions[i]">{{question.moptions[i].text}}</div>
+                  *ngIf="question.motherOptions[i]">{{question.motherOptions[i].text}}</div>
             </div>
           </div>
         </div>

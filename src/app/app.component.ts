@@ -115,14 +115,7 @@ export class MyApp implements OnInit {
       console.log('Subscribe of LOGIN_SUCCESS triggered.');
       let that = this;
       this.settings.load().then(() => {
-        setTimeout(() => {
-          that.api.getScoreLookup().subscribe();
-        }, 2000);
-        if (!this.settings.allSettings.profileFirstLoaded) {
-          setTimeout(() => {
-            that.openPage('ProfileFirstPage');
-          }, 3000);
-        }
+        that.api.loadCachedScoreLookups().subscribe();
       });
     });
   }
@@ -205,7 +198,7 @@ export class MyApp implements OnInit {
     this.ngZone.run(() => {
     this.settings.load().then(() => {
       this.translate.onLangChange.subscribe((data) => {
-        console.log('OnLangChange fired:', data);
+        console.log('OnLangChange fired:', data.lang);
         this.platform.setLang(data.lang, true);
         this.platform.setDir((data.lang === 'fa') ? 'rtl' : 'ltr', true);
       });

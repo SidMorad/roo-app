@@ -20,6 +20,9 @@ export class Settings {
   }
 
   load() {
+    if (this.settings) {
+      return Promise.resolve(this.settings);
+    }
     return this.storage.get(this.SETTINGS_KEY).then((value) => {
       if (value) {
         this.settings = value;
@@ -32,7 +35,7 @@ export class Settings {
     });
   }
 
-  _mergeDefaults(defaults: any) {
+  private _mergeDefaults(defaults: any) {
     for (let k in defaults) {
       if (!(k in this.settings)) {
         this.settings[k] = defaults[k];

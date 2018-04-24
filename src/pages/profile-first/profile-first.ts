@@ -34,25 +34,31 @@ export class ProfileFirstPage {
   _buildForm() {
     let group: any = {
       dname: [this.options.dname],
-      login: [{ value: this.options.login, disabled: true }]
+      motherLanguage: [this.options.motherLanguage],
+      targetLanguage: [this.options.targetLanguage],
+      difficultyLevel: [this.options.difficultyLevel]
     };
 
     this.form = this.formBuilder.group(group);
 
     // Watch the form for changes, and
     this.form.valueChanges.subscribe((v) => {
+      console.log('Value Changes', v);
+      if (v.motherLanguage === 'EN_GB' && v.targetLanguage === 'EN_GB') {
+        this.form.controls['targetLanguage'].setValue('DE_DE');
+      }
       this.settings.merge(this.form.value);
     });
   }
 
   ionViewDidLoad() {
     // Build an empty form for the template to render
-    this.form = this.formBuilder.group({});
+    // this.form = this.formBuilder.group({});
   }
 
   ionViewWillEnter() {
     // Build an empty form for the template to render
-    this.form = this.formBuilder.group({});
+    // this.form = this.formBuilder.group({});
 
     this.page = this.navParams.get('page') || this.page;
     this.pageTitleKey = this.navParams.get('pageTitleKey') || this.pageTitleKey;
@@ -62,25 +68,37 @@ export class ProfileFirstPage {
     })
 
     this.settings.load().then(() => {
-      this.api.getProfile().subscribe((profile: DefaultSettings) => {
-        this.options.dname = profile.dname;
-        if (!this.settings.allSettings.profileFirstLoaded) {
+      if (!this.settings.allSettings.profileFirstLoaded) {
+        this.api.createProfile(this.settings.allSettings).subscribe((profile: DefaultSettings) => {
+          this.options.dname = profile.dname;
+          this.options.motherLanguage = profile.learnDir.split('$')[0];
+          this.options.targetLanguage = profile.learnDir.split('$')[1];
+          this.options.difficultyLevel = profile.difficultyLevel;
           profile.profileFirstLoaded = true;
-          this.settings.merge(profile);
-        }
-        this.principal.identity().then((account: Account) => {
-          this.settingsReady = true;
-          this.options.login = account.login;
-          this._buildForm();
+          this.settings.merge(profile).then(() => {
+            this.principal.identity().then((account: Account) => {
+              this.pageTitle = this.pageTitle + ' ' + account.login;
+              this.settingsReady = true;
+              this._buildForm();
+            });
+          });
         });
-      });
+      }
     });
   }
 
   ionViewWillLeave() {
+    const learnDir =  this.form.value['motherLanguage'] + '$' + this.form.value['targetLanguage'];
+    this.settings.setValue('learnDir',learnDir).then(() => { });
+    this.settings.allSettings.learnDir = learnDir;
+    console.log('learnDir is going to be updated to: ', this.settings.allSettings.learnDir);
     this.api.updateProfile(this.settings.allSettings).subscribe(() => {
       console.log('Profile updated succesfully');
+    }, (err) => {
+      console.warn('Update profile failed.');
     });
+    this.api.loadCachedScoreLookups(true).subscribe();
+    this.api.getCategoryPublicList(true).subscribe();
   }
 
   ok() {

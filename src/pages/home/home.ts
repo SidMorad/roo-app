@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import introJs from 'intro.js/intro.js';
 
 import { Principal } from '../../providers/auth/principal.service';
-import { Api } from '../../providers';
+import { Api, Settings } from '../../providers';
 import { Category, ScoreLookup, Account } from '../../models';
 
 @IonicPage()
@@ -29,7 +29,7 @@ export class HomePage implements OnInit {
               private api: Api, private appVersion: AppVersion,
               public platform: Platform, private storage: Storage,
               private modalCtrl: ModalController, private elementRef: ElementRef,
-              private translateService: TranslateService) {
+              private translateService: TranslateService, private settings: Settings) {
     this.categories = [];
     this.mapWidth = (window.screen.height * 6);
     this.initTranslations();
@@ -56,6 +56,12 @@ export class HomePage implements OnInit {
           this.modalCtrl.create('LessonScorePage').present();
         }
       });
+      this.settings.load().then(() => {
+        if (!this.settings.allSettings.profileFirstLoaded) {
+          this.showHelpHint = false;
+          this.navCtrl.push('ProfileFirstPage');
+        }
+      });
     }
   }
 
@@ -66,14 +72,7 @@ export class HomePage implements OnInit {
     }, 400);
     setTimeout(() => {
       if (this.showHelpHint) {
-        const intro = introJs.introJs();
-        intro.setOptions({
-          hints: [
-            { hint: this.labelClickHereToSeeInstructions, element: '#helpButton', hintPosition: 'middle-middle'}
-          ],
-          hintButtonLabel: this.labelOk
-        });
-        intro.showHints();
+        this.showHelpHintHint();
       }
     }, 2000);
   }
@@ -87,15 +86,20 @@ export class HomePage implements OnInit {
     });
   }
 
+  ionViewDidEnter() {
+    if (this.showHelpHint) {
+      console.log('showHelpHint triggered!!');
+      this.showHelpHintHint();
+    }
+  }
+
   ionViewWillLeave() {
     introJs.introJs().hideHints();
   }
 
   doneLessons(category) {
     if (this.scoreLookup().categoryMap[category.uuid]) {
-      setTimeout(() => {
-        this.showHelpHint = false;
-      }, 0);
+      this.showHelpHint = false;
       return this.scoreLookup().categoryMap[category.uuid];
     }
     return 0;
@@ -153,6 +157,17 @@ export class HomePage implements OnInit {
       doneLabel: this.labelOk
     });
     intro.start();
+  }
+
+  showHelpHintHint() {
+    const intro = introJs.introJs();
+    intro.setOptions({
+      hints: [
+        { hint: this.labelClickHereToSeeInstructions, element: '#helpButton', hintPosition: 'middle-middle'}
+      ],
+      hintButtonLabel: this.labelOk
+    });
+    // intro.showHints(); don't show hint for now. //TODO either make it work as expected or remove hint.
   }
 
   dailyLesson() {

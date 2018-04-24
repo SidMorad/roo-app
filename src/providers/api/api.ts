@@ -25,7 +25,11 @@ export class Api {
     return this.post('roo/api/user/zarinpal/payment/token', subscribeModel, { responseType: 'text' });
   }
 
-  updateProfile(profile: DefaultSettings) {
+  createProfile(profile: DefaultSettings): Observable<any> {
+    return this.post('roo/api/user/profile/create', profile);
+  }
+
+  updateProfile(profile: DefaultSettings): Observable<any> {
     return this.post('roo/api/user/profile/update', profile);
   }
 
@@ -41,7 +45,10 @@ export class Api {
     return this.get('roo/api/user/score/last7/FA$EN_UK');
   }
 
-  getScoreLookup(): Observable<any> {
+  private getScoreLookup(force?: boolean): Observable<any> {
+    if (force) {
+      this.cachedScoreLookup = null;
+    }
     if (this.cachedScoreLookup) {
       return Observable.of(this.cachedScoreLookup);
     }
@@ -57,7 +64,10 @@ export class Api {
     });
   }
 
-  getCategoryPublicList(): Observable<any> {
+  getCategoryPublicList(force?: boolean): Observable<any> {
+    if (force) {
+      this.cachedCategories = null;
+    }
     if (this.cachedCategories) {
       return Observable.of(this.cachedCategories);
     }
@@ -142,15 +152,32 @@ export class Api {
         .catch(() => console.warn('Score lookups cache failed.'));
   }
 
-  private loadCachedScoreLookups() {
-    this.settings.load().then(() => {
-      this.storage.get(this.scoreLookupCacheKey)
-        .then((res) => {
-          if (!this.cachedScoreLookup) {
+  public loadCachedScoreLookups(force?: boolean): Observable<any> {
+    if (force) {
+      this.cachedScoreLookup = null;
+    }
+    if (this.cachedScoreLookup) {
+      return Observable.of(this.cachedScoreLookup);
+    }
+    return new Observable((observer) => {
+      this.settings.load().then(() => {
+        this.storage.get(this.scoreLookupCacheKey).then((res) => {
+          if(res) {
             this.cachedScoreLookup = JSON.parse(res);
+            observer.next(this.cachedScoreLookup);
+            observer.complete();
+          } else {
+            this.getScoreLookup(force).subscribe((res) => {
+              observer.next(res);
+              observer.complete();
+            });
           }
-        })
-        .catch((er) => { console.error('Error on lookup cahced scores.', er) });
+        }).catch((er) => {
+          console.error('Error on lookup cahced scores.', er);
+          observer.error(er);
+          observer.complete();
+        });
+      });
     });
   }
 

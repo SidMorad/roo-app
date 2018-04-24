@@ -14,4 +14,20 @@ export class DefaultSettings {
     return new DefaultSettings(false, 'fa', true, true, 80, 'Guest', 'FA_IR$EN_GB', 'Beginner');
   }
 
+  get motherLanguage(): string {
+    return this.learnDir.split('$')[0];
+  }
+
+  get targetLanguage(): string {
+    return this.learnDir.split('$')[1];
+  }
+
+  set motherLanguage(val) {
+    console.log('setMotherLanguage', val);
+  }
+
+  set targetLanguage(val) {
+    console.log('setTargetLanguage', val);
+  }
+
 }

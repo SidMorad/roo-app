@@ -149,7 +149,7 @@ export class LessonQuestionPage implements OnInit {
       this.noTotal = this.question.d.options.length * 2;
       this.checkIfIsEnd();
       this.checkIfIsEndFailure();
-      this.questionCounter++
+      this.questionCounter++;
       this.isChecking = false;
       this.cards = [this.words[this.questionCounter-1]];
       if (this.autoPlayVoice) {
@@ -185,9 +185,7 @@ export class LessonQuestionPage implements OnInit {
 
   setQuestion(q: Question) {
     this.ngZone.run(() => {
-    let d;
-    try { d = JSON.parse(q.dynamicPart); } catch(error) { };
-    this.question = new Question(q.uuid, q.type, q.indexOrder, q.dynamicPart, d, this.lookupWords);
+    this.question = new Question(q.uuid, q.type, q.indexOrder, q.dynamicPart, null, this.lookupWords);
     if (this.isType('MultiSelect')) {
       this.options = this.question.multiSelectOptions();
       this.chosens = [];
@@ -240,7 +238,7 @@ export class LessonQuestionPage implements OnInit {
   }
 
   isAnswered() {
-    return this.question.isAnswered(this);
+    return this.question ? this.question.isAnswered(this) : false;
   }
 
   speak(text?: string) {

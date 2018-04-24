@@ -8,11 +8,11 @@ export class Lesson {
   ) { }
 
   isMotherLangRTL(): boolean {
-    return this.motherLanguage() === 'FA';
+    return this.motherLanguage() === 'FA_IR';
   }
 
   isTargetLangLTR(): boolean {
-    return this.targetLanguage() !== 'FA';
+    return this.targetLanguage() !== 'FA_IR';
   }
 
   langs(): any {
