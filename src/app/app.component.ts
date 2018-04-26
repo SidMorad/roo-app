@@ -23,7 +23,7 @@ declare const window: any;
             <span *ngIf="principal.isAuthenticated()" style="padding-left: 4px; padding-right: 4px;"> {{dname}} </span>
             <button ion-button clear large (click)="signin()" *ngIf="!principal.isAuthenticated()" menuClose color="dark"
                 style="padding-left: 0px; padding-right: 0px;">
-              <ion-icon name="log-in"></ion-icon>
+                <ion-icon name="log-in"></ion-icon>
               <span style="padding-left: 16px; padding-right: 16px;"> {{'LOGIN_BUTTON' | translate}} </span>
             </button>
           </ion-title>
@@ -37,9 +37,9 @@ declare const window: any;
             {{'SETTINGS_TITLE' | translate}}
           </button>
           <button menuClose ion-item (click)="logout()" *ngIf="principal.isAuthenticated()">
-           <ion-icon name="contact" item-start></ion-icon>
-           {{'LOGOUT_BUTTON' | translate}}
-         </button>
+            <ion-icon name="contact" item-start></ion-icon>
+            {{'LOGOUT_BUTTON' | translate}}
+          </button>
         </ion-list>
       </ion-content>
     </ion-menu>
@@ -115,7 +115,7 @@ export class MyApp implements OnInit {
       console.log('Subscribe of LOGIN_SUCCESS triggered.');
       let that = this;
       this.settings.load().then(() => {
-        that.api.loadCachedScoreLookups().subscribe();
+        that.settings.loadCachedScoreLookups().subscribe();
       });
     });
   }
@@ -161,7 +161,7 @@ export class MyApp implements OnInit {
   }
 
   tryLogin() {
-    this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
+    this.oauthService.loadDiscoveryDocumentAndLogin().then(() => {
       const claims = this.oauthService.getIdentityClaims();
       if (claims) {
         this.events.publish('LOGIN_SUCCESS', claims);
@@ -177,9 +177,11 @@ export class MyApp implements OnInit {
   }
 
   signin() {
-    this.nav.push('LoginPage').then(() => {
+    this.nav.push(FirstRunPage).then(() => {
       const index = this.nav.getActive().index;
-      this.nav.remove(0, index);
+      try {
+        this.nav.remove(0, index);
+      } catch (err) { }
     });
   }
 

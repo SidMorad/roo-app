@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
-import { Storage } from '@ionic/storage';
 
-import { Lesson, Score, Category, ScoreLookup, DefaultSettings } from '../../models';
-import { Settings } from '../../providers';
+import { Lesson, Score, DefaultSettings } from '../../models';
 
 /**
  * Api is a generic(and customized for Roo domain) REST Api handler.
@@ -13,12 +11,8 @@ import { Settings } from '../../providers';
 export class Api {
   public static API_URL: string = 'https://mars.webebook.org/';
   // public static API_URL: string = 'http://192.168.10.106:8080/';
-  public cachedCategories: Category[];
-  public cachedScoreLookup: ScoreLookup;
 
-  constructor(private http: HttpClient, private storage: Storage,
-              private settings: Settings) {
-    this.loadCachedScoreLookups();
+  constructor(private http: HttpClient) {
   }
 
   startPayUrl(subscribeModel) {
@@ -41,54 +35,24 @@ export class Api {
     return this.get('roo/api/public/build/versionCode');
   }
 
-  getLast7DaysScores(): Observable<any> {
-    return this.get('roo/api/user/score/last7/FA$EN_UK');
+  getLast7DaysScores(learnDir: string): Observable<any> {
+    return this.get(`roo/api/user/score/last7/${learnDir}`);
   }
 
-  private getScoreLookup(force?: boolean): Observable<any> {
-    if (force) {
-      this.cachedScoreLookup = null;
-    }
-    if (this.cachedScoreLookup) {
-      return Observable.of(this.cachedScoreLookup);
-    }
-    const learnDir = this.settings.allSettings.learnDir;
-    const difLevel = this.settings.allSettings.difficultyLevel;
-    return Observable.create(observer => {
-      this.http.get(`${Api.API_URL}roo/api/user/score/lookup/${learnDir}/${difLevel}`).subscribe((scoreLookup: ScoreLookup) => {
-        this.cachedScoreLookup = scoreLookup;
-        this.storeCachedScoreLookups();
-        observer.next(this.cachedScoreLookup);
-        observer.complete();
-      });
-    });
+  getScoreLookup(learnDir: string, difLevel: string): Observable<any> {
+    return this.http.get(`${Api.API_URL}roo/api/user/score/lookup/${learnDir}/${difLevel}`);
   }
 
-  getCategoryPublicList(force?: boolean): Observable<any> {
-    if (force) {
-      this.cachedCategories = null;
-    }
-    if (this.cachedCategories) {
-      return Observable.of(this.cachedCategories);
-    }
-    return Observable.create(observer => {
-      this.http.get(Api.API_URL + 'roo/api/public/categories/' + this.settings.allSettings.learnDir).subscribe((categories: Category[]) => {
-        this.cachedCategories = categories;
-        observer.next(this.cachedCategories);
-        observer.complete();
-      });
-    });
+  getCategoryPublicList(learnDir: string): Observable<any> {
+    return this.http.get(`${Api.API_URL}roo/api/public/categories/${learnDir}`);
   }
 
   getLessonPublicList(difficultyLevel: string, uuid: string): Observable<any> {
-    return this.get('roo/api/public/lessons/' + difficultyLevel + '/' + uuid);
+    return this.get(`roo/api/public/lessons/${difficultyLevel}/${uuid}`);
   }
 
-  getQuestions(lesson: Lesson): Observable<any> {
-    return this.get('roo/api/public/questions/'
-                                + this.settings.allSettings.learnDir + '/'
-                                + this.settings.allSettings.difficultyLevel + '/'
-                                + lesson.uuid);
+  getQuestions(lesson: Lesson, learnDir: string, difLevel: string): Observable<any> {
+    return this.get(`roo/api/public/questions/${learnDir}/${difLevel}/${lesson.uuid}`);
   }
 
   createScore(score: Score): Observable<any> {
@@ -127,64 +91,6 @@ export class Api {
 
   patch(endpoint: string, body: any, reqOpts?: any) {
     return this.http.put(Api.API_URL + endpoint, body, reqOpts);
-  }
-
-  updateCachedScoreLookupWith(score: Score) {
-    if (this.cachedScoreLookup) {
-      this.cachedScoreLookup.total += score.score;
-      if (this.cachedScoreLookup.lessonMap[score.lessonUuid] == null) {
-        this.cachedScoreLookup.lessonMap[score.lessonUuid] = score.star;
-        if (this.cachedScoreLookup.categoryMap[score.categoryUuid]) {
-          this.cachedScoreLookup.categoryMap[score.categoryUuid] = this.cachedScoreLookup.categoryMap[score.categoryUuid] + 1;
-        } else {
-          this.cachedScoreLookup.categoryMap[score.categoryUuid] = 1;
-        }
-      } else if (this.cachedScoreLookup.lessonMap[score.lessonUuid] < score.star) {
-        this.cachedScoreLookup.lessonMap[score.lessonUuid] = score.star;
-      }
-      this.storeCachedScoreLookups();
-    }
-  }
-
-  private storeCachedScoreLookups() {
-    this.storage.set(this.scoreLookupCacheKey, JSON.stringify(this.cachedScoreLookup))
-        .then(() => console.debug('Score lookups cached successfully.'))
-        .catch(() => console.warn('Score lookups cache failed.'));
-  }
-
-  public loadCachedScoreLookups(force?: boolean): Observable<any> {
-    if (force) {
-      this.cachedScoreLookup = null;
-    }
-    if (this.cachedScoreLookup) {
-      return Observable.of(this.cachedScoreLookup);
-    }
-    return new Observable((observer) => {
-      this.settings.load().then(() => {
-        this.storage.get(this.scoreLookupCacheKey).then((res) => {
-          if(res) {
-            this.cachedScoreLookup = JSON.parse(res);
-            observer.next(this.cachedScoreLookup);
-            observer.complete();
-          } else {
-            this.getScoreLookup(force).subscribe((res) => {
-              observer.next(res);
-              observer.complete();
-            });
-          }
-        }).catch((er) => {
-          console.error('Error on lookup cahced scores.', er);
-          observer.error(er);
-          observer.complete();
-        });
-      });
-    });
-  }
-
-  private get scoreLookupCacheKey(): string {
-    const learnDir = this.settings.allSettings.learnDir;
-    const difLevel = this.settings.allSettings.difficultyLevel;
-    return 'CACHED_SCORE_LOOKUP_' + learnDir + '_' + difLevel;
   }
 
 }

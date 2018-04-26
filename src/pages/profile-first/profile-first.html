@@ -15,44 +15,66 @@
 
   <form [formGroup]="form" *ngIf="settingsReady">
     <ion-list>
+      <ion-list-header>
+        {{'PROFILE_DNAME' | translate}}
+      </ion-list-header>
       <ion-item>
-        <ion-note item-start>{{'PROFILE_DNAME_NOTE' | translate}}</ion-note>
-      </ion-item>
-      <ion-item>
-        <ion-label>{{ 'PROFILE_DNAME' | translate }}</ion-label>
         <ion-input formControlName="dname"></ion-input>
       </ion-item>
-      <ion-item>
-        <ion-label>{{'LANGUAGE_I_SPEAK' | translate}}</ion-label>
-        <ion-select formControlName="motherLanguage">
-          <ion-option value="FA_IR">{{'LANG_PARSI' | translate}}</ion-option>
-          <ion-option value="EN_GB">{{'LANG_ENGLISH' | translate}}</ion-option>
-        </ion-select>
+      <ion-list-header>
+        {{'LANGUAGE_I_SPEAK' | translate}}
+      </ion-list-header>
+      <ion-item no-lines>
+        <ion-segment formControlName="motherLanguage" mode="ios">
+          <ion-segment-button value="FA_IR">
+            <span class="flag-icon flag-icon-ir"></span>
+            {{'LANG_PARSI' | translate}}</ion-segment-button>
+          <ion-segment-button value="EN_GB">
+            {{'LANG_ENGLISH' | translate}}
+            <span class="flag-icon flag-icon-gb"></span>
+          </ion-segment-button>
+        </ion-segment>
       </ion-item>
-      <ion-item>
-        <ion-label>{{'LANGUAGE_I_LEARN' | translate}}</ion-label>
-        <ion-select formControlName="targetLanguage">
-          <ion-option value="EN_GB">{{'LANG_ENGLISH' | translate}}</ion-option>
-          <ion-option value="DE_DE">{{'LANG_GERMAN' | translate}}</ion-option>
-        </ion-select>
+      <ion-list-header>
+        {{'LANGUAGE_I_LEARN' | translate}}
+      </ion-list-header>
+      <ion-item no-lines>
+        <ion-segment formControlName="targetLanguage" mode="ios">
+          <ion-segment-button value="EN_GB">
+            {{'LANG_ENGLISH' | translate}}
+            <span class="flag-icon flag-icon-gb"></span>
+          </ion-segment-button>
+          <ion-segment-button value="DE_DE">
+            {{'LANG_GERMAN' | translate}}
+            <span class="flag-icon flag-icon-de"></span>
+          </ion-segment-button>
+        </ion-segment>
       </ion-item>
-    </ion-list>
-    <ion-list radio-group formControlName="difficultyLevel">
       <ion-list-header>
         {{'LEVEL_DIFFICULTY' | translate}}
       </ion-list-header>
-      <ion-item>
-        <ion-label>{{'LEVEL_BEGINNER' | translate}}</ion-label>
-        <ion-radio value="Beginner"></ion-radio>
+      <ion-item no-lines>
+        <ion-segment formControlName="difficultyLevel" mode="ios">
+          <ion-segment-button value="Beginner">
+            <ion-icon name="ios-text-outline"></ion-icon>
+            {{'LEVEL_BEGINNER' | translate}}
+          </ion-segment-button>
+          <ion-segment-button value="Intermediate">
+            <ion-icon name="ios-chatbubbles-outline"></ion-icon>
+            {{'LEVEL_INTERMEDIATE' | translate}}
+          </ion-segment-button>
+          <ion-segment-button value="Advanced">
+            <ion-icon name="ios-chatboxes-outline"></ion-icon>
+            {{'LEVEL_ADVANCED' | translate}}
+          </ion-segment-button>
+        </ion-segment>
       </ion-item>
-      <ion-item>
-        <ion-label>{{'LEVEL_INTERMEDIATE' | translate}}</ion-label>
-        <ion-radio value="Intermediate"></ion-radio>
-      </ion-item>
-      <ion-item>
-        <ion-label>{{'LEVEL_ADVANCED' | translate}}</ion-label>
-        <ion-radio value="Advanced"></ion-radio>
-      </ion-item>
+      <ion-item-divider>
+      </ion-item-divider>
+      <button ion-item full (click)="ok()" color="secondary">
+        <ion-icon name="checkmark"></ion-icon>
+        {{'SAVE' | translate}}
+      </button>
     </ion-list>
   </form>
 

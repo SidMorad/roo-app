@@ -128,8 +128,7 @@ export class SettingsPage {
     console.log('SettingsPage#ionViewWillLeave');
     this.updateProfile().subscribe();
     if (this.page === 'learn') {
-      console.log('Learn settings is going to be updated.');
-      this.api.loadCachedScoreLookups(true).subscribe();
+      this.settings.loadCachedScoreLookups(true).subscribe();
       if (this.previousLearnDir !== this.settings.allSettings.learnDir) {
         this.splash.show();
         window.location.reload();
@@ -141,7 +140,6 @@ export class SettingsPage {
     const learnDir = this.settings.allSettings.motherLanguage + '$' + this.settings.allSettings.targetLanguage;
     this.settings.setValue('learnDir', learnDir).then(() => { });
     this.settings.allSettings.learnDir = learnDir;  // in case above line is not fast enougth
-    console.log('learnDir is going to be updated to: ', this.settings.allSettings.learnDir);
     return this.api.updateProfile(this.settings.allSettings);
   }
 

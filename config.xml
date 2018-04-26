@@ -100,4 +100,5 @@
     <plugin name="cordova-plugin-market" spec="~1.2.0" />
     <plugin name="cordova-plugin-statusbar" spec="^2.4.1" />
     <engine name="android" spec="7.0.0" />
+    <plugin name="cordova-plugin-secure-storage" spec="^2.6.8" />
 </widget>

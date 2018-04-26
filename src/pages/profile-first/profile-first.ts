@@ -43,7 +43,6 @@ export class ProfileFirstPage {
 
     // Watch the form for changes, and
     this.form.valueChanges.subscribe((v) => {
-      console.log('Value Changes', v);
       if (v.motherLanguage === 'EN_GB' && v.targetLanguage === 'EN_GB') {
         this.form.controls['targetLanguage'].setValue('DE_DE');
       }
@@ -91,14 +90,12 @@ export class ProfileFirstPage {
     const learnDir =  this.form.value['motherLanguage'] + '$' + this.form.value['targetLanguage'];
     this.settings.setValue('learnDir',learnDir).then(() => { });
     this.settings.allSettings.learnDir = learnDir;
-    console.log('learnDir is going to be updated to: ', this.settings.allSettings.learnDir);
     this.api.updateProfile(this.settings.allSettings).subscribe(() => {
-      console.log('Profile updated succesfully');
     }, (err) => {
       console.warn('Update profile failed.');
     });
-    this.api.loadCachedScoreLookups(true).subscribe();
-    this.api.getCategoryPublicList(true).subscribe();
+    this.settings.loadCachedScoreLookups(true).subscribe();
+    this.api.getCategoryPublicList(this.settings.learnDir).subscribe();
   }
 
   ok() {

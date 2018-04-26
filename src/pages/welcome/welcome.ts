@@ -29,8 +29,8 @@ export class WelcomePage implements OnInit {
     this.isTryingToLogin = true;
     const claims: any = this.oauthService.getIdentityClaims();
     if (!claims) {
-      this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
-        this.geAccount();
+      this.oauthService.loadDiscoveryDocumentAndLogin().then(() => {
+        this.home();
         console.log('Well loadAuthAndTryLogin succeed, accessTokenExpiration is ', this.oauthService.getAccessTokenExpiration());
       }).catch((error) => {
         console.log('Well loadAuthAndTryLogin failed with error ', error);
@@ -39,7 +39,7 @@ export class WelcomePage implements OnInit {
     } else {
       // console.log('Cliams ', claims);
       this.events.publish('LOGIN_SUCCESS', claims);
-      this.geAccount();
+      this.home();
     }
   }
 

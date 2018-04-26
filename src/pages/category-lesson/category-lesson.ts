@@ -31,7 +31,7 @@ export class CategoryLessonPage implements OnInit {
 
   ngOnInit() {
     this.isBeginning = true;
-    this.api.getLessonPublicList(this.settings.allSettings.difficultyLevel, this.category.uuid).subscribe((res) => {
+    this.api.getLessonPublicList(this.settings.difficultyLevel, this.category.uuid).subscribe((res) => {
       this.lessons = res;
     }, (error) => {
       console.log('Oops category-lesson load failed! TODO');
@@ -73,7 +73,9 @@ export class CategoryLessonPage implements OnInit {
   }
 
   startLesson(index) {
-    this.subscription = this.api.getQuestions(this.lessons[index]).subscribe((res) => {
+    this.subscription = this.api.getQuestions(this.lessons[index],
+                                              this.settings.learnDir,
+                                              this.settings.difficultyLevel).subscribe((res) => {
       this.navCtrl.push('LessonQuestionPage', {
         category: this.category,
         lesson: this.lessons[index],
@@ -112,9 +114,9 @@ export class CategoryLessonPage implements OnInit {
   }
 
   starLookup(lesson) {
-    if (this.api.cachedScoreLookup && lesson) {
-      if (this.api.cachedScoreLookup.lessonMap[lesson.uuid]) {
-        return this.api.cachedScoreLookup.lessonMap[lesson.uuid];
+    if (this.settings.cachedScoreLookup && lesson) {
+      if (this.settings.cachedScoreLookup.lessonMap[lesson.uuid]) {
+        return this.settings.cachedScoreLookup.lessonMap[lesson.uuid];
       }
     }
     return 0;

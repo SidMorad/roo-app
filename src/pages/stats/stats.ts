@@ -3,7 +3,7 @@ import { IonicPage, ViewController, NavController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { ChartOptions, Chart } from 'chart.js';
 
-import { Api, ScoreUtil, Principal, LoginService } from '../../providers';
+import { Api, ScoreUtil, Principal, LoginService, Settings } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -23,7 +23,7 @@ export class StatsPage {
               private api: Api, private scoreUtil: ScoreUtil,
               private translateService: TranslateService,
               private principal: Principal, private loginService: LoginService,
-              private navCtrl: NavController) {
+              private navCtrl: NavController, private settings: Settings) {
     this.initLabelsTranslations();
     Chart.defaults.global['plugins'] = {
       datalabels: {
@@ -46,7 +46,7 @@ export class StatsPage {
   fetchLast7dayScore() {
     this.inProgress = true;
     let daysInWeek = this.forwardDaysToToday();
-    this.api.getLast7DaysScores().subscribe((res) => {
+    this.api.getLast7DaysScores(this.settings.learnDir).subscribe((res) => {
       // console.log('Received data: ', res);
       this.ngZone.run(() => {
         for (let i = 0; i < daysInWeek.length; i++) {
@@ -82,7 +82,7 @@ export class StatsPage {
   }
 
   resolveScoreStats() {
-    this.total = this.api.cachedScoreLookup.total;
+    this.total = this.settings.cachedScoreLookup.total;
     let divider = this.scoreUtil.determineDivider(this.total);
     this.progressLevelFrom = this.scoreUtil.resolveLevelFrom(this.total);
     this.progressLevelTo = this.progressLevelFrom + 1;

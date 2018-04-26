@@ -32,7 +32,6 @@ export class HomePage implements OnInit {
               private translateService: TranslateService, private settings: Settings) {
     this.categories = [];
     this.mapWidth = (window.screen.height * 6);
-    this.initTranslations();
   }
 
   ngOnInit() {
@@ -71,6 +70,7 @@ export class HomePage implements OnInit {
       scrollContentDiv.style = null;  // a fix for auto padding-top and padding-bottom set value.
     }, 400);
     setTimeout(() => {
+      this.initTranslations();
       if (this.showHelpHint) {
         this.showHelpHintHint();
       }
@@ -106,15 +106,23 @@ export class HomePage implements OnInit {
   }
 
   scoreLookup(): ScoreLookup {
-    if (this.api.cachedScoreLookup) {
-      return this.api.cachedScoreLookup;
+    if (this.settings.cachedScoreLookup) {
+      return this.settings.cachedScoreLookup;
     }
     return new ScoreLookup(0, null, {}, {});
   }
 
+  get flag() {
+    if (this.settings.learnDir) {
+      return this.settings.learnDir.split('$')[1].split('_')[1].toLowerCase();
+    } else {
+      return 'gb';
+    }
+  }
+
   fetchCategories() {
     this.showRetryButton = false;
-    this.api.getCategoryPublicList().subscribe((response) => {
+    this.api.getCategoryPublicList(this.settings.learnDir).subscribe((response) => {
       this.ngZone.run(() => {
         this.categories = response;
       });
@@ -170,9 +178,6 @@ export class HomePage implements OnInit {
     // intro.showHints(); don't show hint for now. //TODO either make it work as expected or remove hint.
   }
 
-  dailyLesson() {
-  }
-
   labelOk: string;
   labelNext: string;
   labelPrev: string;
@@ -185,6 +190,7 @@ export class HomePage implements OnInit {
     this.translateService.get(['OK', 'FOR_START_CLICK_ON_THE_PICTURE', 'NEXT', 'PREV',
                                'CLICK_HERE_TO_SEE_GUIDE', 'TO_THE_RIGHT',
                                'AND_CONTINUE_YOUR_PATH']).subscribe((translated) => {
+console.log('initTranslations Called and result was ', translated);
       this.labelOk = translated.OK;
       this.labelNext = translated.NEXT;
       this.labelPrev = translated.PREV;

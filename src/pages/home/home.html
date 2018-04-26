@@ -20,6 +20,7 @@
       <button ion-button icon-only clear *ngIf="showUpgradeButton" (click)="upgrade()" color="danger">
         <ion-icon name="appstore"></ion-icon>
       </button>
+      <span class="flag-icon flag-icon-{{flag}}"></span>
       <button ion-button icon-only clear (click)="showHelp()" color="secondary" id="helpButton">
         <ion-icon name="help-buoy"></ion-icon>
       </button>
@@ -34,6 +35,7 @@
       <button ion-button icon-only clear (click)="showHelp()" color="secondary" id="helpButton">
         <ion-icon name="help-buoy"></ion-icon>
       </button>
+      <span class="flag-icon flag-icon-{{flag}}"></span>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
