@@ -2,19 +2,18 @@ import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { IonicPageModule } from 'ionic-angular';
 
-import { HomePage } from './home';
-
+import { LearnDirPopover } from './learn-dir-popover';
 
 @NgModule({
   declarations: [
-    HomePage
+    LearnDirPopover
   ],
   imports: [
-    IonicPageModule.forChild(HomePage),
+    IonicPageModule.forChild(LearnDirPopover),
     TranslateModule.forChild()
   ],
   exports: [
-    HomePage
+    LearnDirPopover
   ]
 })
-export class HomePageModule { }
+export class LearnDirPopoverModule { }

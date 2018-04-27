@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
 
-import { Lesson, Score, DefaultSettings } from '../../models';
+import { Lesson, Score, DefaultSettings, Category } from '../../models';
 
 /**
  * Api is a generic(and customized for Roo domain) REST Api handler.
@@ -41,10 +41,6 @@ export class Api {
 
   getScoreLookup(learnDir: string, difLevel: string): Observable<any> {
     return this.http.get(`${Api.API_URL}roo/api/user/score/lookup/${learnDir}/${difLevel}`);
-  }
-
-  getCategoryPublicList(learnDir: string): Observable<any> {
-    return this.http.get(`${Api.API_URL}roo/api/public/categories/${learnDir}`);
   }
 
   getLessonPublicList(difficultyLevel: string, uuid: string): Observable<any> {
@@ -91,6 +87,19 @@ export class Api {
 
   patch(endpoint: string, body: any, reqOpts?: any) {
     return this.http.put(Api.API_URL + endpoint, body, reqOpts);
+  }
+
+  cachedCategories: Category[];
+  getCategoryPublicList(learnDir: string, force?: boolean): Observable<any> {
+    if (force) this.cachedCategories = null;
+    if (this.cachedCategories) return Observable.of(this.cachedCategories);
+    return new Observable((observer) => {
+      this.http.get(`${Api.API_URL}roo/api/public/categories/${learnDir}`).subscribe((res: Category[]) => {
+        this.cachedCategories = res;
+        observer.next(this.cachedCategories);
+        observer.complete();
+      });
+    });
   }
 
 }

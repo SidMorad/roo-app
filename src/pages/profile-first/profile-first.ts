@@ -44,7 +44,7 @@ export class ProfileFirstPage {
     // Watch the form for changes, and
     this.form.valueChanges.subscribe((v) => {
       if (v.motherLanguage === 'EN_GB' && v.targetLanguage === 'EN_GB') {
-        this.form.controls['targetLanguage'].setValue('DE_DE');
+        this.form.controls['motherLanguage'].setValue('FA_IR');
       }
       this.settings.merge(this.form.value);
     });
@@ -94,8 +94,12 @@ export class ProfileFirstPage {
     }, (err) => {
       console.warn('Update profile failed.');
     });
-    this.settings.loadCachedScoreLookups(true).subscribe();
-    this.api.getCategoryPublicList(this.settings.learnDir).subscribe();
+    this.settings.switchLearnLevelTo(learnDir, this.settings.difficultyLevel).subscribe(() => {
+      this.navCtrl.push('TabsPage').then(() => {
+        const index = this.navCtrl.getActive().index;
+        this.navCtrl.remove(0, index);
+      });
+    });
   }
 
   ok() {

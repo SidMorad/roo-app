@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { Observable } from 'rxjs/Rx';
 
-import { DefaultSettings, ScoreLookup, Category, Score } from '../../models';
+import { DefaultSettings, ScoreLookup, Score, LearnDir, DifficultyLevel } from '../../models';
 import { Api } from './../providers';
 
 /**
@@ -78,17 +78,29 @@ export class Settings {
     return this.settings;
   }
 
-  public cachedCategories: Category[];
   public cachedScoreLookup: ScoreLookup;
 
   get learnDir() {
-    if (this.settings) {
-      return this.settings.learnDir;
-    }
+    return this.settings ? this.settings.learnDir : 'FA_IR$EN_GB';
   }
 
   get difficultyLevel() {
-    return this.settings.difficultyLevel;
+    return this.settings ? this.settings.difficultyLevel : 'Beginner';
+  }
+
+  switchLearnLevelTo(learnDir: string, difLevel: string) {
+    return new Observable((observer) => {
+      this.setValue('learnDir', learnDir).then(() => {
+        this.setValue('difficultyLevel', difLevel).then(() => {
+          this.api.getCategoryPublicList(learnDir, true).subscribe(() => {
+            this.loadCachedScoreLookups(true).subscribe(() => {
+              observer.next(true);
+              observer.complete();
+            });
+          });
+        });
+      });
+    });
   }
 
   private storeCachedScoreLookups() {
@@ -98,12 +110,8 @@ export class Settings {
   }
 
   public loadCachedScoreLookups(force?: boolean): Observable<any> {
-    if (force) {
-      this.cachedScoreLookup = null;
-    }
-    if (this.cachedScoreLookup) {
-      return Observable.of(this.cachedScoreLookup);
-    }
+    if (force) this.cachedScoreLookup = null;
+    if (this.cachedScoreLookup) return Observable.of(this.cachedScoreLookup);
     return new Observable((observer) => {
       this.load().then(() => {
         this.storage.get(this.scoreLookupCacheKey).then((res) => {
@@ -112,9 +120,7 @@ export class Settings {
             observer.next(this.cachedScoreLookup);
             observer.complete();
           } else {
-            const learnDir = this.allSettings.learnDir;
-            const difLevel = this.allSettings.difficultyLevel;
-            this.api.getScoreLookup(learnDir, difLevel).subscribe((res) => {
+            this.api.getScoreLookup(this.learnDir, this.difficultyLevel).subscribe((res) => {
               this.cachedScoreLookup = res;
               this.storeCachedScoreLookups();
               observer.next(res);
@@ -147,10 +153,49 @@ export class Settings {
     }
   }
 
-  private get scoreLookupCacheKey(): string {
-    const learnDir = this.allSettings.learnDir;
-    const difLevel = this.allSettings.difficultyLevel;
-    return 'CACHED_SCORE_LOOKUP_' + learnDir + '_' + difLevel;
+  scoreLookupCacheKeyPrefix: string = 'CACHED_SCORE_LOOKUP_';
+  public get scoreLookupCacheKey(): string {
+    return `${this.scoreLookupCacheKeyPrefix}${this.learnDir}_${this.difficultyLevel}`;
+  }
+
+  learnDirList() {
+    return new Observable((observer) => {
+      let result = [];
+      let promises = [];
+      const keys = this.allPossibleScoreLookupKeys();
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        let promise = this.storage.get(key).then((value) => {
+          if (value) {
+            result.push({ key: key, value: JSON.parse(value) });
+          }
+        }).catch();
+        promises.push(promise);
+      }
+      Promise.all(promises).then(() => {
+        observer.next(result);
+        observer.complete();
+      }).catch();
+    });
+  }
+
+  removeByKey(key) {
+    return this.storage.remove(key);
+  }
+
+  private allPossibleScoreLookupKeys() : any[] {
+    let result = [];
+    for (let learnDir in LearnDir) {
+      if (isNaN(Number(learnDir))) {
+        for (let dl in DifficultyLevel) {
+          if (isNaN(Number(dl))) {
+            result.push(this.scoreLookupCacheKeyPrefix + learnDir + '_' + dl);
+          }
+        }
+      }
+    }
+    console.log('All possible keys: ', result);
+    return result;
   }
 
 }

@@ -49,17 +49,17 @@
             <ion-icon name="sad"></ion-icon>
           </button>
         </span>
-        <p [class.dir-rtl]="platform.isRTL"
-           [class.dir-ltr]="!platform.isRTL">&nbsp; {{description | translate}}</p>
+        <p [class.dir-rtl]="isRTL"
+           [class.dir-ltr]="!isRTL">&nbsp; {{description | translate}}</p>
       </div>
       <div *ngIf="question && isNotTypes(['Conversation', 'Words'])" (click)="speak()"
-          [class.dir-rtl]="lesson.isMotherLangRTL() && question.d.reverse"
-          [class.dir-ltr]="lesson.isTargetLangLTR() && !question.d.reverse" class="question-question">
+          [class.dir-rtl]="lesson.isClassRTL(question.d.reverse)"
+          [class.dir-ltr]="lesson.isClassLTR(question.d.reverse)" class="question-question">
           {{questionFace}}
       </div>
-      <div *ngIf="(wasWrong || wasAlmostCorrect) && isNotTypes(['TwoPicture', 'FourPicture', 'OneCheck', 'Conversation', 'Words'])" class="alert alert-info"
-          [class.dir-rtl]="lesson.isMotherLangRTL() && !question.d.reverse"
-          [class.dir-ltr]="lesson.isTargetLangLTR() && question.d.reverse" (click)="speak()">
+      <div *ngIf="(wasWrong || wasAlmostCorrect) && isNotTypes(['TwoPicture', 'FourPicture', 'OneCheck', 'Conversation', 'Words', 'Speaking'])" class="alert alert-info"
+          [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)"
+          [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)" (click)="speak()">
         {{rightAnswerString}}
       </div>
 
@@ -69,9 +69,9 @@
           <ion-card swing-card #mycards1 *ngFor="let word of cards; let i = index;">
             <ion-row text-center center padding>
               <ion-col>
-                <ion-icon name="ios-arrow-back" class="float-right" style="padding-top: 1.5em" *ngIf="platform.isRTL"></ion-icon>
-                <ion-icon name="ios-arrow-back" class="float-left" style="padding-top: 1.5em" *ngIf="!platform.isRTL"></ion-icon>
-                <button ion-button large icon-end (click)="voteUp(platform.isRTL ? true : false)" color="light" [ngStyle]="{'background-color' : leftBackgroundColor}">
+                <ion-icon name="ios-arrow-back" class="float-right" style="padding-top: 1.5em" *ngIf="isRTL"></ion-icon>
+                <ion-icon name="ios-arrow-back" class="float-left" style="padding-top: 1.5em" *ngIf="!isRTL"></ion-icon>
+                <button ion-button large icon-end (click)="voteUp(isRTL ? true : false)" color="light" [ngStyle]="{'background-color' : leftBackgroundColor}">
                   {{word.option1}}
                 </button>
               </ion-col>
@@ -85,11 +85,11 @@
             </ion-row>
             <ion-row text-center center padding>
               <ion-col (click)="voteUp(true)">
-                <button ion-button large icon-end (click)="voteUp(platform.isRTL ? false : true)" color="light" [ngStyle]="{'background-color' : rightBackgroundColor}">
+                <button ion-button large icon-end (click)="voteUp(isRTL ? false : true)" color="light" [ngStyle]="{'background-color' : rightBackgroundColor}">
                   {{word.option2}}
                 </button>
-                <ion-icon name="ios-arrow-forward" class="float-left" style="padding-top: 1.5em" *ngIf="platform.isRTL"></ion-icon>
-                <ion-icon name="ios-arrow-forward" class="float-right" style="padding-top: 1.5em" *ngIf="!platform.isRTL"></ion-icon>
+                <ion-icon name="ios-arrow-forward" class="float-left" style="padding-top: 1.5em" *ngIf="isRTL"></ion-icon>
+                <ion-icon name="ios-arrow-forward" class="float-right" style="padding-top: 1.5em" *ngIf="!isRTL"></ion-icon>
               </ion-col>
             </ion-row>
           </ion-card>
@@ -153,8 +153,8 @@
       </div>
 
       <div *ngIf="isType('OneCheck')">
-        <ion-list radio-group [class.dir-rtl]="lesson.isMotherLangRTL() && question.isN()"
-                              [class.dir-ltr]="lesson.isTargetLangLTR() && question.isR()" padding>
+        <ion-list radio-group [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)"
+                              [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)" padding>
           <div *ngFor="let choice of choices; let i = index;">
             <div *ngIf="!isInContinueState || choice.isCorrect || choice.picked" class="check-option" (click)="oneChecked(i)"
                   [class.option-correct]="wasCorrect && choice.picked"
@@ -171,15 +171,15 @@
 
       <div *ngIf="isType('MultiSelect')">
         <div class="answer-background" id="answer-background">
-          <div [class.dir-rtl]="lesson.isMotherLangRTL() && question.isN()" padding
-               [class.dir-ltr]="lesson.isTargetLangLTR() && question.isR()">
+          <div [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)" padding
+               [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)">
             <span class="answer" *ngFor="let chosen of chosens; let i = index;" (click)="moveBackToOptions(chosen)">
               <button class="{{chosen.class}} answer-contents" id="chosen-{{i}}">{{chosen.text}}</button>
             </span>
           </div>
         </div>
-        <div [class.dir-rtl]="lesson.isMotherLangRTL() && question.isN()" padding
-             [class.dir-ltr]="lesson.isTargetLangLTR() && question.isR()" id="optionsContainer">
+        <div [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)" padding
+             [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)" id="optionsContainer">
           <span class="answer answer-container" *ngFor="let option of options; let i = index;" id="option-{{i}}">
             <button (click)="moveToChosen(option)" [disabled]="option.class === 'option-selected'" class="answer-contents {{option.class}}">{{option.text}}</button>
           </span>
@@ -206,12 +206,12 @@
 
       <div *ngIf="isType('Writing')" class="answer-background" padding>
         <textarea *ngIf="!writingAnswerDiff" [(ngModel)]="writingAnswer" class="answer-background"
-              [class.dir-rtl]="lesson.isMotherLangRTL() && question.isN()"
-              [class.dir-ltr]="lesson.isTargetLangLTR() && question.isR()"
+              [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)"
+              [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)"
         style="width: 100%" rows = "1" autofocus placeholder="{{typeHere | translate}}"></textarea>
         <div *ngIf="writingAnswerDiff" (click)="speak(writingAnswerDiffString)" class="answer-background"
-          [class.dir-rtl]="lesson.isMotherLangRTL() && question.isN()"
-          [class.dir-ltr]="lesson.isTargetLangLTR() && question.isR()">
+          [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)"
+          [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)">
           <span *ngFor="let part of writingAnswerDiff" [class.part-removed]="part.added" [class.part-added]="part.removed">{{part.value}}&nbsp;</span>
         </div>
       </div>

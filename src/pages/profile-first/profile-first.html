@@ -56,15 +56,15 @@
       <ion-item no-lines>
         <ion-segment formControlName="difficultyLevel" mode="ios">
           <ion-segment-button value="Beginner">
-            <ion-icon name="ios-text-outline"></ion-icon>
+            <ion-icon name="ios-text{{form.value.difficultyLevel !== 'Beginner' ? '-outline' : ''}}"></ion-icon>
             {{'LEVEL_BEGINNER' | translate}}
           </ion-segment-button>
           <ion-segment-button value="Intermediate">
-            <ion-icon name="ios-chatbubbles-outline"></ion-icon>
+            <ion-icon name="ios-chatbubbles{{form.value.difficultyLevel !== 'Intermediate' ? '-outline' : ''}}"></ion-icon>
             {{'LEVEL_INTERMEDIATE' | translate}}
           </ion-segment-button>
           <ion-segment-button value="Advanced">
-            <ion-icon name="ios-chatboxes-outline"></ion-icon>
+            <ion-icon name="ios-chatboxes{{form.value.difficultyLevel !== 'Advanced' ? '-outline' : ''}}"></ion-icon>
             {{'LEVEL_ADVANCED' | translate}}
           </ion-segment-button>
         </ion-segment>

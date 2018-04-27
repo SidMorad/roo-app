@@ -41,7 +41,7 @@ export class LessonQuestionPage implements OnInit {
   private unregisterBackButtonAction: any; private exitAlertInstance: any;
   private questionStartIndex: number = 0;
 
-  constructor(public platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
+  constructor(private platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
               private translateService: TranslateService, private viewCtrl: ViewController,
               private principal: Principal, private loginService: LoginService,
               private modalCtrl: ModalController, private ngZone: NgZone, private market: Market,
@@ -348,7 +348,7 @@ export class LessonQuestionPage implements OnInit {
   microphoneDown(event) {
     this.microphonePressed = true;
     if (this.hasAudioRecordingPermission) {
-      this.speechRecognition.startListening().subscribe((matches: any) => {
+      this.speechRecognition.startListening({ language: this.lesson.targetLocale() }).subscribe((matches: any) => {
         let findBest;
         if (this.isType('Speaking')) {
           findBest = findBestMatch(this.question.speakingAnswer(), matches);
@@ -495,6 +495,10 @@ export class LessonQuestionPage implements OnInit {
     this.autoPlayVoice = !this.autoPlayVoice;
   }
 
+  get isRTL(): boolean {
+    return this.platform.isRTL;
+  }
+
   checkHasAudioRecordingPermission() {
     this.speechRecognition.hasPermission().then((hasPermission: boolean) => {
       if (!hasPermission) {
@@ -573,6 +577,7 @@ export class LessonQuestionPage implements OnInit {
   }
 
   initalizeBackButtonCustomHandler() {
+    console.log('custom init back handler called acutally!');
     let that = this;
     this.unregisterBackButtonAction = this.platform.registerBackButtonAction(function(event) {
       if (that.exitAlertInstance) {

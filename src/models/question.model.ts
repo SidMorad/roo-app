@@ -373,8 +373,8 @@ export class Question {
     if (this.targetMultiSelectOptions) {
       return this.targetMultiSelectOptions;
     }
-    const toptions = JSON.parse(JSON.stringify(this.targetOptions));
-    this.targetMultiSelectOptions = this.shuffle(toptions.concat(this.multiSelectAnswers()));
+    const toptions = this.splitOptions(JSON.parse(JSON.stringify(this.targetOptions)).concat(this.multiSelectAnswers()));
+    this.targetMultiSelectOptions = this.shuffle(toptions);
     return this.targetMultiSelectOptions;
   }
 
@@ -382,8 +382,8 @@ export class Question {
     if (this.motherMultiSelectOptions) {
       return this.motherMultiSelectOptions;
     }
-    const moptions = JSON.parse(JSON.stringify(this.motherOptions));
-    this.motherMultiSelectOptions = this.shuffle(moptions.concat(this.multiSelectAnswers()));
+    const moptions = this.splitOptions(JSON.parse(JSON.stringify(this.motherOptions)).concat(this.multiSelectAnswers()));
+    this.motherMultiSelectOptions = this.shuffle(moptions);
     return this.motherMultiSelectOptions;
   }
 
@@ -444,6 +444,27 @@ export class Question {
     }
 
     return array;
+  }
+
+  splitOptions(array) {
+    let unique = [];
+    let result = [];
+    array.forEach((option: any) => {
+      if (/\s/.test(option.text)) {
+        option.text.split(' ').forEach((suboption) => {
+          if (unique.indexOf(suboption) === -1) {
+            unique.push(suboption);
+            result.push({ text: suboption });
+          }
+        });
+      } else {
+        if (unique.indexOf(option.text) === -1) {
+          unique.push(option.text);
+          result.push({ text: option.text });
+        }
+      }
+    });
+    return result;
   }
 
   private determineOptionValue(option: any, dir: string, removeDot?: boolean): string {

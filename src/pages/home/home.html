@@ -1,31 +1,33 @@
 <ion-header no-border>
   <ion-navbar transparent>
     <ion-title>
-        <span class="app-name" [class.app-name-rtl]="platform.isRTL">{{'APP_NAME' | translate}}</span>
+        <span class="app-name" [class.app-name-rtl]="isRTL">{{'APP_NAME' | translate}}</span>
     </ion-title>
-    <ion-buttons end *ngIf="platform.isRTL">
+    <ion-buttons end *ngIf="isRTL">
       <button ion-button icon-only clear color="dark" menuToggle>
         <ion-icon name="menu"></ion-icon>
       </button>
     </ion-buttons>
-    <ion-buttons left *ngIf="!platform.isRTL">
+    <ion-buttons left *ngIf="!isRTL">
       <button ion-button icon-only clear color="dark" menuToggle>
         <ion-icon name="menu"></ion-icon>
       </button>
     </ion-buttons>
-    <ion-buttons end *ngIf="!platform.isRTL">
+    <ion-buttons end *ngIf="!isRTL">
       <button ion-button icon-only clear *ngIf="showRetryButton" (click)="fetchCategories()">
         <ion-icon name="refresh"></ion-icon>
       </button>
       <button ion-button icon-only clear *ngIf="showUpgradeButton" (click)="upgrade()" color="danger">
         <ion-icon name="appstore"></ion-icon>
       </button>
-      <span class="flag-icon flag-icon-{{flag}}"></span>
+      <button ion-button clear (click)="presentPopover($event)" *ngIf="isAuthenticated">
+        <span class="flag-icon flag-icon-{{flag}}"></span>
+      </button>
       <button ion-button icon-only clear (click)="showHelp()" color="secondary" id="helpButton">
         <ion-icon name="help-buoy"></ion-icon>
       </button>
     </ion-buttons>
-    <ion-buttons left *ngIf="platform.isRTL">
+    <ion-buttons left *ngIf="isRTL">
       <button ion-button icon-only clear *ngIf="showRetryButton" (click)="fetchCategories()">
         <ion-icon name="refresh"></ion-icon>
       </button>
@@ -35,7 +37,9 @@
       <button ion-button icon-only clear (click)="showHelp()" color="secondary" id="helpButton">
         <ion-icon name="help-buoy"></ion-icon>
       </button>
-      <span class="flag-icon flag-icon-{{flag}}"></span>
+      <button ion-button clear (click)="presentPopover($event)" *ngIf="isAuthenticated">
+        <span class="flag-icon flag-icon-{{flag}}"></span>
+      </button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>

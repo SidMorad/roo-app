@@ -96,13 +96,13 @@ export class MyApp implements OnInit {
               customHashFragment: keyValuePair,
               disableOAuth2StateCheck: true,
               onTokenReceived: context => {
-                me.getAccount();
+                const claims = me.oauthService.getIdentityClaims();
+                if (claims) {
+                  me.events.publish('LOGIN_SUCCESS', claims);
+                  me.getAccount();
+                }
               }
             });
-            const claims = me.oauthService.getIdentityClaims();
-            if (claims) {
-              me.events.publish('LOGIN_SUCCESS', claims);
-            }
           }
         }
       }, 0);
@@ -111,8 +111,8 @@ export class MyApp implements OnInit {
 
   ngOnInit() {
     console.log('App init event.');
-    this.events.subscribe('LOGIN_SUCCESS', (cliams) => {
-      console.log('Subscribe of LOGIN_SUCCESS triggered.');
+    this.events.subscribe('LOGIN_SUCCESS', (claims) => {
+      console.log('Subscribe of LOGIN_SUCCESS triggered.', claims.preferred_username);
       let that = this;
       this.settings.load().then(() => {
         that.settings.loadCachedScoreLookups().subscribe();
@@ -164,9 +164,9 @@ export class MyApp implements OnInit {
     this.oauthService.loadDiscoveryDocumentAndLogin().then(() => {
       const claims = this.oauthService.getIdentityClaims();
       if (claims) {
-        this.events.publish('LOGIN_SUCCESS', claims);
+        // this.events.publish('LOGIN_SUCCESS', claims);
+        this.getAccount();
       }
-      this.getAccount();
     }).catch(error => {
       if (error.params && error.params.error === 'unsupported_response_type') {
         let problem = 'You need to enable implicit flow for this app in your identity provider!';
@@ -198,6 +198,8 @@ export class MyApp implements OnInit {
 
   initTranslate() {
     this.ngZone.run(() => {
+    this.translate.setDefaultLang('fa');
+    this.translate.use('fa');
     this.settings.load().then(() => {
       this.translate.onLangChange.subscribe((data) => {
         console.log('OnLangChange fired:', data.lang);

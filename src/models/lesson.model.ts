@@ -32,7 +32,7 @@ export class Lesson {
       case 'EN_GB':
         return 'en-GB';
       case 'DE_DE':
-        return 'de';
+        return 'de-DE';
       default:
         return 'en-GB';
     }
@@ -44,6 +44,14 @@ export class Lesson {
 
   get targetLangKey(): string {
     return this.targetLanguage().split('_')[0];
+  }
+
+  isClassRTL(reverse: boolean): boolean {
+    return this.isMotherLangRTL() && reverse;
+  }
+
+  isClassLTR(reverse: boolean): boolean {
+    return !this.isClassRTL(reverse);
   }
 
 }

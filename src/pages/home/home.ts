@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone, ViewChild, ElementRef } from '@angular/core';
-import { IonicPage, NavController, Platform, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, Platform, ModalController, PopoverController } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { Market } from '@ionic-native/market';
 import { Storage } from '@ionic/storage';
@@ -27,9 +27,10 @@ export class HomePage implements OnInit {
   constructor(private navCtrl: NavController, private principal: Principal,
               private ngZone: NgZone, private market: Market,
               private api: Api, private appVersion: AppVersion,
-              public platform: Platform, private storage: Storage,
+              private platform: Platform, private storage: Storage,
               private modalCtrl: ModalController, private elementRef: ElementRef,
-              private translateService: TranslateService, private settings: Settings) {
+              private translateService: TranslateService, private settings: Settings,
+              private popoverCtrl: PopoverController) {
     this.categories = [];
     this.mapWidth = (window.screen.height * 6);
   }
@@ -65,19 +66,31 @@ export class HomePage implements OnInit {
   }
 
   ngAfterViewInit() {
+    setTimeout(() => {
+      console.log('Home#currentLang was ', this.translateService.currentLang);
+      if (this.translateService.currentLang) {
+        this.initTranslations();
+      } else {
+        this.ngZone.run(() => {
+          this.translateService.setDefaultLang(this.settings.allSettings.language);
+          this.translateService.use(this.settings.allSettings.language).subscribe(() => {
+            this.platform.setLang(this.translateService.currentLang, true);
+            this.platform.setDir(this.translateService.currentLang === 'fa' ? 'rtl' : 'ltr', true);
+            this.initTranslations();
+          });
+        });
+      }
+      if (this.showHelpHint) {
+        this.showHelpHintHint();
+      }
+    }, 4000);
+  }
+
+  ionViewWillEnter() {
     let scrollContentDiv = this.elementRef.nativeElement.querySelector('.scroll-content');
     setTimeout(() => {
       scrollContentDiv.style = null;  // a fix for auto padding-top and padding-bottom set value.
     }, 400);
-    setTimeout(() => {
-      this.initTranslations();
-      if (this.showHelpHint) {
-        this.showHelpHintHint();
-      }
-    }, 2000);
-  }
-
-  ionViewWillEnter() {
     this.principal.identity().then((account) => {
       this.ngZone.run(() => {
         this.account = account === null ? {} : account;
@@ -88,7 +101,6 @@ export class HomePage implements OnInit {
 
   ionViewDidEnter() {
     if (this.showHelpHint) {
-      console.log('showHelpHint triggered!!');
       this.showHelpHintHint();
     }
   }
@@ -109,7 +121,7 @@ export class HomePage implements OnInit {
     if (this.settings.cachedScoreLookup) {
       return this.settings.cachedScoreLookup;
     }
-    return new ScoreLookup(0, null, {}, {});
+    return new ScoreLookup(0, null, null, {}, {});
   }
 
   get flag() {
@@ -144,8 +156,21 @@ export class HomePage implements OnInit {
     }
   }
 
+  get isAuthenticated(): boolean {
+    return this.principal.isAuthenticated();
+  }
+
+  get isRTL(): boolean {
+    return this.platform.isRTL;
+  }
+
   upgrade() {
     this.market.open('mars.roo');
+  }
+
+  presentPopover($event) {
+    const popover = this.popoverCtrl.create('LearnDirPopover');
+    popover.present({ ev: $event });
   }
 
   showHelp() {
@@ -190,7 +215,7 @@ export class HomePage implements OnInit {
     this.translateService.get(['OK', 'FOR_START_CLICK_ON_THE_PICTURE', 'NEXT', 'PREV',
                                'CLICK_HERE_TO_SEE_GUIDE', 'TO_THE_RIGHT',
                                'AND_CONTINUE_YOUR_PATH']).subscribe((translated) => {
-console.log('initTranslations Called and result was ', translated);
+console.log('initTranslations Called and result was ', translated.OK);
       this.labelOk = translated.OK;
       this.labelNext = translated.NEXT;
       this.labelPrev = translated.PREV;

@@ -62,17 +62,17 @@ export class TabsPage implements OnInit, OnDestroy {
       const nav = this.app.getActiveNavs()[0];
 
       if (this.menuController.isOpen()) {
-        this.menuController.close();
+        try { this.menuController.close(); } catch(err) { }
         console.log('Menu closed!!!');
         return;
       }
       else if (activePortal) {
-        activePortal.dismiss();
+        try { activePortal.dismiss(); } catch(err) { }
         console.log('Portal closed!!!');
         return;
       }
       else if (nav.canGoBack()) {
-        nav.pop();
+        try { nav.pop(); } catch(err) { }
         console.log('Nav popped!!!');
         return;
       }

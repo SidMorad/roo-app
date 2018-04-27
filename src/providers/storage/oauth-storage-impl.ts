@@ -30,7 +30,7 @@ export class OAuthStorageImpl implements OAuthStorage {
 
   loadMemory(): Promise<void> {
     return this.ss.keys().then((keys: string[]) => {
-      keys.forEach(key => {
+      keys.forEach((key) => {
         this.ss.get(key).then((value) => {
           if (!this.memory[key]) {
             this.memory[key] = JSON.parse(value);

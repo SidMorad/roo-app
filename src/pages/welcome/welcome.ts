@@ -27,10 +27,11 @@ export class WelcomePage implements OnInit {
 
   ngOnInit() {
     this.isTryingToLogin = true;
+    this.oauthService.setStorage(localStorage);
     const claims: any = this.oauthService.getIdentityClaims();
     if (!claims) {
       this.oauthService.loadDiscoveryDocumentAndLogin().then(() => {
-        this.home();
+        this.geAccount();
         console.log('Well loadAuthAndTryLogin succeed, accessTokenExpiration is ', this.oauthService.getAccessTokenExpiration());
       }).catch((error) => {
         console.log('Well loadAuthAndTryLogin failed with error ', error);
@@ -39,7 +40,7 @@ export class WelcomePage implements OnInit {
     } else {
       // console.log('Cliams ', claims);
       this.events.publish('LOGIN_SUCCESS', claims);
-      this.home();
+      this.geAccount();
     }
   }
 
@@ -56,14 +57,20 @@ export class WelcomePage implements OnInit {
   login() {
     this.loginService.appLogin((data) => {
       this.home();
-      this.viewCtrl.dismiss();
     }, (err) => {
       console.log('WelcomePage: Login failed.');
     });
   }
 
   home() {
-    this.app.getRootNavs()[0].setRoot(MainPage);
+    this.navCtrl.push(MainPage).then(() => {
+      const index = this.navCtrl.getActive().index;
+      this.navCtrl.remove(0, index);
+    });
+    // this.app.getRootNavs()[0].setRoot(MainPage);
+    // try {
+    //   this.viewCtrl.dismiss();
+    // } catch(err) { console.warn('Error on dismiss welcome page: ', err) }
   }
 
 }

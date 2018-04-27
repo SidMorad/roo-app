@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { IonicPage, NavParams } from 'ionic-angular';
+import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { TranslateService } from '@ngx-translate/core';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -43,7 +43,7 @@ export class SettingsPage {
     private formBuilder: FormBuilder, private navParams: NavParams,
     private translate: TranslateService, private api: Api,
     public principal: Principal, private appVersion: AppVersion,
-    private splash: SplashScreen) {
+    private splash: SplashScreen, private navCtrl: NavController) {
       this.appVersion.getVersionNumber().then((versionNum) => {
         this.versionNumber = versionNum;
       }).catch((err) => { console.error('getVersionNumber ', err) });
@@ -79,7 +79,7 @@ export class SettingsPage {
     // Watch the form for changes, and
     this.form.valueChanges.subscribe((v) => {
       if (v.motherLanguage === 'EN_GB' && v.targetLanguage === 'EN_GB') {
-        this.form.controls['targetLanguage'].setValue('DE_DE');
+        this.form.controls['motherLanguage'].setValue('FA_IR');
       }
       this.settings.merge(this.form.value);
       if (this.settings.allSettings.language !== this.translate.currentLang) {
@@ -128,10 +128,13 @@ export class SettingsPage {
     console.log('SettingsPage#ionViewWillLeave');
     this.updateProfile().subscribe();
     if (this.page === 'learn') {
-      this.settings.loadCachedScoreLookups(true).subscribe();
       if (this.previousLearnDir !== this.settings.allSettings.learnDir) {
-        this.splash.show();
-        window.location.reload();
+        this.settings.switchLearnLevelTo(this.settings.learnDir, this.settings.difficultyLevel).subscribe(() => {
+          this.navCtrl.push('TabsPage').then(() => {
+            const index = this.navCtrl.getActive().index;
+            this.navCtrl.remove(0, index);
+          });
+        });
       }
     }
   }
