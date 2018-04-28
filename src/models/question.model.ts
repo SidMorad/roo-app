@@ -334,7 +334,7 @@ export class Question {
     }
     else {
       if (this.lookupWords[this.d.question]) {
-        return this.isNormal() ? this.lookupWords[this.d.question]['target']: this.lookupWords[this.d.question]['mother'];
+        return this.isNormal() ? this.lookupWords[this.d.question]['t']: this.lookupWords[this.d.question]['m'];
       }
     }
   }
@@ -361,12 +361,12 @@ export class Question {
       }
     }
     else {
-      return this.lookupWords[this.d.question]['target'];
+      return this.lookupWords[this.d.question]['t'];
     }
   }
 
   get answer(): string {
-    return this.isNormal() ? this.lookupWords[this.d.question]['mother']: this.lookupWords[this.d.question]['target'];
+    return this.isNormal() ? this.lookupWords[this.d.question]['m']: this.lookupWords[this.d.question]['t'];
   }
 
   get tmultiSelectOptions(): any[] {
@@ -391,7 +391,7 @@ export class Question {
     if (this.targetOptions) {
       return this.targetOptions;
     }
-    this.targetOptions = this.replaceWords(this.d.options, 'target', removeDot);
+    this.targetOptions = this.replaceWords(this.d.options, 't', removeDot);
     return this.targetOptions;
   }
 
@@ -399,7 +399,7 @@ export class Question {
     if (this.motherOptions) {
       return this.motherOptions;
     }
-    this.motherOptions = this.replaceWords(this.d.options, 'mother', removeDot);
+    this.motherOptions = this.replaceWords(this.d.options, 'm', removeDot);
     return this.motherOptions;
   }
 

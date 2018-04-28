@@ -8,29 +8,41 @@ import { Settings, ScoreUtil } from '../../providers';
   selector: 'learn-dir-popover',
   template: `
   <ion-list>
-  <ion-item-sliding *ngFor="let learn of learnDirList">
-    <ion-item (click)="switchTo(learn)">
+    <ion-item-sliding *ngFor="let learn of learnDirList">
+      <ion-item (click)="switchTo(learn)">
+        <ion-avatar item-start>
+          <span class="flag-icon flag-icon-{{learn.flagl}}"></span>
+        </ion-avatar>
+        <h2>{{learn.translKey | translate}}
+          <ion-spinner *ngIf="isSwitching && learn.wantToSwitch"></ion-spinner>
+          <ion-icon name="ribbon"></ion-icon>
+          {{learn.level}}
+        </h2>
+        <ion-icon [name]="learn.difIcon" [isActive]="learn.key === currentKey" item-end></ion-icon>
+      </ion-item>
+      <ion-item-options>
+        <button ion-button color="danger" (click)="delete(learn)" [disabled]="learn.key === currentKey">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+    <ion-item (click)="newDirection()">
       <ion-avatar item-start>
-        <span class="flag-icon flag-icon-{{learn.flagl}}"></span>
+        <button ion-button icon-only clear color="dark">
+          <ion-icon name="add-circle"></ion-icon>
+        </button>
       </ion-avatar>
-      <h2>{{learn.translKey | translate}}
-        <ion-spinner *ngIf="isSwitching && learn.wantToSwitch"></ion-spinner>
+      <h2>{{'NEW_LABEL' | translate}}
+        <ion-spinner *ngIf="isLeaving"></ion-spinner>
       </h2>
-      <p>{{learn.level}}</p>
-      <ion-icon [name]="learn.difIcon" [isActive]="learn.key === currentKey" item-end></ion-icon>
     </ion-item>
-    <ion-item-options>
-      <button ion-button color="danger" (click)="delete(learn)" [disabled]="learn.key === currentKey">
-        <ion-icon name="trash"></ion-icon>
-      </button>
-    </ion-item-options>
-  </ion-item-sliding>
   </ion-list>`
 })
 export class LearnDirPopover implements OnInit {
 
   learnDirList: Array<any> = [];
   isSwitching: boolean = false;
+  isLeaving: boolean = false;
 
   constructor(private settings: Settings, private scoreUtil: ScoreUtil,
               private ngZone: NgZone, private viewCtrl: ViewController,
@@ -85,6 +97,16 @@ export class LearnDirPopover implements OnInit {
       this.loadLearnDirList();
       this.isSwitching = false;
     });
+  }
+
+  newDirection() {
+    this.isLeaving = true;
+    this.navCtrl.push('SettingsPage', {
+      page: 'learn',
+      pageTitleKey: 'SETTINGS_PAGE_LANGUAGE'
+    }).then(() => {
+      this.viewCtrl.dismiss();
+    })
   }
 
   get currentKey(): string {

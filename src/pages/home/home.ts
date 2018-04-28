@@ -1,9 +1,10 @@
 import { Component, OnInit, NgZone, ViewChild, ElementRef } from '@angular/core';
-import { IonicPage, NavController, Platform, ModalController, PopoverController } from 'ionic-angular';
+import { IonicPage, NavController, Platform, ModalController, PopoverController, Events } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { Market } from '@ionic-native/market';
 import { Storage } from '@ionic/storage';
 import { TranslateService } from '@ngx-translate/core';
+import { Observable } from 'rxjs/Rx';
 import introJs from 'intro.js/intro.js';
 
 import { Principal } from '../../providers/auth/principal.service';
@@ -17,12 +18,15 @@ import { Category, ScoreLookup, Account } from '../../models';
 })
 export class HomePage implements OnInit {
   @ViewChild('panel', { read: ElementRef}) public panel: ElementRef;
+
   account: Account = {};
   categories: Category[];
   mapWidth: number;
   showRetryButton: boolean;
   showUpgradeButton: boolean;
   showHelpHint: boolean = true;
+  hideBackward: boolean = true;
+  hideForward: boolean = false;
 
   constructor(private navCtrl: NavController, private principal: Principal,
               private ngZone: NgZone, private market: Market,
@@ -30,7 +34,7 @@ export class HomePage implements OnInit {
               private platform: Platform, private storage: Storage,
               private modalCtrl: ModalController, private elementRef: ElementRef,
               private translateService: TranslateService, private settings: Settings,
-              private popoverCtrl: PopoverController) {
+              private popoverCtrl: PopoverController, private events: Events) {
     this.categories = [];
     this.mapWidth = (window.screen.height * 6);
   }
@@ -67,19 +71,16 @@ export class HomePage implements OnInit {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      console.log('Home#currentLang was ', this.translateService.currentLang);
-      if (this.translateService.currentLang) {
-        this.initTranslations();
-      } else {
-        this.ngZone.run(() => {
-          this.translateService.setDefaultLang(this.settings.allSettings.language);
-          this.translateService.use(this.settings.allSettings.language).subscribe(() => {
-            this.platform.setLang(this.translateService.currentLang, true);
-            this.platform.setDir(this.translateService.currentLang === 'fa' ? 'rtl' : 'ltr', true);
-            this.initTranslations();
+      this.initTranslations().subscribe((translated) => {
+        if (translated['OK'] === 'OK') {  // Oops translatation didn't work as expected!
+          console.log('Oops translateService didn\'t initialized correctly! ', this.translateService.currentLang);
+          this.events.publish('INIT_TRANSLATIONS');
+          this.navCtrl.push('TabsPage').then(() => {
+            const index = this.navCtrl.getActive().index;
+            this.navCtrl.remove(0, index);
           });
-        });
-      }
+        }
+      });
       if (this.showHelpHint) {
         this.showHelpHintHint();
       }
@@ -87,9 +88,13 @@ export class HomePage implements OnInit {
   }
 
   ionViewWillEnter() {
-    let scrollContentDiv = this.elementRef.nativeElement.querySelector('.scroll-content');
+    const scrollContentDiv = this.elementRef.nativeElement.querySelector('.scroll-content');
+    const mapDiv = this.elementRef.nativeElement.querySelector('.map-container');
     setTimeout(() => {
       scrollContentDiv.style = null;  // a fix for auto padding-top and padding-bottom set value.
+      if (mapDiv.scrollLeft === 0) {
+        mapDiv.scrollLeft += 38;
+      }
     }, 400);
     this.principal.identity().then((account) => {
       this.ngZone.run(() => {
@@ -144,7 +149,51 @@ export class HomePage implements OnInit {
   }
 
   scrollToTheRight() {
-    this.panel.nativeElement.scrollLeft += window.screen.width;
+    this.panel.nativeElement.scrollLeft += window.screen.width - 30;
+    if (this.panel.nativeElement.scrollLeft >= (this.mapWidth - window.screen.width)) {
+      this.hideForward = true;
+    }
+    this.hideBackward = false;
+  }
+
+  scrollToTheLeft() {
+    this.panel.nativeElement.scrollLeft -= window.screen.width - 30;
+    if (this.panel.nativeElement.scrollLeft <= 0) {
+      this.hideBackward = true;
+    }
+    this.hideForward = false;
+  }
+
+  scrollToTheFarLeft() {
+    console.log('Scroll to far left triggered.');
+    this.panel.nativeElement.scrollLeft = 0;
+    this.hideBackward = true;
+  }
+
+  scrollToTheFarRight() {
+    console.log('Scroll to far right triggered.');
+    this.panel.nativeElement.scrollLeft = this.mapWidth - window.screen.width;
+    this.hideForward = true;
+  }
+
+  lastTimeScreenTouched: number;
+  touchMove1($event) {
+    this.hideBackward = true;
+    this.hideForward = true;
+    this.lastTimeScreenTouched = new Date().getTime();
+  }
+
+  touchEnd1($event) {
+    setTimeout(() => {
+      if (this.lastTimeScreenTouched && new Date().getTime() - this.lastTimeScreenTouched > 2000) {
+        if (this.panel.nativeElement.scrollLeft > 0) {
+          this.hideBackward = false;
+        }
+        if (this.panel.nativeElement.scrollLeft < (this.mapWidth - window.screen.width)) {
+          this.hideForward = false;
+        }
+      }
+    }, 2000);
   }
 
   categoryLesson(category: Category) {
@@ -179,7 +228,7 @@ export class HomePage implements OnInit {
       steps: [
         { element: '#pin-1', intro: this.labelStartFromHere, position: 'auto' },
         { element: '#pin-22' , intro: this.labelAndContinueYourPath, position: 'auto'},
-        { element: '#pin-2' , intro: this.labelToTheRight, position: 'auto'}
+        { element: '#helpButton' , intro: this.labelToTheRight, position: 'auto'}
       ],
       showStepNumbers: false,
       exitOnOverlayClick: true,
@@ -212,17 +261,20 @@ export class HomePage implements OnInit {
   labelToTheRight: string;
 
   initTranslations() {
-    this.translateService.get(['OK', 'FOR_START_CLICK_ON_THE_PICTURE', 'NEXT', 'PREV',
-                               'CLICK_HERE_TO_SEE_GUIDE', 'TO_THE_RIGHT',
-                               'AND_CONTINUE_YOUR_PATH']).subscribe((translated) => {
-console.log('initTranslations Called and result was ', translated.OK);
-      this.labelOk = translated.OK;
-      this.labelNext = translated.NEXT;
-      this.labelPrev = translated.PREV;
-      this.labelStartFromHere = translated.FOR_START_CLICK_ON_THE_PICTURE;
-      this.labelClickHereToSeeInstructions = translated.CLICK_HERE_TO_SEE_GUIDE;
-      this.labelAndContinueYourPath = translated.AND_CONTINUE_YOUR_PATH;
-      this.labelToTheRight = translated.TO_THE_RIGHT;
+    return new Observable((observer) => {
+       this.translateService.get(['OK', 'FOR_START_CLICK_ON_THE_PICTURE', 'NEXT', 'PREV',
+                                 'CLICK_HERE_TO_SEE_GUIDE', 'TO_THE_RIGHT',
+                                 'AND_CONTINUE_YOUR_PATH']).subscribe((translated) => {
+        this.labelOk = translated.OK;
+        this.labelNext = translated.NEXT;
+        this.labelPrev = translated.PREV;
+        this.labelStartFromHere = translated.FOR_START_CLICK_ON_THE_PICTURE;
+        this.labelClickHereToSeeInstructions = translated.CLICK_HERE_TO_SEE_GUIDE;
+        this.labelAndContinueYourPath = translated.AND_CONTINUE_YOUR_PATH;
+        this.labelToTheRight = translated.TO_THE_RIGHT;
+        observer.next(translated);
+        observer.complete();
+      });
     });
   }
 

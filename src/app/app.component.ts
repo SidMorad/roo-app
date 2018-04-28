@@ -4,6 +4,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { Config, Nav, Platform, Events, App } from 'ionic-angular';
 import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
+import { Subscription } from 'rxjs/Rx';
 
 import { FirstRunPage } from '../pages/pages';
 import { Settings } from '../providers/providers';
@@ -54,6 +55,7 @@ export class MyApp implements OnInit {
   exitConfirmationText: string;
   // fallbackAuthBaseUrl: string = 'http://192.168.10.106:9080';
   fallbackAuthBaseUrl: string = 'https://mars.webebook.org';
+  onLangChangeSubscription: Subscription;
 
   constructor(private translate: TranslateService, private platform: Platform,
     private settings: Settings, private config: Config, private ngZone: NgZone,
@@ -116,6 +118,21 @@ export class MyApp implements OnInit {
       let that = this;
       this.settings.load().then(() => {
         that.settings.loadCachedScoreLookups().subscribe();
+      });
+    });
+    this.events.subscribe('INIT_TRANSLATIONS', () => {
+      if (this.onLangChangeSubscription) this.onLangChangeSubscription.unsubscribe();
+      this.onLangChangeSubscription = this.translate.onLangChange.subscribe((data) => {
+        console.log('OnLangChange fired:', data.lang);
+        this.platform.setLang(data.lang, true);
+        this.platform.setDir((data.lang === 'fa') ? 'rtl' : 'ltr', true);
+      });
+      this.translate.setDefaultLang(this.settings.allSettings.language);
+      this.translate.use(this.settings.allSettings.language).subscribe(() => {
+        this.translate.get(['BACK_BUTTON_TEXT', 'EXIT_CONFIRMATION_TEXT']).subscribe(values => {
+          this.config.set('ios', 'backButtonText', values.BACK_BUTTON_TEXT);
+          this.exitConfirmationText = values.EXIT_CONFIRMATION_TEXT;
+        });
       });
     });
   }
@@ -198,20 +215,8 @@ export class MyApp implements OnInit {
 
   initTranslate() {
     this.ngZone.run(() => {
-    this.translate.setDefaultLang('fa');
-    this.translate.use('fa');
     this.settings.load().then(() => {
-      this.translate.onLangChange.subscribe((data) => {
-        console.log('OnLangChange fired:', data.lang);
-        this.platform.setLang(data.lang, true);
-        this.platform.setDir((data.lang === 'fa') ? 'rtl' : 'ltr', true);
-      });
-      this.translate.setDefaultLang(this.settings.allSettings.language);
-      this.translate.use(this.settings.allSettings.language);
-      this.translate.get(['BACK_BUTTON_TEXT', 'EXIT_CONFIRMATION_TEXT']).subscribe(values => {
-        this.config.set('ios', 'backButtonText', values.BACK_BUTTON_TEXT);
-        this.exitConfirmationText = values.EXIT_CONFIRMATION_TEXT;
-      });
+      this.events.publish('INIT_TRANSLATIONS');
       this.dname = this.settings.allSettings.dname;
     });
     });

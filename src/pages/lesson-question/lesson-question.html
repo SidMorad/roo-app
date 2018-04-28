@@ -52,7 +52,7 @@
         <p [class.dir-rtl]="isRTL"
            [class.dir-ltr]="!isRTL">&nbsp; {{description | translate}}</p>
       </div>
-      <div *ngIf="question && isNotTypes(['Conversation', 'Words'])" (click)="speak()"
+      <div *ngIf="question && isNotTypes(['Conversation', 'Words']) && (!question.d.listen || isInContinueState)" (click)="speak()"
           [class.dir-rtl]="lesson.isClassRTL(question.d.reverse)"
           [class.dir-ltr]="lesson.isClassLTR(question.d.reverse)" class="question-question">
           {{questionFace}}
@@ -198,7 +198,7 @@
         <a *ngIf="isType('Speaking')" (click)="skipSpeakingQuestions()" style="color:gray">{{'SKIP_MICROPHONE_QUESTIONS_FOR_NOW' | translate}}</a>
         <ion-fab center bottom large>
           <button ion-fab large color="{{microphonePressed ? 'danger' : 'primary'}}"
-            (touchstart)="microphoneDown($event)" (touchend)="microphoneUp($event)" [disabled]="isChecking" id="speakingButton">
+            (touchstart)="microphoneDown($event)" [disabled]="isChecking" id="speakingButton">
             <ion-icon name="microphone"></ion-icon>
           </button>
         </ion-fab>
@@ -315,7 +315,7 @@
   </div>
   <ion-fab center bottom large *ngIf="isType('Conversation')">
     <button ion-fab large color="{{microphonePressed ? 'danger' : 'primary'}}"
-      (touchstart)="microphoneDown($event)" (touchend)="microphoneUp($event)" [disabled]="isChecking" id="speakingButton">
+      (touchstart)="microphoneDown($event)" [disabled]="isChecking" id="speakingButton">
       <ion-icon name="microphone"></ion-icon>
     </button>
   </ion-fab>

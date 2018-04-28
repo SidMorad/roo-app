@@ -1,13 +1,13 @@
 {
   "APP_NAME": "Roo",
-  "ROO_BANNER_MESSAGE": "یادگیری زبان، هوشمند با تفریح و پرش!",
+  "Learn a language with smart Roo!": "یادگیری زبان هوشمند!",
   "APP_VERSION": "نسخه",
   "BACK_BUTTON_TEXT": "برگشت",
   "EXIT_CONFIRMATION_TEXT": "برای خروج دوباره دکمه برگشت را بزنید.",
   "CLICK_HERE_TO_SEE_GUIDE": "برای دیدن راهنما، اینجا را کلیک کنید.",
   "FOR_START_CLICK_ON_THE_PICTURE": "برای شروع بروی یک تصویر کلیک کنید.",
   "AND_CONTINUE_YOUR_PATH": "و به مسیرتون ادامه بدید.",
-  "TO_THE_RIGHT": "به سمت راست و به سمت راست.",
+  "TO_THE_RIGHT": "به سمت راست.",
 
   "NEW_LABEL": "جدید",
   "SOON_LABEL": "به زودی",
@@ -49,6 +49,7 @@
   "PLEASE_UPDATE_THIS_OTHER_APP_FROM_MARKET": "لطفا این اپلیکیشن دیگر را به روز رسانی کنید.",
   "MARKET": "بازار",
   "TRANSLATE_THIS_SENTENCE": "این جمله را ترجمه کن",
+  "TRANSLATE_WHAT_YOU_HEAR": "آنچه می شنوی را ترجمه کن",
   "CHOOSE_CORRECT_TRANSLATION": "ترجمه صحیح را انتخاب کنید",
   "CHOOSE_CORRECT_PICTURE": "تصویر درست را انتخاب کنید",
   "CLICK_MICROPHONE_AND_SAY": "روی میکروفن کلیک کنید و بگویید",

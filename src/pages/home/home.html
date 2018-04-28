@@ -44,13 +44,13 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content class="force-ltr" fullscreen="true">
+<ion-content class="force-ltr" fullscreen="true" (touchmove)="touchMove1($event)" (touchend)="touchEnd1($event)">
   <!-- <ion-scroll style="width: auto; height: 100%" class="force-ltr" scrollX="true" scrollY="false" zoom="false"> -->
     <div class="categories-index">
     <div class="content">
     <div id="map-container-main" class="map-container-main">
-    <div class="map-container map-wrapper">
-    <div class="map map-inner map-webview touch-action" id="map-webview" #panel
+    <div class="map-container map-wrapper" #panel>
+    <div class="map map-inner map-webview touch-action" id="map-webview"
       [style.width.px]="mapWidth" style="height:99%; overflow-x:scroll; display:inline-block;">
 
       <!-- <div id="pin-daily" class="pin">
@@ -114,10 +114,15 @@
     </div>
     </div>
     </div>
-    <!-- <ion-fab right bottom>
-      <button ion-fab color="dark" (click)="scrollToTheRight()">
-        <ion-icon name="arrow-forward"></ion-icon>
+    <ion-fab right bottom color="gold" class="force-ltr" *ngIf="!hideForward" (dblclick)="scrollToTheFarRight()">
+      <button ion-fab (click)="scrollToTheRight()">
+        <ion-icon [name]="!isRTL ? 'ios-arrow-forward' : 'ios-arrow-back'" color="gold"></ion-icon>
       </button>
-    </ion-fab> -->
+    </ion-fab>
+    <ion-fab left bottom color="gold" class="force-ltr" *ngIf="!hideBackward" (dblclick)="scrollToTheFarLeft()">
+      <button ion-fab (click)="scrollToTheLeft()">
+        <ion-icon [name]="!isRTL ? 'ios-arrow-back' : 'ios-arrow-forward'" color="gold"></ion-icon>
+      </button>
+    </ion-fab>
   <!-- </ion-scroll> -->
 </ion-content>

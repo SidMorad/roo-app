@@ -21,7 +21,6 @@ export class CategoryLessonPage implements OnInit {
   isBeginning: boolean;
   subscription: Subscription;
 
-
   constructor(public platform: Platform, navParams: NavParams, private navCtrl: NavController,
               private api: Api, public ngProgress: NgProgress, private ngZone: NgZone,
               private memory: Memory, private settings: Settings) {
@@ -36,10 +35,12 @@ export class CategoryLessonPage implements OnInit {
     }, (error) => {
       console.log('Oops category-lesson load failed! TODO');
     });
-    this.renderPaginationBulletRender();
   }
 
-  ionViewWillEnter() {
+  ionViewDidEnter() {
+    this.renderPaginationBulletRender();
+    this.slides.update();
+    this.slides.resize();
     if (this.memory.isLessonDoneSuccessfully() && !this.isEnd) {
       const currentIndex = this.slides.getActiveIndex();
       setTimeout(() => {

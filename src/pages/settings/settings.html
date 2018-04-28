@@ -65,27 +65,34 @@
       <ion-list-header *ngIf="!principal.isAuthenticated()" color="danger">
         {{'PLEASE_LOGIN_FIRST' | translate}}
       </ion-list-header>
-      <ion-item>
-        <ion-label>{{'LANGUAGE_I_SPEAK' | translate}}</ion-label>
-        <ion-select formControlName="motherLanguage">
-          <ion-option value="FA_IR">
+      <ion-list-header>
+        {{'LANGUAGE_I_SPEAK' | translate}}
+      </ion-list-header>
+      <ion-item no-lines>
+        <ion-segment formControlName="motherLanguage" mode="ios">
+          <ion-segment-button value="FA_IR">
             <span class="flag-icon flag-icon-ir"></span>
-            {{'LANG_PARSI' | translate}}</ion-option>
-          <ion-option value="EN_GB">
+            {{'LANG_PARSI' | translate}}</ion-segment-button>
+          <ion-segment-button value="EN_GB">
+            {{'LANG_ENGLISH' | translate}}
             <span class="flag-icon flag-icon-gb"></span>
-            {{'LANG_ENGLISH' | translate}}</ion-option>
-        </ion-select>
+          </ion-segment-button>
+        </ion-segment>
       </ion-item>
-      <ion-item>
-        <ion-label>{{'LANGUAGE_I_LEARN' | translate}}</ion-label>
-        <ion-select formControlName="targetLanguage">
-          <ion-option value="EN_GB">
+      <ion-list-header>
+        {{'LANGUAGE_I_LEARN' | translate}}
+      </ion-list-header>
+      <ion-item no-lines>
+        <ion-segment formControlName="targetLanguage" mode="ios">
+          <ion-segment-button value="EN_GB">
+            {{'LANG_ENGLISH' | translate}}
             <span class="flag-icon flag-icon-gb"></span>
-            {{'LANG_ENGLISH' | translate}}</ion-option>
-          <ion-option value="DE_DE">
+          </ion-segment-button>
+          <ion-segment-button value="DE_DE">
+            {{'LANG_GERMAN' | translate}}
             <span class="flag-icon flag-icon-de"></span>
-            {{'LANG_GERMAN' | translate}}</ion-option>
-        </ion-select>
+          </ion-segment-button>
+        </ion-segment>
       </ion-item>
       <ion-list-header>
         {{'LEVEL_DIFFICULTY' | translate}}

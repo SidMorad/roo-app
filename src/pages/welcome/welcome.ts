@@ -17,7 +17,7 @@ import { LoginService, Principal } from '../../providers';
   templateUrl: 'welcome.html'
 })
 export class WelcomePage implements OnInit {
-  isTryingToLogin: boolean;
+  isTryingToLogin: boolean = true;
 
   constructor(public navCtrl: NavController, public viewCtrl: ViewController,
               public principal: Principal, public app: App,

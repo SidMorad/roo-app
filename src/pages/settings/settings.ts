@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { TranslateService } from '@ngx-translate/core';
-import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { Settings, Api, Principal } from '../../providers/providers';
 
@@ -43,7 +42,7 @@ export class SettingsPage {
     private formBuilder: FormBuilder, private navParams: NavParams,
     private translate: TranslateService, private api: Api,
     public principal: Principal, private appVersion: AppVersion,
-    private splash: SplashScreen, private navCtrl: NavController) {
+    private navCtrl: NavController) {
       this.appVersion.getVersionNumber().then((versionNum) => {
         this.versionNumber = versionNum;
       }).catch((err) => { console.error('getVersionNumber ', err) });
@@ -84,13 +83,7 @@ export class SettingsPage {
       this.settings.merge(this.form.value);
       if (this.settings.allSettings.language !== this.translate.currentLang) {
         this.translate.use(this.settings.allSettings.language);
-        this.splash.show();
-        this.updateProfile().subscribe(() => {
-          window.location.reload();
-        }, (err) => {
-          this.splash.hide();
-          console.warn('FAILURE:settings#_buildForm#updateProfile');
-        });
+        this.navigateToTabs();
       }
     });
   }
@@ -130,10 +123,7 @@ export class SettingsPage {
     if (this.page === 'learn') {
       if (this.previousLearnDir !== this.settings.allSettings.learnDir) {
         this.settings.switchLearnLevelTo(this.settings.learnDir, this.settings.difficultyLevel).subscribe(() => {
-          this.navCtrl.push('TabsPage').then(() => {
-            const index = this.navCtrl.getActive().index;
-            this.navCtrl.remove(0, index);
-          });
+          this.navigateToTabs();
         });
       }
     }
@@ -148,6 +138,13 @@ export class SettingsPage {
 
   ngOnChanges() {
     console.log('Ng All Changes');
+  }
+
+  navigateToTabs() {
+    this.navCtrl.push('TabsPage').then(() => {
+      const index = this.navCtrl.getActive().index;
+      this.navCtrl.remove(0, index);
+    });
   }
 
 }

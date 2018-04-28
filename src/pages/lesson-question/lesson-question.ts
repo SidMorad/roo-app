@@ -189,7 +189,7 @@ export class LessonQuestionPage implements OnInit {
     if (this.isType('MultiSelect')) {
       this.options = this.question.multiSelectOptions();
       this.chosens = [];
-      this.description = 'TRANSLATE_THIS_SENTENCE';
+      this.description = this.question.d.listen ? 'TRANSLATE_WHAT_YOU_HEAR' : 'TRANSLATE_THIS_SENTENCE';
     } else if (this.isType('OneCheck')) {
       this.choices = this.question.oneCheckChoices();
       this.question.toneCheckAnswer;  // for initalize answer into variable and also speak function works as expected.
