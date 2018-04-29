@@ -36,7 +36,7 @@ export class SettingsPage {
   pageTitleKey: string = 'SETTINGS_TITLE';
   pageTitle: string;
   public versionNumber: string;
-  private previousLearnDir: string;
+  saveInProgress: boolean;
 
   constructor(private settings: Settings,
     private formBuilder: FormBuilder, private navParams: NavParams,
@@ -108,7 +108,6 @@ export class SettingsPage {
       this.principal.identity().then((account) => {
         this.settingsReady = true;
         this.options = this.settings.allSettings;
-        this.previousLearnDir = this.settings.allSettings.learnDir;
         if (account) {
           this.options.login = account.login;
         }
@@ -118,15 +117,15 @@ export class SettingsPage {
   }
 
   ionViewWillLeave() {
+    this.saveInProgress = true;
     console.log('SettingsPage#ionViewWillLeave');
-    this.updateProfile().subscribe();
-    if (this.page === 'learn') {
-      if (this.previousLearnDir !== this.settings.allSettings.learnDir) {
+    this.updateProfile().subscribe(() => {
+      if (this.page === 'learn') {
         this.settings.switchLearnLevelTo(this.settings.learnDir, this.settings.difficultyLevel).subscribe(() => {
           this.navigateToTabs();
         });
       }
-    }
+    });
   }
 
   updateProfile() {

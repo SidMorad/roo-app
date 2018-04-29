@@ -23,11 +23,11 @@ export class DefaultSettings {
   }
 
   set motherLanguage(val) {
-    console.log('setMotherLanguage', val);
+    console.log('DefaultSettings#setMotherLanguage', val);
   }
 
   set targetLanguage(val) {
-    console.log('setTargetLanguage', val);
+    console.log('DefaultSettings#setTargetLanguage', val);
   }
 
 }

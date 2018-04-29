@@ -112,6 +112,9 @@
         </ion-segment-button>
       </ion-segment>
     </ion-list>
+    <div text-center *ngIf="saveInProgress">
+      <ion-spinner></ion-spinner>
+    </div>
   </form>
 
 </ion-content>
