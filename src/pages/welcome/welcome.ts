@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, ViewController, App, Events } from 'ionic-angular';
 import { OAuthService } from 'angular-oauth2-oidc';
 
-import { MainPage } from '../pages';
+// import { MainPage } from '../pages';
 import { LoginService, Principal } from '../../providers';
 
 /**
@@ -63,7 +63,7 @@ export class WelcomePage implements OnInit {
   }
 
   home() {
-    this.navCtrl.push(MainPage).then(() => {
+    this.navCtrl.push('TabsPage').then(() => {
       const index = this.navCtrl.getActive().index;
       this.navCtrl.remove(0, index);
     });

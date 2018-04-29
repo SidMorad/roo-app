@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, ViewController, NavParams, Platform } from 'ionic-angular';
 
 import { Settings, Api, Principal } from '../../providers/providers';
 import { DefaultSettings, Account } from '../../models';
@@ -24,11 +24,13 @@ export class ProfileFirstPage {
   page: string = 'main';
   pageTitleKey: string = 'SETTINGS_PAGE_PROFILE';
   pageTitle: string;
+  isLoading: boolean;
+  private unregisterBackButtonAction: any;
 
-  constructor(public navCtrl: NavController, public api: Api,
-    public settings: Settings, public formBuilder: FormBuilder,
-    public navParams: NavParams, public translate: TranslateService,
-    public principal: Principal) {
+  constructor(private viewCtrl: ViewController, private api: Api,
+    private settings: Settings, private formBuilder: FormBuilder,
+    private navParams: NavParams, private translate: TranslateService,
+    private principal: Principal, private platform: Platform) {
   }
 
   _buildForm() {
@@ -51,6 +53,7 @@ export class ProfileFirstPage {
   }
 
   ionViewDidLoad() {
+    this.initalizeBackButtonCustomHandler();
     // Build an empty form for the template to render
     // this.form = this.formBuilder.group({});
   }
@@ -58,7 +61,7 @@ export class ProfileFirstPage {
   ionViewWillEnter() {
     // Build an empty form for the template to render
     // this.form = this.formBuilder.group({});
-
+    this.isLoading = true;
     this.page = this.navParams.get('page') || this.page;
     this.pageTitleKey = this.navParams.get('pageTitleKey') || this.pageTitleKey;
 
@@ -67,7 +70,6 @@ export class ProfileFirstPage {
     })
 
     this.settings.load().then(() => {
-      if (!this.settings.allSettings.profileFirstLoaded) {
         this.api.createProfile(this.settings.allSettings).subscribe((profile: DefaultSettings) => {
           this.options.dname = profile.dname;
           this.options.motherLanguage = profile.learnDir.split('$')[0];
@@ -79,31 +81,37 @@ export class ProfileFirstPage {
               this.pageTitle = this.pageTitle + ' ' + account.login;
               this.settingsReady = true;
               this._buildForm();
+              this.isLoading = false;
             });
           });
         });
-      }
     });
   }
 
   ionViewWillLeave() {
-    const learnDir =  this.form.value['motherLanguage'] + '$' + this.form.value['targetLanguage'];
-    this.settings.setValue('learnDir',learnDir).then(() => { });
-    this.settings.allSettings.learnDir = learnDir;
-    this.api.updateProfile(this.settings.allSettings).subscribe(() => {
-    }, (err) => {
-      console.warn('Update profile failed.');
-    });
-    this.settings.switchLearnLevelTo(learnDir, this.settings.difficultyLevel).subscribe(() => {
-      this.navCtrl.push('TabsPage').then(() => {
-        const index = this.navCtrl.getActive().index;
-        this.navCtrl.remove(0, index);
-      });
-    });
+    this.unregisterBackButtonAction && this.unregisterBackButtonAction();
+  }
+
+  initalizeBackButtonCustomHandler() {
+    let that = this;
+    this.unregisterBackButtonAction = this.platform.registerBackButtonAction(function(event) {
+      that.ok();
+    }, 101);  // Priorty 101 will override back button handling (we set in app.component.ts) as it is bigger then priority 100 configured in app.component.ts file.
   }
 
   ok() {
-    this.navCtrl.pop();
+    if (this.isLoading) return;
+    this.isLoading = true;
+    const learnDir =  this.form.value['motherLanguage'] + '$' + this.form.value['targetLanguage'];
+    this.settings.setValue('learnDir',learnDir).then(() => {
+      this.api.updateProfile(this.settings.allSettings).subscribe(() => {
+        this.settings.switchLearnLevelTo(learnDir, this.settings.difficultyLevel).subscribe(() => {
+          this.viewCtrl.dismiss();
+        });
+      }, (err) => {
+        console.warn('Update profile failed.');
+      });
+    });
   }
 
   ngOnChanges() {

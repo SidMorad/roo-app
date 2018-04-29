@@ -110,8 +110,7 @@ export class Settings {
   }
 
   public loadCachedScoreLookups(force?: boolean): Observable<any> {
-    if (force) this.cachedScoreLookup = null;
-    if (this.cachedScoreLookup) return Observable.of(this.cachedScoreLookup);
+    if (this.cachedScoreLookup && force !== true) return Observable.of(this.cachedScoreLookup);
     return new Observable((observer) => {
       this.load().then(() => {
         this.storage.get(this.scoreLookupCacheKey).then((res) => {

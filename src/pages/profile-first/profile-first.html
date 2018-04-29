@@ -2,9 +2,10 @@
 
   <ion-navbar [hideBackButton]="true">
     <ion-buttons start>
-      <button ion-button icon-only clear small (click)="ok()" color="secondary">
+      <button ion-button icon-only clear small (click)="ok()" color="secondary" *ngIf="!isLoading">
         <ion-icon name="checkmark"></ion-icon>
       </button>
+      <ion-spinner *ngIf="isLoading"></ion-spinner>
     </ion-buttons>
     <ion-title>{{ pageTitle }}</ion-title>
   </ion-navbar>
@@ -71,7 +72,7 @@
       </ion-item>
       <ion-item-divider>
       </ion-item-divider>
-      <button ion-item full (click)="ok()" color="secondary">
+      <button ion-item full (click)="ok()" color="secondary" [disabled]="isLoading">
         <ion-icon name="checkmark"></ion-icon>
         {{'SAVE' | translate}}
       </button>

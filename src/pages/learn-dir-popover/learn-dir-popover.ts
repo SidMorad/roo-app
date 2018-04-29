@@ -80,10 +80,7 @@ export class LearnDirPopover implements OnInit {
       ll.wantToSwitch = true;
       this.isSwitching = true;
       this.settings.switchLearnLevelTo(ll.learnDir, ll.difLevel).subscribe(() => {
-        this.navCtrl.push('TabsPage').then(() => {
-          const index = this.navCtrl.getActive().index;
-          this.navCtrl.remove(0, index);
-        });
+        this.viewCtrl.dismiss();
       });
     } else {
       this.viewCtrl.dismiss();

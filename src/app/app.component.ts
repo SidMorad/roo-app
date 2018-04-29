@@ -6,7 +6,6 @@ import { Config, Nav, Platform, Events, App } from 'ionic-angular';
 import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
 import { Subscription } from 'rxjs/Rx';
 
-import { FirstRunPage } from '../pages/pages';
 import { Settings } from '../providers/providers';
 import { Api } from '../providers/api/api';
 import { Principal } from '../providers/auth/principal.service';
@@ -48,7 +47,7 @@ declare const window: any;
 })
 export class MyApp implements OnInit {
 
-  rootPage = FirstRunPage;
+  rootPage = 'WelcomePage';
   @ViewChild(Nav) nav: Nav;
   account: Account = new Account();
   dname: string;
@@ -194,7 +193,7 @@ export class MyApp implements OnInit {
   }
 
   signin() {
-    this.nav.push(FirstRunPage).then(() => {
+    this.nav.push('WelcomePage').then(() => {
       const index = this.nav.getActive().index;
       try {
         this.nav.remove(0, index);

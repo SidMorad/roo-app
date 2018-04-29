@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone, ViewChild, ElementRef } from '@angular/core';
-import { IonicPage, NavController, Platform, ModalController, PopoverController, Events } from 'ionic-angular';
+import { IonicPage, NavController, Platform, ModalController, PopoverController, Events, Content } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { Market } from '@ionic-native/market';
 import { Storage } from '@ionic/storage';
@@ -18,6 +18,7 @@ import { Category, ScoreLookup, Account } from '../../models';
 })
 export class HomePage implements OnInit {
   @ViewChild('panel', { read: ElementRef}) public panel: ElementRef;
+  @ViewChild(Content) content: Content;
 
   account: Account = {};
   categories: Category[];
@@ -47,7 +48,7 @@ export class HomePage implements OnInit {
     this.appVersion.getVersionCode().then((versionCode) => {
       this.api.versionCode().subscribe((remoteVersion) => {
         console.log('App version code is ', versionCode, ' and remoteVersion ', remoteVersion);
-        if (remoteVersion > versionCode) {
+        if (+remoteVersion > +versionCode) {
           this.ngZone.run(() => {
             this.showUpgradeButton = true;
           });
@@ -108,6 +109,7 @@ export class HomePage implements OnInit {
     if (this.showHelpHint) {
       this.showHelpHintHint();
     }
+    this.settings.loadCachedScoreLookups();
   }
 
   ionViewWillLeave() {
@@ -137,9 +139,9 @@ export class HomePage implements OnInit {
     }
   }
 
-  fetchCategories() {
+  fetchCategories(force?: boolean) {
     this.showRetryButton = false;
-    this.api.getCategoryPublicList(this.settings.learnDir).subscribe((response) => {
+    this.api.getCategoryPublicList(this.settings.learnDir, force).subscribe((response) => {
       this.ngZone.run(() => {
         this.categories = response;
       });
@@ -219,6 +221,12 @@ export class HomePage implements OnInit {
 
   presentPopover($event) {
     const popover = this.popoverCtrl.create('LearnDirPopover');
+    popover.onDidDismiss(() => {
+      console.log('Popover#onDidDismiss');
+      this.content.resize();
+      this.settings.loadCachedScoreLookups(true);
+      this.fetchCategories(true);
+    });
     popover.present({ ev: $event });
   }
 

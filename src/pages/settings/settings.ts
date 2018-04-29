@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { IonicPage, NavParams, NavController } from 'ionic-angular';
+import { IonicPage, NavParams, ViewController, Platform } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -37,12 +37,13 @@ export class SettingsPage {
   pageTitle: string;
   public versionNumber: string;
   saveInProgress: boolean;
+  private unregisterBackButtonAction: any;
 
   constructor(private settings: Settings,
     private formBuilder: FormBuilder, private navParams: NavParams,
-    private translate: TranslateService, private api: Api,
+    private translate: TranslateService, private api: Api, private platform: Platform,
     public principal: Principal, private appVersion: AppVersion,
-    private navCtrl: NavController) {
+    private viewCtrl: ViewController) {
       this.appVersion.getVersionNumber().then((versionNum) => {
         this.versionNumber = versionNum;
       }).catch((err) => { console.error('getVersionNumber ', err) });
@@ -80,15 +81,11 @@ export class SettingsPage {
       if (v.motherLanguage === 'EN_GB' && v.targetLanguage === 'EN_GB') {
         this.form.controls['motherLanguage'].setValue('FA_IR');
       }
-      this.settings.merge(this.form.value);
-      if (this.settings.allSettings.language !== this.translate.currentLang) {
-        this.translate.use(this.settings.allSettings.language);
-        this.navigateToTabs();
-      }
     });
   }
 
   ionViewDidLoad() {
+    this.initalizeBackButtonCustomHandler();
     // Build an empty form for the template to render
     this.form = this.formBuilder.group({});
   }
@@ -117,22 +114,39 @@ export class SettingsPage {
   }
 
   ionViewWillLeave() {
-    this.saveInProgress = true;
-    console.log('SettingsPage#ionViewWillLeave');
-    this.updateProfile().subscribe(() => {
-      if (this.page === 'learn') {
-        this.settings.switchLearnLevelTo(this.settings.learnDir, this.settings.difficultyLevel).subscribe(() => {
-          this.navigateToTabs();
-        });
-      }
-    });
+    this.unregisterBackButtonAction && this.unregisterBackButtonAction();
   }
 
-  updateProfile() {
-    const learnDir = this.settings.allSettings.motherLanguage + '$' + this.settings.allSettings.targetLanguage;
-    this.settings.setValue('learnDir', learnDir).then(() => { });
-    this.settings.allSettings.learnDir = learnDir;  // in case above line is not fast enougth
-    return this.api.updateProfile(this.settings.allSettings);
+  initalizeBackButtonCustomHandler() {
+    let that = this;
+    this.unregisterBackButtonAction = this.platform.registerBackButtonAction(function(event) {
+      that.ok();
+    }, 101);  // Priorty 101 will override back button handling (we set in app.component.ts) as it is bigger then priority 100 configured in app.component.ts file.
+  }
+
+  ok() {
+    if (this.saveInProgress) return;
+    this.saveInProgress = true;
+    this.settings.merge(this.form.value).then(() => {
+      console.log('SETTINGS#VALUES ', this.settings.allSettings);
+      const learnDir = this.settings.allSettings.motherLanguage + '$' + this.settings.allSettings.targetLanguage;
+      this.settings.setValue('learnDir', learnDir).then(() => {
+        this.api.updateProfile(this.settings.allSettings).subscribe(() => {
+          if (this.page === 'learn') {
+            this.settings.switchLearnLevelTo(this.settings.learnDir, this.settings.difficultyLevel).subscribe(() => {
+              this.navigateToTabs();
+            });
+          } else {
+            if (this.settings.allSettings.language !== this.translate.currentLang) {
+              this.translate.use(this.settings.allSettings.language);
+              this.navigateToTabs();
+            } else {
+              this.viewCtrl.dismiss();
+            }
+          }
+        });
+      });
+    });
   }
 
   ngOnChanges() {
@@ -140,10 +154,7 @@ export class SettingsPage {
   }
 
   navigateToTabs() {
-    this.navCtrl.push('TabsPage').then(() => {
-      const index = this.navCtrl.getActive().index;
-      this.navCtrl.remove(0, index);
-    });
+    this.viewCtrl.dismiss();
   }
 
 }

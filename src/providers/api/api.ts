@@ -91,8 +91,7 @@ export class Api {
 
   cachedCategories: Category[];
   getCategoryPublicList(learnDir: string, force?: boolean): Observable<any> {
-    if (force) this.cachedCategories = null;
-    if (this.cachedCategories) return Observable.of(this.cachedCategories);
+    if (this.cachedCategories && force !== true) return Observable.of(this.cachedCategories);
     return new Observable((observer) => {
       this.http.get(`${Api.API_URL}roo/api/public/categories/${learnDir}`).subscribe((res: Category[]) => {
         this.cachedCategories = res;

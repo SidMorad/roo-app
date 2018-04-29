@@ -1,6 +1,12 @@
 <ion-header>
 
-  <ion-navbar>
+  <ion-navbar [hideBackButton]="true">
+    <ion-buttons start>
+      <button ion-button icon-only clear small (click)="ok()" color="secondary" *ngIf="!saveInProgress">
+        <ion-icon name="checkmark"></ion-icon>
+      </button>
+      <ion-spinner *ngIf="saveInProgress"></ion-spinner>
+    </ion-buttons>
     <ion-title>{{ pageTitle }}</ion-title>
   </ion-navbar>
 
