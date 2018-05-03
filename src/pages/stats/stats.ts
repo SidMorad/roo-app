@@ -50,7 +50,6 @@ export class StatsPage {
 
   sectionChanged($event) {
     console.log('sectionChanged(', $event, ')');
-    this.section = $event;
     this.inProgress = true;
     if (this.section === 'rankMonth') {
       this.api.getTop3MonthMembers(this.settings.learnDir).subscribe((res) => {

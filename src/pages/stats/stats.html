@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-segment [(ngModel)]="section" color="primary" (ngModelChange)="sectionChanged($event)">
+    <ion-segment [(ngModel)]="section" color="primary" (ionChange)="sectionChanged($event)">
       <ion-segment-button value="stats">
         <ion-icon name="stats"></ion-icon>
         {{'STATS' | translate}}
