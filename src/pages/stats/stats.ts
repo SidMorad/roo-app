@@ -18,7 +18,7 @@ export class StatsPage {
   progressLevelTo: number;
   progressLevelValue: number;
   progressLevelMax: number;
-  section: string = 'stats';
+  section: string;
   topMonthMembers: any[] = [];
   topEverMembers: any[] = [];
   currentMonth: string;
@@ -41,6 +41,12 @@ export class StatsPage {
     this.currentMonth = 'MONTH_' + new Date().getMonth();
   }
 
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.section = 'stats';
+    }, 400);
+  }
+
   ionViewWillEnter() {
     if (this.principal.isAuthenticated()) {
       this.fetchLast7dayScore();
@@ -50,6 +56,7 @@ export class StatsPage {
 
   sectionChanged($event) {
     console.log('sectionChanged(', $event, ')');
+    this.section = $event;
     this.inProgress = true;
     if (this.section === 'rankMonth') {
       this.api.getTop3MonthMembers(this.settings.learnDir).subscribe((res) => {

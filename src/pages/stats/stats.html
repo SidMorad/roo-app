@@ -1,15 +1,15 @@
 <ion-header>
   <ion-toolbar>
-    <ion-segment [(ngModel)]="section" color="primary" (ionChange)="sectionChanged($event)">
-      <ion-segment-button value="stats">
+    <ion-segment color="primary">
+      <ion-segment-button [class.segment-activated]="section === 'stats'" (click)="sectionChanged('stats')">
         <ion-icon name="stats"></ion-icon>
         {{'STATS' | translate}}
       </ion-segment-button>
-      <ion-segment-button value="rankMonth">
+      <ion-segment-button [class.segment-activated]="section === 'rankMonth'" (click)="sectionChanged('rankMonth')">
         <ion-icon name="medal"></ion-icon>
         {{'RANK' | translate}} {{currentMonth | translate}}
       </ion-segment-button>
-      <ion-segment-button value="rankEver">
+      <ion-segment-button [class.segment-activated]="section === 'rankEver'" (click)="sectionChanged('rankEver')">
         <ion-icon name="infinite"></ion-icon>
         {{'RANK' | translate}} {{'SINCE_FIRST' | translate}}
       </ion-segment-button>
