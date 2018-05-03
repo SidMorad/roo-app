@@ -1,15 +1,15 @@
 <ion-header>
   <ion-toolbar>
-    <ion-segment color="primary">
-      <ion-segment-button [class.segment-activated]="section === 'stats'" (click)="sectionChanged('stats')">
+    <ion-segment [(ngModel)]="section" color="primary" *ngIf="!inProgress">
+      <ion-segment-button value="stats" (click)="sectionChanged('stats')">
         <ion-icon name="stats"></ion-icon>
         {{'STATS' | translate}}
       </ion-segment-button>
-      <ion-segment-button [class.segment-activated]="section === 'rankMonth'" (click)="sectionChanged('rankMonth')">
+      <ion-segment-button value="rankMonth" (click)="sectionChanged('rankMonth')">
         <ion-icon name="medal"></ion-icon>
         {{'RANK' | translate}} {{currentMonth | translate}}
       </ion-segment-button>
-      <ion-segment-button [class.segment-activated]="section === 'rankEver'" (click)="sectionChanged('rankEver')">
+      <ion-segment-button value="rankEver" (click)="sectionChanged('rankEver')">
         <ion-icon name="infinite"></ion-icon>
         {{'RANK' | translate}} {{'SINCE_FIRST' | translate}}
       </ion-segment-button>
@@ -61,7 +61,7 @@
 
   <ion-list text-center *ngIf="isAuthenticated() && section === 'rankMonth'">
     <ion-item *ngFor="let tm of topMonthMembers; let i = index;">
-      <ion-avatar item-start>{{tm.rank}}</ion-avatar>
+      <button ion-button large clear item-start color="dark">{{tm.rank}}</button>
       <h2>{{tm.dname}}</h2>
       <p item-end>{{tm.total}}</p>
     </ion-item>
@@ -69,7 +69,7 @@
 
   <ion-list text-center *ngIf="isAuthenticated() && section === 'rankEver'">
     <ion-item *ngFor="let tm of topEverMembers; let i = index;">
-      <ion-avatar item-start>{{tm.rank}}</ion-avatar>
+      <button ion-button large clear item-start color="dark">{{tm.rank}}</button>
       <h2>{{tm.dname}}</h2>
       <p item-end>{{tm.total}}</p>
     </ion-item>
