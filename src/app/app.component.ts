@@ -1,8 +1,9 @@
 import { Component, ViewChild, OnInit, NgZone } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { TranslateService } from '@ngx-translate/core';
-import { Config, Nav, Platform, Events, App } from 'ionic-angular';
+import { Config, Nav, Platform, Events, App, ToastController } from 'ionic-angular';
 import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
 import { Subscription } from 'rxjs/Rx';
 
@@ -61,7 +62,7 @@ export class MyApp implements OnInit {
     private statusBar: StatusBar, private splashScreen: SplashScreen,
     private oauthService: OAuthService, private api: Api, private app: App,
     private principal: Principal, private loginService: LoginService,
-    private events: Events) {
+    private events: Events, private toastCtrl: ToastController) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -133,6 +134,16 @@ export class MyApp implements OnInit {
           this.exitConfirmationText = values.EXIT_CONFIRMATION_TEXT;
         });
       });
+    });
+    this.events.subscribe('HTTP_ERROR', (httpError: HttpErrorResponse) => {
+      console.log('HTTP ERROR', httpError);
+      if (httpError && httpError.status) {
+        this.toastCtrl.create({
+          message: httpError.status + '',
+          duration: 2000,
+          position: 'middle'
+        }).present();
+      }
     });
   }
 

@@ -58,8 +58,11 @@
 
     <ion-list *ngIf="page === 'profile'">
       <ion-item>
-        <ion-label>{{ 'PROFILE_DNAME' | translate }}</ion-label>
+        <ion-label [color]="showDnameError ? 'danger' : 'dark'">{{ 'PROFILE_DNAME' | translate }}</ion-label>
         <ion-input formControlName="dname"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="showDnameError">
+        <ion-note color="danger" item-start>{{'NICKNAME_CONTAINS_INVALID_CHARACTERS' | translate}}</ion-note>
       </ion-item>
       <ion-item>
         <ion-label>{{ 'PROFILE_LOGIN' | translate }}</ion-label>

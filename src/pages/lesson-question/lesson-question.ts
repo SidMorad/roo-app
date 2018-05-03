@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, NgZone, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { IonicPage, Platform, NavParams, AlertController, ViewController,
         Content, ModalController, ToastController } from 'ionic-angular';
 import { Market } from '@ionic-native/market';
@@ -25,12 +25,13 @@ export class LessonQuestionPage implements OnInit {
   @ViewChild(Content) content: Content;
   @ViewChild('myswing1') swingStack: SwingStackComponent;
   @ViewChildren('mycards1') swingCards: QueryList<SwingCardComponent>;
+  @ViewChild('writingAnswerTextarea') writingAnswerTextarea: ElementRef;
   lesson: Lesson; category: Category; question: Question; questions: Question[];
   options: any[]; chosens: any[]; choices: any[];
   twoPicturesNominated: string[]; twoPictureCorrectIndex: number;
   fourPictures: number[]; fourPictureCorrectIndex: number;
   noTotal: number; noWrong: number;
-  writingAnswer: string; speakingAnswer: string; wordAnswer: boolean; rightAnswerString: string;
+  writingAnswer: string = ''; speakingAnswer: string; wordAnswer: boolean; rightAnswerString: string;
   wasCorrect: boolean; wasWrong: boolean; wasAlmostCorrect: boolean;
   isChecking: boolean; autoPlayVoice: boolean; autoContinue: boolean; skipSpeaking: boolean;
   microphonePressed: boolean; hasAudioRecordingPermission: boolean;
@@ -110,7 +111,7 @@ export class LessonQuestionPage implements OnInit {
     this.speakingAnswerDiff = null;
     this.writingAnswerDiff = null;
     this.speakingAnswer = null;
-    this.writingAnswer = null;
+    this.writingAnswer = '';
     this.goToNextQuestion();
   }
 
@@ -207,6 +208,9 @@ export class LessonQuestionPage implements OnInit {
     } else if (this.isType('Writing')) {
       this.description = 'TRANSLATE_THIS_SENTENCE';
       this.typeHere = this.question.isN() ? 'TYPE_HERE_' + this.lesson.motherLangKey : 'TYPE_HERE_' + this.lesson.targetLangKey;
+      setTimeout(() => {
+        this.writingAnswerTextarea.nativeElement.focus();
+      }, 300);
     } else if (this.isType('Speaking')) {
       this.description = 'CLICK_MICROPHONE_AND_SAY';
       if (this.skipSpeaking) {
@@ -364,7 +368,8 @@ export class LessonQuestionPage implements OnInit {
         this.microphoneUp(event);
         const toast = this.toastCtrl.create({
           message: this.labelPleaseUpdateThisOtherAppFromMarket,
-          duration: 10000,
+          duration: 4000,
+          position: 'top',
           showCloseButton: true,
           closeButtonText: this.labelMarket
         });
@@ -497,6 +502,11 @@ export class LessonQuestionPage implements OnInit {
 
   get isRTL(): boolean {
     return this.platform.isRTL;
+  }
+
+  addCharToWritingAnswer(char) {
+    this.writingAnswer += char;
+    this.writingAnswerTextarea.nativeElement.focus();
   }
 
   checkHasAudioRecordingPermission() {

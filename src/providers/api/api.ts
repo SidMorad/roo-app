@@ -39,6 +39,14 @@ export class Api {
     return this.get(`roo/api/user/score/last7/${learnDir}`);
   }
 
+  getTop3MonthMembers(learnDir: string): Observable<any> {
+    return this.get(`roo/api/user/score/top3/month/${learnDir}`);
+  }
+
+  getTop3EverMembers(learnDir: string): Observable<any> {
+    return this.get(`roo/api/user/score/top3/ever/${learnDir}`);
+  }
+
   getScoreLookup(learnDir: string, difLevel: string): Observable<any> {
     return this.http.get(`${Api.API_URL}roo/api/user/score/lookup/${learnDir}/${difLevel}`);
   }

@@ -1,7 +1,20 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>{{'STATS' | translate}}</ion-title>
-  </ion-navbar>
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="section" color="primary" (ngModelChange)="sectionChanged($event)">
+      <ion-segment-button value="stats">
+        <ion-icon name="stats"></ion-icon>
+        {{'STATS' | translate}}
+      </ion-segment-button>
+      <ion-segment-button value="rankMonth">
+        <ion-icon name="medal"></ion-icon>
+        {{'RANK' | translate}} {{currentMonth | translate}}
+      </ion-segment-button>
+      <ion-segment-button value="rankEver">
+        <ion-icon name="infinite"></ion-icon>
+        {{'RANK' | translate}} {{'SINCE_FIRST' | translate}}
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content text-center>
@@ -13,7 +26,7 @@
       <span style="padding-left: 16px; padding-right: 16px;"> {{'LOGIN_BUTTON' | translate}} </span>
     </button>
   </div>
-  <ion-grid text-center *ngIf="isAuthenticated()">
+  <ion-grid text-center *ngIf="isAuthenticated() && section === 'stats'">
     <ion-row>
       <ion-col>
         <span>{{'TOTAL' | translate}} {{total}}</span>
@@ -45,4 +58,21 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+
+  <ion-list text-center *ngIf="isAuthenticated() && section === 'rankMonth'">
+    <ion-item *ngFor="let tm of topMonthMembers; let i = index;">
+      <ion-avatar item-start>{{tm.rank}}</ion-avatar>
+      <h2>{{tm.dname}}</h2>
+      <p item-end>{{tm.total}}</p>
+    </ion-item>
+  </ion-list>
+
+  <ion-list text-center *ngIf="isAuthenticated() && section === 'rankEver'">
+    <ion-item *ngFor="let tm of topEverMembers; let i = index;">
+      <ion-avatar item-start>{{tm.rank}}</ion-avatar>
+      <h2>{{tm.dname}}</h2>
+      <p item-end>{{tm.total}}</p>
+    </ion-item>
+  </ion-list>
+
 </ion-content>

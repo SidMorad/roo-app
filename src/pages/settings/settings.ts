@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { IonicPage, NavParams, ViewController, Platform } from 'ionic-angular';
+import { IonicPage, NavParams, ViewController, Platform, ToastController, Events } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -38,15 +39,24 @@ export class SettingsPage {
   public versionNumber: string;
   saveInProgress: boolean;
   private unregisterBackButtonAction: any;
+  showDnameError: boolean;
 
   constructor(private settings: Settings,
     private formBuilder: FormBuilder, private navParams: NavParams,
     private translate: TranslateService, private api: Api, private platform: Platform,
     public principal: Principal, private appVersion: AppVersion,
-    private viewCtrl: ViewController) {
+    private viewCtrl: ViewController, private toastCtrl: ToastController, private events: Events) {
       this.appVersion.getVersionNumber().then((versionNum) => {
         this.versionNumber = versionNum;
       }).catch((err) => { console.error('getVersionNumber ', err) });
+      this.events.subscribe('HTTP_ERROR', (error: HttpErrorResponse) => {
+        if (error.status === 400) {
+          if (error.error && error.error.fieldErrors && error.error.fieldErrors[0]
+            && error.error.fieldErrors[0].field && error.error.fieldErrors[0].field === 'dname') {
+            this.showDnameError = true;
+          }
+        }
+      });
   }
 
   _buildForm() {
@@ -124,26 +134,45 @@ export class SettingsPage {
     }, 101);  // Priorty 101 will override back button handling (we set in app.component.ts) as it is bigger then priority 100 configured in app.component.ts file.
   }
 
+  exitConfirmed: boolean;
   ok() {
-    if (this.saveInProgress) return;
+    this.showDnameError = false;
+    if (this.saveInProgress) {
+      if (this.exitConfirmed) {
+        this.viewCtrl.dismiss();
+      }
+      const toast = this.toastCtrl.create({
+        message: 'Want to cancel update? press back again.',
+        duration: 3000,
+      });
+      toast.onDidDismiss(() => {
+        this.exitConfirmed = false;
+      });
+      toast.present();
+      this.exitConfirmed = true;
+    }
     this.saveInProgress = true;
     this.settings.merge(this.form.value).then(() => {
-      console.log('SETTINGS#VALUES ', this.settings.allSettings);
-      const learnDir = this.settings.allSettings.motherLanguage + '$' + this.settings.allSettings.targetLanguage;
+      console.log('SETTINGS#VALUES ', this.settings.allSettings, this.form.value);
+      let learnDir = this.settings.allSettings.learnDir;
+      if (this.page === 'learn') {
+        learnDir = this.settings.allSettings.motherLanguage + '$' + this.settings.allSettings.targetLanguage;
+      }
       this.settings.setValue('learnDir', learnDir).then(() => {
         this.api.updateProfile(this.settings.allSettings).subscribe(() => {
           if (this.page === 'learn') {
             this.settings.switchLearnLevelTo(this.settings.learnDir, this.settings.difficultyLevel).subscribe(() => {
-              this.navigateToTabs();
+              this.viewCtrl.dismiss();
             });
           } else {
             if (this.settings.allSettings.language !== this.translate.currentLang) {
-              this.translate.use(this.settings.allSettings.language);
-              this.navigateToTabs();
+              window.location.reload();
             } else {
               this.viewCtrl.dismiss();
             }
           }
+        }, (error) => {
+          this.saveInProgress = false;
         });
       });
     });
@@ -151,10 +180,6 @@ export class SettingsPage {
 
   ngOnChanges() {
     console.log('Ng All Changes');
-  }
-
-  navigateToTabs() {
-    this.viewCtrl.dismiss();
   }
 
 }

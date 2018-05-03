@@ -8,7 +8,7 @@ import { IonicStorageModule, Storage } from '@ionic/storage';
 import { SecureStorage } from '@ionic-native/secure-storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { IonicApp, IonicErrorHandler, IonicModule, Events } from 'ionic-angular';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 import { NgProgressModule } from '@ngx-progressbar/core';
@@ -27,6 +27,7 @@ import { LoginService } from '../providers/login/login.service';
 import { Principal } from '../providers/auth/principal.service';
 import { AccountService } from '../providers/auth/account.service';
 import { AuthInterceptor } from '../providers/auth/auth-interceptor';
+import { HttpErrorHandlerInterceptor } from '../providers/api/http-error-handler-interceptor';
 import { EntityPageModule } from '../pages/entities/entity.module';
 
 // The translate loader needs to know where to load i18n files
@@ -60,7 +61,10 @@ export function provideSettings(storage: Storage, api:Api) {
       }
     }),
     IonicModule.forRoot(MyApp, {
-      tabsHideOnSubPages: true
+      tabsHideOnSubPages: true,
+      scrollAssist: true,
+      autoFocusAssist: 'immediate',
+      keyboardHeight: 200
     }),
     IonicStorageModule.forRoot(),
     EntityPageModule,
@@ -96,7 +100,8 @@ export function provideSettings(storage: Storage, api:Api) {
     { provide: Settings, useFactory: provideSettings, deps: [Storage, Api] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorHandlerInterceptor, deps: [Events], multi: true }
   ]
 })
 export class AppModule { }

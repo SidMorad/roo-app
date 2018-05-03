@@ -204,11 +204,20 @@
         </ion-fab>
       </div>
 
-      <div *ngIf="isType('Writing')" class="answer-background" padding>
-        <textarea *ngIf="!writingAnswerDiff" [(ngModel)]="writingAnswer" class="answer-background"
-              [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)"
-              [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)"
-        style="width: 100%" rows = "1" autofocus placeholder="{{typeHere | translate}}"></textarea>
+      <div *ngIf="isType('Writing')" class="answer-background" style="padding: 8px">
+        <input type="text" *ngIf="!writingAnswerDiff" [(ngModel)]="writingAnswer" class="answer-background"
+              [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)" (keyup.enter)="check()"
+              [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)" #writingAnswerTextarea
+        style="width: 100%" rows = "1" autofocus placeholder="{{typeHere | translate}}"/>
+        <div *ngIf="typeHere === 'TYPE_HERE_DE' && !writingAnswerDiff" class="dir-ltr">
+          <button ion-button clear class="special-chars-button" (click)="addCharToWritingAnswer('ä')">ä</button>
+          <button ion-button clear class="special-chars-button" (click)="addCharToWritingAnswer('ö')">ö</button>
+          <button ion-button clear class="special-chars-button" (click)="addCharToWritingAnswer('ü')">ü</button>
+          <button ion-button clear class="special-chars-button" (click)="addCharToWritingAnswer('ß')">ß</button>
+          <button ion-button clear class="special-chars-button" (click)="addCharToWritingAnswer('Ä')">Ä</button>
+          <button ion-button clear class="special-chars-button" (click)="addCharToWritingAnswer('Ö')">Ö</button>
+          <button ion-button clear class="special-chars-button" (click)="addCharToWritingAnswer('Ü')">Ü</button>
+        </div>
         <div *ngIf="writingAnswerDiff" (click)="speak(writingAnswerDiffString)" class="answer-background"
           [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)"
           [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)">
@@ -303,7 +312,7 @@
   </section>
   <div style="position: absolute; bottom: 0px; width: 100%" text-center>
     <button ion-button full large color="secondary"
-            *ngIf="isNotTypes(['FourPicture', 'TwoPicture', 'Speaking', 'Conversation', 'Words']) && !wasWrong && !wasAlmostCorrect && !isChecking"
+            *ngIf="isNotTypes(['FourPicture', 'TwoPicture', 'Speaking', 'Conversation', 'Words', 'Writing']) && !wasWrong && !wasAlmostCorrect && !isChecking"
             [disabled]="!isAnswered()" (click)="check()" id="checkButton">
       {{'CHECK' | translate}}
     </button>

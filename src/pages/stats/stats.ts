@@ -18,6 +18,10 @@ export class StatsPage {
   progressLevelTo: number;
   progressLevelValue: number;
   progressLevelMax: number;
+  section: string = 'stats';
+  topMonthMembers: any[] = [];
+  topEverMembers: any[] = [];
+  currentMonth: string;
 
   constructor(private viewCtrl: ViewController, private ngZone: NgZone,
               private api: Api, private scoreUtil: ScoreUtil,
@@ -34,12 +38,32 @@ export class StatsPage {
         offset: 10
       }
     }
+    this.currentMonth = 'MONTH_' + new Date().getMonth();
   }
 
   ionViewWillEnter() {
     if (this.principal.isAuthenticated()) {
       this.fetchLast7dayScore();
       this.resolveScoreStats();
+    }
+  }
+
+  sectionChanged($event) {
+    console.log('sectionChanged(', $event, ')');
+    this.section = $event;
+    this.inProgress = true;
+    if (this.section === 'rankMonth') {
+      this.api.getTop3MonthMembers(this.settings.learnDir).subscribe((res) => {
+        this.topMonthMembers = res.topMembers;
+        this.inProgress = false;
+      });
+    } else if (this.section === 'rankEver') {
+      this.api.getTop3EverMembers(this.settings.learnDir).subscribe((res) => {
+        this.topEverMembers = res.topMembers;
+        this.inProgress = false;
+      });
+    } else {
+      this.inProgress = false;
     }
   }
 
