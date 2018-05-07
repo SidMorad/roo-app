@@ -231,7 +231,7 @@
                    [class.alert-warning]="question.d.options[0].answered  && !wasCorrect && !wasWrong"
                    [class.alert-error]="question.d.options[0].answered  && wasWrong"
                    [class.alert-success]="question.d.options[0].answered && wasCorrect"
-                   *ngIf="(!wasWrong && !wasCorrect) || twoPictureCorrectIndex === 0 || question.d.options[0].answered">
+                   *ngIf="(!wasWrong && !wasCorrect) || pictureCorrectIndex === 0 || question.d.options[0].answered">
             <ion-col col-3></ion-col>
             <ion-col col-6>
               <div class="relative-flex-1" id="twoPicture-0">
@@ -245,7 +245,7 @@
                    [class.alert-warning]="question.d.options[1].answered  && !wasCorrect && !wasWrong"
                    [class.alert-error]="question.d.options[1].answered  && wasWrong"
                    [class.alert-success]="question.d.options[1].answered && wasCorrect"
-                   *ngIf="(!wasWrong && !wasCorrect) || twoPictureCorrectIndex === 1 || question.d.options[1].answered">
+                   *ngIf="(!wasWrong && !wasCorrect) || pictureCorrectIndex === 1 || question.d.options[1].answered">
             <ion-col col-3></ion-col>
             <ion-col col-6>
               <div class="relative-flex-1" id="twoPicture-1">
@@ -266,7 +266,7 @@
                     [class.alert-warning]="question.d.options[0].answered  && !wasCorrect && !wasWrong"
                     [class.alert-error]="question.d.options[0].answered  && wasWrong"
                     [class.alert-success]="question.d.options[0].answered && wasCorrect"
-                    *ngIf="(!wasWrong && !wasCorrect) || fourPictureCorrectIndex === 0 || question.d.options[0].answered">
+                    *ngIf="(!wasWrong && !wasCorrect) || pictureCorrectIndex === 0 || question.d.options[0].answered">
               <div class="relative-flex-1" id="fourPicture-0">
                 <img [src]="resolveImageUrl(question.d.options[0].name)" class="z_index_0"/>
                 <button ion-button full small clear color="dark">{{question.pictureLabel(0)}}</button>
@@ -276,7 +276,7 @@
                     [class.alert-warning]="question.d.options[1].answered  && !wasCorrect && !wasWrong"
                     [class.alert-error]="question.d.options[1].answered  && wasWrong"
                     [class.alert-success]="question.d.options[1].answered && wasCorrect"
-                    *ngIf="(!wasWrong && !wasCorrect) || fourPictureCorrectIndex === 1 || question.d.options[1].answered">
+                    *ngIf="(!wasWrong && !wasCorrect) || pictureCorrectIndex === 1 || question.d.options[1].answered">
               <div class="relative-flex-1" id="fourPicture-1">
                 <img [src]="resolveImageUrl(question.d.options[1].name)" class="z_index_0"/>
                 <button ion-button full small clear color="dark">{{question.pictureLabel(1)}}</button>
@@ -288,7 +288,7 @@
                     [class.alert-warning]="question.d.options[2].answered  && !wasCorrect && !wasWrong"
                     [class.alert-error]="question.d.options[2].answered  && wasWrong"
                     [class.alert-success]="question.d.options[2].answered && wasCorrect"
-                    *ngIf="(!wasWrong && !wasCorrect) || fourPictureCorrectIndex === 2  || question.d.options[2].answered">
+                    *ngIf="(!wasWrong && !wasCorrect) || pictureCorrectIndex === 2  || question.d.options[2].answered">
               <div class="relative-flex-1" id="fourPicture-2">
                 <img [src]="resolveImageUrl(question.d.options[2].name)" class="z_index_0"/>
                 <button ion-button full small clear color="dark">{{question.pictureLabel(2)}}</button>
@@ -298,7 +298,7 @@
                     [class.alert-warning]="question.d.options[3].answered  && !wasCorrect && !wasWrong"
                     [class.alert-error]="question.d.options[3].answered  && wasWrong"
                     [class.alert-success]="question.d.options[3].answered && wasCorrect"
-                    *ngIf="(!wasWrong && !wasCorrect) || fourPictureCorrectIndex === 3  || question.d.options[3].answered">
+                    *ngIf="(!wasWrong && !wasCorrect) || pictureCorrectIndex === 3  || question.d.options[3].answered">
               <div class="relative-flex-1" id="fourPicture-3">
                 <img [src]="resolveImageUrl(question.d.options[3].name)" class="z_index_0"/>
                 <button ion-button full small clear color="dark">{{question.pictureLabel(3)}}</button>

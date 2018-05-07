@@ -114,12 +114,12 @@
     </div>
     </div>
     </div>
-    <ion-fab right bottom color="gold" class="force-ltr" *ngIf="!hideForward" (dblclick)="scrollToTheFarRight()">
+    <ion-fab right bottom color="gold" class="force-ltr" *ngIf="!hideForward">
       <button ion-fab (click)="scrollToTheRight()">
         <ion-icon [name]="!isRTL ? 'ios-arrow-forward' : 'ios-arrow-back'" color="gold"></ion-icon>
       </button>
     </ion-fab>
-    <ion-fab left bottom color="gold" class="force-ltr" *ngIf="!hideBackward" (dblclick)="scrollToTheFarLeft()">
+    <ion-fab left bottom color="gold" class="force-ltr" *ngIf="!hideBackward">
       <button ion-fab (click)="scrollToTheLeft()">
         <ion-icon [name]="!isRTL ? 'ios-arrow-back' : 'ios-arrow-forward'" color="gold"></ion-icon>
       </button>

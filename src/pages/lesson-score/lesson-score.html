@@ -43,8 +43,15 @@
         <span>{{'TOTAL' | translate}} {{total}}</span>
       </ion-col>
     </ion-row>
-    <ion-row>
-      <!-- TODO show top 2+1 customers -->
+    <ion-row *ngIf="!inProgress || !showRetry" text-center>
+      <ion-spinner *ngIf="!topMembersLoaded"></ion-spinner>
+      <ion-grid *ngIf="topMembersLoaded">
+        <ion-row *ngFor="let mem of topMembers">
+          <ion-col>{{mem.rank}}</ion-col>
+          <ion-col>{{mem.dname}}</ion-col>
+          <ion-col>{{mem.total}}</ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-row>
     <ion-row>
      <ion-col>

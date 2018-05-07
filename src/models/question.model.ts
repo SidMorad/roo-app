@@ -29,13 +29,15 @@ export class Question {
         break;
       case 'FourPicture':
       case 'TwoPicture':
+        this.d.options = this.shuffle(this.d.options);
+        this.initOptions(false);
+        break;
       case 'Writing':
       case 'Speaking':
       case 'Conversation':
         this.initOptions(false);
         break;
     }
-
   }
 
   public readonly textCompareAcceptablePercentage: number = 0.8;
@@ -73,10 +75,10 @@ export class Question {
       }
     }
     else if (this.isType('TwoPicture')) {
-      return this.d.options[viewComp.twoPictureCorrectIndex].answered;
+      return this.d.options[viewComp.pictureCorrectIndex].answered;
     }
     else if (this.isType('FourPicture')) {
-      return this.d.options[viewComp.fourPictureCorrectIndex].answered;
+      return this.d.options[viewComp.pictureCorrectIndex].answered;
     }
     else if (this.isType('MultiCheck')) {
       for (let i = 0; i < viewComp.choices.length; i++) {
@@ -167,10 +169,10 @@ export class Question {
   resolveRightAnswerString(viewComp, autoCorrect?:boolean): string {
     let result = '';
     if (this.isType('TwoPicture')) {
-      result = this.pictureLabel(viewComp.twoPictureCorrectIndex);
+      result = this.pictureLabel(viewComp.pictureCorrectIndex);
     }
     else if (this.isType('FourPicture')) {
-      result = this.pictureLabel(viewComp.fourPictureCorrectIndex);
+      result = this.pictureLabel(viewComp.pictureCorrectIndex);
     }
     else if (this.isType('MultiCheck')) {
       for (let i = 0; i < viewComp.choices.length; i++) {
@@ -323,10 +325,10 @@ export class Question {
 
   public face(viewComp): string {
     if (this.isType('TwoPicture')) {
-      return this.pictureQuestion(viewComp.twoPictureCorrectIndex);
+      return this.pictureQuestion(viewComp.pictureCorrectIndex);
     }
     else if (this.isType('FourPicture')) {
-      return this.pictureQuestion(viewComp.fourPictureCorrectIndex);
+      return this.pictureQuestion(viewComp.pictureCorrectIndex);
     }
     else if (this.isType('OneCheck')) {
       return this.isNormal() ? this.toneCheckAnswer ? this.toneCheckAnswer.text : ''
@@ -341,10 +343,10 @@ export class Question {
 
   public faceForSpeak(viewComp): string {
     if (this.isType('TwoPicture')) {
-      return this.pictureLabel(viewComp.twoPictureCorrectIndex);
+      return this.pictureLabel(viewComp.pictureCorrectIndex);
     }
     else if (this.isType('FourPicture')) {
-      return this.pictureLabel(viewComp.fourPictureCorrectIndex);
+      return this.pictureLabel(viewComp.pictureCorrectIndex);
     }
     else if (this.isType('Conversation')) {
       return this.conversationAnswer(viewComp.questionCounter-1);

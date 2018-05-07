@@ -166,17 +166,17 @@ export class HomePage implements OnInit {
     this.hideForward = false;
   }
 
-  scrollToTheFarLeft() {
-    console.log('Scroll to far left triggered.');
-    this.panel.nativeElement.scrollLeft = 0;
-    this.hideBackward = true;
-  }
-
-  scrollToTheFarRight() {
-    console.log('Scroll to far right triggered.');
-    this.panel.nativeElement.scrollLeft = this.mapWidth - window.screen.width;
-    this.hideForward = true;
-  }
+  // scrollToTheFarLeft() {
+  //   console.log('Scroll to far left triggered.');
+  //   this.panel.nativeElement.scrollLeft = 0;
+  //   this.hideBackward = true;
+  // }
+  //
+  // scrollToTheFarRight() {
+  //   console.log('Scroll to far right triggered.');
+  //   this.panel.nativeElement.scrollLeft = this.mapWidth - window.screen.width;
+  //   this.hideForward = true;
+  // }
 
   lastTimeScreenTouched: number;
   touchMove1($event) {
@@ -187,7 +187,7 @@ export class HomePage implements OnInit {
 
   touchEnd1($event) {
     setTimeout(() => {
-      if (this.lastTimeScreenTouched && new Date().getTime() - this.lastTimeScreenTouched > 2000) {
+      if (this.lastTimeScreenTouched && new Date().getTime() - this.lastTimeScreenTouched > 1999) {
         if (this.panel.nativeElement.scrollLeft > 0) {
           this.hideBackward = false;
         }

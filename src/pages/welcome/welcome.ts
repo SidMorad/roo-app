@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, ViewController, App, Events } from 'ionic-angular';
+import { IonicPage, App, Events } from 'ionic-angular';
 import { OAuthService } from 'angular-oauth2-oidc';
 
 // import { MainPage } from '../pages';
@@ -19,8 +19,7 @@ import { LoginService, Principal } from '../../providers';
 export class WelcomePage implements OnInit {
   isTryingToLogin: boolean = true;
 
-  constructor(public navCtrl: NavController, public viewCtrl: ViewController,
-              public principal: Principal, public app: App,
+  constructor(private principal: Principal, private app: App,
               private loginService: LoginService, private events: Events,
               private oauthService: OAuthService) {
   }
@@ -55,19 +54,28 @@ export class WelcomePage implements OnInit {
   }
 
   login() {
-    this.loginService.appLogin((data) => {
-      this.home();
-    }, (err) => {
-      console.log('WelcomePage: Login failed.');
+    this.isTryingToLogin = true;
+    this.principal.identity().then((account) => {
+      if (account) {
+        this.home();
+      } else {
+        this.loginService.appLogin((data) => {
+          this.isTryingToLogin = false;
+          this.home();
+        }, (err) => {
+          console.log('WelcomePage: Login failed.', err);
+          this.isTryingToLogin = false;
+        });
+      }
     });
   }
 
   home() {
-    this.navCtrl.push('TabsPage').then(() => {
-      const index = this.navCtrl.getActive().index;
-      this.navCtrl.remove(0, index);
-    });
-    // this.app.getRootNavs()[0].setRoot(MainPage);
+    // this.navCtrl.push('TabsPage').then(() => {
+    //   const index = this.navCtrl.getActive().index;
+    //   this.navCtrl.remove(0, index);
+    // });
+    this.app.getRootNavs()[0].setRoot('TabsPage');
     // try {
     //   this.viewCtrl.dismiss();
     // } catch(err) { console.warn('Error on dismiss welcome page: ', err) }

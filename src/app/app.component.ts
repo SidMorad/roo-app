@@ -75,6 +75,8 @@ export class MyApp implements OnInit {
     const claims: any = this.oauthService.getIdentityClaims();
     if (!claims) {
       this.initAuthentication();
+    } else {
+      this.oauthService.setupAutomaticSilentRefresh();
     }
 
     const me = this;
@@ -137,11 +139,12 @@ export class MyApp implements OnInit {
     });
     this.events.subscribe('HTTP_ERROR', (httpError: HttpErrorResponse) => {
       console.log('HTTP ERROR', httpError);
-      if (httpError && httpError.status) {
+      if (httpError && httpError.status || httpError.status === 0) {
         this.toastCtrl.create({
           message: httpError.status + '',
           duration: 2000,
-          position: 'middle'
+          position: 'middle',
+          dismissOnPageChange: true
         }).present();
       }
     });

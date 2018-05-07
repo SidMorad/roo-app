@@ -28,8 +28,7 @@ export class LessonQuestionPage implements OnInit {
   @ViewChild('writingAnswerTextarea') writingAnswerTextarea: ElementRef;
   lesson: Lesson; category: Category; question: Question; questions: Question[];
   options: any[]; chosens: any[]; choices: any[];
-  twoPicturesNominated: string[]; twoPictureCorrectIndex: number;
-  fourPictures: number[]; fourPictureCorrectIndex: number;
+  twoPicturesNominated: string[]; pictureCorrectIndex: number; fourPictures: any[];
   noTotal: number; noWrong: number;
   writingAnswer: string = ''; speakingAnswer: string; wordAnswer: boolean; rightAnswerString: string;
   wasCorrect: boolean; wasWrong: boolean; wasAlmostCorrect: boolean;
@@ -51,10 +50,11 @@ export class LessonQuestionPage implements OnInit {
               private memory: Memory) {
     this.dir = platform.dir();
     const l: Lesson = navParams.get('lesson');
-    this.lesson = new Lesson(l.uuid, l.title, settings.allSettings.learnDir, l.indexOrder);
     this.category = navParams.get('category');
     this.questions = navParams.get('questions');
     this.lookupWords = navParams.get('words');
+    this.lesson = new Lesson(l.uuid, l.title, settings.allSettings.learnDir, l.indexOrder);
+    // this.lesson.determinePictureCorrectIndexies(this.questions, this.lookupWords);
     this.initTranslations();
     this.initSettings();
     this.initSwingStackConfig();
@@ -122,7 +122,7 @@ export class LessonQuestionPage implements OnInit {
   goToNextQuestion() {
     this.ngZone.run(() => {
     if (this.isType('FourPicture') && this.fourPictures.length === 3) {
-      this.fourPictureCorrectIndex = this.fourPictures[1];
+      this.pictureCorrectIndex = this.determinePictureCorrectIndex();
       this.fourPictures.splice(1, 1);
       this.markPictureAsUnAnswered(4);
       this.isChecking = false;
@@ -196,13 +196,12 @@ export class LessonQuestionPage implements OnInit {
       this.question.toneCheckAnswer;  // for initalize answer into variable and also speak function works as expected.
       this.description = 'CHOOSE_CORRECT_TRANSLATION';
     } else if (this.isType('FourPicture')) {
-      this.fourPictures = this.shuffleArray([0, 1, 2, 3]);
-      this.fourPictureCorrectIndex = this.fourPictures[2];
-      this.fourPictures.splice(2, 1);
+      this.fourPictures = [1, 1 , 1];
+      this.pictureCorrectIndex = this.determinePictureCorrectIndex();
       this.content.scrollToBottom();
       this.description = 'CHOOSE_CORRECT_PICTURE';
     } else if (this.isType('TwoPicture')) {
-      this.twoPictureCorrectIndex  = this.determineTwoPictureCorrectIndex();
+      this.pictureCorrectIndex  = this.determinePictureCorrectIndex();
       this.content.scrollToBottom();
       this.description = 'CHOOSE_CORRECT_PICTURE';
     } else if (this.isType('Writing')) {
@@ -270,8 +269,9 @@ export class LessonQuestionPage implements OnInit {
     });
   }
 
-  determineTwoPictureCorrectIndex(): number {
-    for (let i = 0; i < this.question.d.options.length; i++)  {
+  determinePictureCorrectIndex(): number {
+    const options = this.question.d.options;
+    for (let i = 0; i < options.length; i++)  {
       if (this.twoPicturesNominated) {
         if (this.twoPicturesNominated.indexOf(this.question.pictureLabel(i)) <= -1) {
           this.twoPicturesNominated.push(this.question.pictureLabel(i));
@@ -283,6 +283,7 @@ export class LessonQuestionPage implements OnInit {
         return i;
       }
     }
+    return Math.floor(Math.random() * (options.length - 1 + 1)) + 0;
   }
 
   twoPictureSelected(index) {
@@ -637,11 +638,11 @@ export class LessonQuestionPage implements OnInit {
     }
     else if (this.isType('TwoPicture')) {
       introSteps = [
-        { element: '#twoPicture-' + this.twoPictureCorrectIndex, intro: this.labelSelectACorrectPicture, position: 'auto' } ];
+        { element: '#twoPicture-' + this.pictureCorrectIndex, intro: this.labelSelectACorrectPicture, position: 'auto' } ];
     }
     else if (this.isType('FourPicture')) {
       introSteps = [
-        { element: '#fourPicture-' + this.fourPictureCorrectIndex, intro: this.labelSelectACorrectPicture, position: 'auto' } ];
+        { element: '#fourPicture-' + this.pictureCorrectIndex, intro: this.labelSelectACorrectPicture, position: 'auto' } ];
     }
     else if (this.isType('MutliCheck')) {
       introSteps = [

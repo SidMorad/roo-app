@@ -21,6 +21,8 @@ export class LessonScorePage {
   progressLevelTo: number;
   progressLevelValue: number;
   progressLevelMax: number;
+  topMembersLoaded: boolean;
+  topMembers: any[];
 
   constructor(private viewCtrl: ViewController, private storage: Storage,
               private api: Api, private scoreUtil: ScoreUtil, private settings: Settings) {
@@ -45,6 +47,7 @@ export class LessonScorePage {
             setTimeout(() => {
               me.inProgress = false;
               me.resolveScoreStats();
+              me.loadTopMembers();
             }, 1000);
         }, (err) => {
           console.log('OOPS upload score failed.', err);
@@ -61,11 +64,18 @@ export class LessonScorePage {
 
   resolveScoreStats() {
     this.total = this.settings.cachedScoreLookup.total;
-    let divider = this.scoreUtil.determineDivider(this.total);
     this.progressLevelFrom = this.scoreUtil.resolveLevelFrom(this.total);
     this.progressLevelTo = this.progressLevelFrom + 1;
-    this.progressLevelValue = Math.floor(this.total - (this.progressLevelFrom * divider));
-    this.progressLevelMax = divider;
+    this.progressLevelValue =  this.total - this.scoreUtil.resolveMaxScoreFrom(this.progressLevelFrom-1);
+    this.progressLevelMax = this.scoreUtil.determineDivider(this.total);
+  }
+
+  loadTopMembers() {
+    this.topMembersLoaded = false;
+    this.api.getTop3MonthMembers(this.settings.learnDir).subscribe((res) => {
+      this.topMembers = res.topMembers;
+      this.topMembersLoaded = true;
+    });
   }
 
   continue() {

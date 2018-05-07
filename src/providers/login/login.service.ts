@@ -41,6 +41,7 @@ export class LoginService {
     }
 
     oauthLogin(): Promise<any> {
+        const defaultError = 'Problem authenticating with OAuth';
         return this.oauthService.createAndSaveNonce().then(nonce => {
             let state: string = Math.floor(Math.random() * 1000000000).toString();
             if (window.crypto) {
@@ -51,12 +52,16 @@ export class LoginService {
             return new Promise((resolve, reject) => {
                 const oauthUrl = this.buildUrl(state, nonce);
                 this.platform.ready().then(()=> {
-                  const defaultError = 'Problem authenticating with OAuth';
                     window.cordova.plugins.browsertab.isAvailable(function(result) {
                         if (result) {
+                            console.log('BrowserTab is about to open',oauthUrl);
                             window.cordova.plugins.browsertab.openUrl(oauthUrl,
-                                function(success) { },
-                                function(error) { reject(defaultError) }
+                                function(success) {
+                                  if (typeof success === 'string' && success.startsWith('No Activity found to')) {
+                                    reject(defaultError);
+                                  }
+                                },
+                                function(error) { console.log('Acutally failed, ', error); reject(defaultError); }
                             );
                         } else {
                             const browser = window.cordova.InAppBrowser.open(oauthUrl, '_blank',
