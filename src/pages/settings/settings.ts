@@ -156,7 +156,7 @@ export class SettingsPage {
       console.log('SETTINGS#VALUES ', this.settings.allSettings, this.form.value);
       let learnDir = this.settings.allSettings.learnDir;
       if (this.page === 'learn') {
-        learnDir = this.settings.allSettings.motherLanguage + '$' + this.settings.allSettings.targetLanguage;
+        learnDir = this.form.value.motherLanguage + '$' + this.form.value.targetLanguage;
       }
       this.settings.setValue('learnDir', learnDir).then(() => {
         this.api.updateProfile(this.settings.allSettings).subscribe(() => {
