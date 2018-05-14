@@ -1,22 +1,26 @@
 page-lesson-question {
   .question-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+    position: relative;
+    min-height: 90vh;
   }
 
   .question-part {
-    flex: 1 90%;
+    min-height: 60vh;
   }
 
-  .question-button {
-    flex: 1 10%;
-    z-index: 100;
+  .question-buttons {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
   }
 
   .fab {
     width: 5em;
     height: 5em;
+  }
+
+  ion-list {
+    margin: 0px !important;
   }
 
   .part-added {

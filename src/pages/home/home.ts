@@ -1,5 +1,6 @@
 import { Component, OnInit, NgZone, ViewChild, ElementRef } from '@angular/core';
-import { IonicPage, NavController, Platform, ModalController, PopoverController, Events, Content } from 'ionic-angular';
+import { IonicPage, NavController, Platform, ModalController, PopoverController,
+         Events, Content, ToastController } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { Market } from '@ionic-native/market';
 import { Storage } from '@ionic/storage';
@@ -30,12 +31,11 @@ export class HomePage implements OnInit {
   hideForward: boolean = false;
 
   constructor(private navCtrl: NavController, private principal: Principal,
-              private ngZone: NgZone, private market: Market,
-              private api: Api, private appVersion: AppVersion,
-              private platform: Platform, private storage: Storage,
-              private modalCtrl: ModalController, private elementRef: ElementRef,
-              private translateService: TranslateService, private settings: Settings,
-              private popoverCtrl: PopoverController, private events: Events) {
+      private ngZone: NgZone, private market: Market, private events: Events,
+      private appVersion: AppVersion, private platform: Platform, private storage: Storage,
+      private modalCtrl: ModalController, private elementRef: ElementRef, private api: Api,
+      private translateService: TranslateService, private settings: Settings,
+      private popoverCtrl: PopoverController, private toastCtrl: ToastController) {
     this.categories = [];
     this.mapWidth = (window.screen.height * 6);
   }
@@ -43,8 +43,6 @@ export class HomePage implements OnInit {
   ngOnInit() {
     console.log('Home initalized. ', new Date());
     this.fetchCategories();
-    // this.content.enableJsScroll();
-    // this.content.resize();
     this.appVersion.getVersionCode().then((versionCode) => {
       this.api.versionCode().subscribe((remoteVersion) => {
         console.log('App version code is ', versionCode, ' and remoteVersion ', remoteVersion);
@@ -203,7 +201,15 @@ export class HomePage implements OnInit {
       this.navCtrl.push('SubscribePage');
     }
     else {
-      this.navCtrl.push('CategoryLessonPage', { category: category });
+      if (category.commingSoon) {
+        this.toastCtrl.create({
+          message: this.labelSoon,
+          duration: 1000,
+          position: 'middle'
+        }).present();
+      } else {
+        this.navCtrl.push('CategoryLessonPage', { category: category });
+      }
     }
   }
 
@@ -267,12 +273,13 @@ export class HomePage implements OnInit {
   labelClickHereToSeeInstructions: string;
   labelAndContinueYourPath: string;
   labelToTheRight: string;
+  labelSoon: string;
 
   initTranslations() {
     return new Observable((observer) => {
        this.translateService.get(['OK', 'FOR_START_CLICK_ON_THE_PICTURE', 'NEXT', 'PREV',
                                  'CLICK_HERE_TO_SEE_GUIDE', 'TO_THE_RIGHT',
-                                 'AND_CONTINUE_YOUR_PATH']).subscribe((translated) => {
+                                 'AND_CONTINUE_YOUR_PATH', 'SOON_LABEL']).subscribe((translated) => {
         this.labelOk = translated.OK;
         this.labelNext = translated.NEXT;
         this.labelPrev = translated.PREV;
@@ -280,6 +287,7 @@ export class HomePage implements OnInit {
         this.labelClickHereToSeeInstructions = translated.CLICK_HERE_TO_SEE_GUIDE;
         this.labelAndContinueYourPath = translated.AND_CONTINUE_YOUR_PATH;
         this.labelToTheRight = translated.TO_THE_RIGHT;
+        this.labelSoon = translated.SOON_LABEL;
         observer.next(translated);
         observer.complete();
       });

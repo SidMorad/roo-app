@@ -211,7 +211,9 @@ export class Question {
           for (let j = 0; j < answers.length; j++) {
             if (viewComp.chosens[i].text === answers[j].text) {
               wasIn = true;
-              wasPositionCorrect = i === j;
+              if (!wasPositionCorrect) {
+                wasPositionCorrect = i === j;
+              }
             }
           }
           if (wasIn && wasPositionCorrect) {
@@ -223,10 +225,12 @@ export class Question {
           }
         }
         for (let i = 0; i < viewComp.options.length; i++) {
-          for (let j = 0; j < answers.length; j++) {
-            if (viewComp.options[i].text === answers[j].text) {
-              if (viewComp.options[i].class !== 'option-selected') {
-                viewComp.options[i].class = 'option-confuse';
+          if (viewComp.wasWrong || viewComp.wasAlmostCorrect) {
+            for (let j = 0; j < answers.length; j++) {
+              if (viewComp.options[i].text === answers[j].text) {
+                if (viewComp.options[i].class !== 'option-selected') {
+                  viewComp.options[i].class = 'option-confuse';
+                }
               }
             }
           }
@@ -280,6 +284,7 @@ export class Question {
       return result;
     } catch (error) {
       console.log('Error on parse dynamicPart: ', array, dir);
+      return [];
     }
   }
 
@@ -375,7 +380,8 @@ export class Question {
     if (this.targetMultiSelectOptions) {
       return this.targetMultiSelectOptions;
     }
-    const toptions = this.splitOptions(JSON.parse(JSON.stringify(this.targetOptions)).concat(this.multiSelectAnswers()));
+    const extra = this.targetOptions.length > 0 ? JSON.parse(JSON.stringify(this.targetOptions)) : [];
+    const toptions = this.splitOptions(extra.concat(this.multiSelectAnswers()));
     this.targetMultiSelectOptions = this.shuffle(toptions);
     return this.targetMultiSelectOptions;
   }
@@ -384,7 +390,8 @@ export class Question {
     if (this.motherMultiSelectOptions) {
       return this.motherMultiSelectOptions;
     }
-    const moptions = this.splitOptions(JSON.parse(JSON.stringify(this.motherOptions)).concat(this.multiSelectAnswers()));
+    const extra = this.motherOptions.length > 0 ? JSON.parse(JSON.stringify(this.motherOptions)) : [];
+    const moptions = this.splitOptions(extra.concat(this.multiSelectAnswers()));
     this.motherMultiSelectOptions = this.shuffle(moptions);
     return this.motherMultiSelectOptions;
   }
@@ -454,13 +461,13 @@ export class Question {
     array.forEach((option: any) => {
       if (/\s/.test(option.text)) {
         option.text.split(' ').forEach((suboption) => {
-          if (unique.indexOf(suboption) === -1) {
+          if (unique.indexOf(suboption) === -1 || this.d.dallow) {
             unique.push(suboption);
             result.push({ text: suboption });
           }
         });
       } else {
-        if (unique.indexOf(option.text) === -1) {
+        if (unique.indexOf(option.text) === -1 || this.d.dallow) {
           unique.push(option.text);
           result.push({ text: option.text });
         }

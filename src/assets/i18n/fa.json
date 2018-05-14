@@ -136,6 +136,9 @@
   "MONTH_9": "اکتبر",
   "MONTH_10": "نوامبر",
   "MONTH_11": "دسامبر",
+  "LESSON_TYPE_CONVERSATION": "مکالمه",
+  "LESSON_TYPE_WORDS": "لغت",
+  "LESSON_TYPE_LESSON": "درس",
 
   "LOGIN_TITLE": "ورود",
   "LOGIN_ERROR": "ورود ناموفق، لطفا بعد از بررسی اطلاعات حسابتون، دوباره تلاش کنید.",

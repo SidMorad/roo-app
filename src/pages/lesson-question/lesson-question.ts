@@ -28,7 +28,7 @@ export class LessonQuestionPage implements OnInit {
   @ViewChild('writingAnswerTextarea') writingAnswerTextarea: ElementRef;
   lesson: Lesson; category: Category; question: Question; questions: Question[];
   options: any[]; chosens: any[]; choices: any[];
-  twoPicturesNominated: string[]; pictureCorrectIndex: number; fourPictures: any[];
+  twoPicturesNominated: string[]; pictureCorrectIndex: number;
   noTotal: number; noWrong: number;
   writingAnswer: string = ''; speakingAnswer: string; wordAnswer: boolean; rightAnswerString: string;
   wasCorrect: boolean; wasWrong: boolean; wasAlmostCorrect: boolean;
@@ -102,6 +102,9 @@ export class LessonQuestionPage implements OnInit {
       this.noWrong++;
     }
     this.question.resolveRightAnswerString(this, true);
+    setTimeout(() => {
+      this.content.scrollToBottom(1000);
+    }, 300);
   }
 
   continue() {
@@ -121,16 +124,16 @@ export class LessonQuestionPage implements OnInit {
 
   goToNextQuestion() {
     this.ngZone.run(() => {
-    if (this.isType('FourPicture') && this.fourPictures.length === 3) {
-      this.pictureCorrectIndex = this.determinePictureCorrectIndex();
-      this.fourPictures.splice(1, 1);
-      this.markPictureAsUnAnswered(4);
-      this.isChecking = false;
-      if (this.autoPlayVoice) {
-        this.speak();
-      }
-    }
-    else if (this.isType('Conversation')) {
+    // if (this.isType('FourPicture') && this.fourPictures.length === 3) {
+    //   this.pictureCorrectIndex = this.determinePictureCorrectIndex();
+    //   this.fourPictures.splice(1, 1);
+    //   this.markPictureAsUnAnswered(4);
+    //   this.isChecking = false;
+    //   if (this.autoPlayVoice) {
+    //     this.speak();
+    //   }
+    // }
+    if (this.isType('Conversation')) {
       this.noTotal = this.question.d.options.length;
       this.checkIfIsEnd();
       this.checkIfIsEndFailure();
@@ -144,7 +147,7 @@ export class LessonQuestionPage implements OnInit {
         this.questionCounter++;
         this.isChecking = false;
       });
-    this.content.scrollToBottom();
+      this.content.scrollToBottom();
     }
     else if (this.isType('Words')) {
       this.noTotal = this.question.d.options.length * 2;
@@ -185,7 +188,7 @@ export class LessonQuestionPage implements OnInit {
   }
 
   setQuestion(q: Question) {
-    this.ngZone.run(() => {
+  this.ngZone.run(() => {
     this.question = new Question(q.uuid, q.type, q.indexOrder, q.dynamicPart, null, this.lookupWords);
     if (this.isType('MultiSelect')) {
       this.options = this.question.multiSelectOptions();
@@ -196,13 +199,10 @@ export class LessonQuestionPage implements OnInit {
       this.question.toneCheckAnswer;  // for initalize answer into variable and also speak function works as expected.
       this.description = 'CHOOSE_CORRECT_TRANSLATION';
     } else if (this.isType('FourPicture')) {
-      this.fourPictures = [1, 1 , 1];
       this.pictureCorrectIndex = this.determinePictureCorrectIndex();
-      this.content.scrollToBottom();
       this.description = 'CHOOSE_CORRECT_PICTURE';
     } else if (this.isType('TwoPicture')) {
       this.pictureCorrectIndex  = this.determinePictureCorrectIndex();
-      this.content.scrollToBottom();
       this.description = 'CHOOSE_CORRECT_PICTURE';
     } else if (this.isType('Writing')) {
       this.description = 'TRANSLATE_THIS_SENTENCE';
@@ -236,8 +236,10 @@ export class LessonQuestionPage implements OnInit {
         this.speak();
       }
     }
-    console.log('MotherLangRTL ', this.lesson.isMotherLangRTL(), 'isNormal ' ,this.question.isN());
-    });
+    setTimeout(() => {
+      this.content.scrollToBottom(1000);
+    }, 300);
+  });
   }
 
   isAnswered() {
@@ -247,6 +249,11 @@ export class LessonQuestionPage implements OnInit {
   speak(text?: string) {
     if (!text) {
       text = this.questionFaceForSpeak;
+    }
+    if (this.isType('Writing')) {
+      setTimeout(() => {
+        this.writingAnswerTextarea.nativeElement.focus();
+      }, 300);
     }
     return this.textToSpeech.speak({
       text: text,

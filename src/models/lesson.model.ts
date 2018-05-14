@@ -54,4 +54,8 @@ export class Lesson {
     return !this.isClassRTL(reverse);
   }
 
+  get titleKey(): string {
+    return this.indexOrder === 70 ? 'LESSON_TYPE_CONVERSATION' : this.indexOrder === 80 ? 'LESSON_TYPE_WORDS' : 'LESSON_TYPE_LESSON';
+  }
+
 }

@@ -123,4 +123,9 @@ export class CategoryLessonPage implements OnInit {
     return 0;
   }
 
+  titleKey(lesson) {
+    const l = new Lesson(lesson.uuid, null, null, lesson.indexOrder);
+    return l.titleKey;
+  }
+
 }
