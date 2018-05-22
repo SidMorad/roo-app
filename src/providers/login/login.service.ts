@@ -1,119 +1,120 @@
 import { Injectable } from '@angular/core';
-import { OAuthService } from 'angular-oauth2-oidc';
 import { Platform, Events } from 'ionic-angular';
 
-import { Principal } from '../auth/principal.service';
+import { Principal, SecurityService } from '../';
 
 declare const window: any;
 
 @Injectable()
 export class LoginService {
 
-    constructor(private oauthService: OAuthService, private platform: Platform,
-                private principal: Principal,
-                private events: Events) {}
+  constructor(private securityService: SecurityService, private platform: Platform,
+    private principal: Principal,
+    private events: Events) { }
 
-    redirectLogin() {
-        this.oauthService.initImplicitFlow();
-    }
+  redirectLogin() {
+    this.securityService.oidc().initImplicitFlow();
+  }
 
-    appLogin(cb, fail) {
-        return this.oauthLogin().then(success => {
-            const idToken = success.id_token;
-            const accessToken = success.access_token;
-            const keyValuePair = `#id_token=${encodeURIComponent(idToken)}&access_token=${encodeURIComponent(accessToken)}`;
-            this.oauthService.tryLogin({
-                customHashFragment: keyValuePair,
-                disableOAuth2StateCheck: true,
-                onTokenReceived: context => {
-                  console.log('login.service#onTokenReceived: ', context);
-                  const claims: any = this.oauthService.getIdentityClaims();
-                  if (claims) {
-                    this.events.publish('LOGIN_SUCCESS', claims);
-                  }
-                  return cb(claims);
-                }
-            });
-            // this.translate.use(account.langKey);
-        }, (error) => {
-            return fail(error);
-        });
-    }
-
-    oauthLogin(): Promise<any> {
-        const defaultError = 'Problem authenticating with OAuth';
-        return this.oauthService.createAndSaveNonce().then(nonce => {
-            let state: string = Math.floor(Math.random() * 1000000000).toString();
-            if (window.crypto) {
-                const array = new Uint32Array(1);
-                window.crypto.getRandomValues(array);
-                state = array.join().toString();
-            }
-            return new Promise((resolve, reject) => {
-                const oauthUrl = this.buildUrl(state, nonce);
-                this.platform.ready().then(()=> {
-                    window.cordova.plugins.browsertab.isAvailable(function(result) {
-                        if (result) {
-                            console.log('BrowserTab is about to open',oauthUrl);
-                            window.cordova.plugins.browsertab.openUrl(oauthUrl,
-                                function(success) {
-                                  if (typeof success === 'string' && success.startsWith('No Activity found to')) {
-                                    reject(defaultError);
-                                  }
-                                },
-                                function(error) { console.log('Acutally failed, ', error); reject(defaultError); }
-                            );
-                        } else {
-                            const browser = window.cordova.InAppBrowser.open(oauthUrl, '_blank',
-                                'location=no,clearsessioncache=no,clearcache=no');
-                            browser.addEventListener('loadstart', (event) => {
-                                if ((event.url).indexOf('http://localhost:8100') === 0) {
-                                    browser.removeEventListener('exit', () => {
-                                    });
-                                    browser.close();
-                                    const responseParameters = ((event.url).split('#')[1]).split('&');
-                                    const parsedResponse = {};
-                                    for (let i = 0; i < responseParameters.length; i++) {
-                                        parsedResponse[responseParameters[i].split('=')[0]] =
-                                            responseParameters[i].split('=')[1];
-                                    }
-                                    if (parsedResponse['state'] !== state) {
-                                        reject(defaultError);
-                                    } else if (parsedResponse['access_token'] !== undefined &&
-                                        parsedResponse['access_token'] !== null) {
-                                        resolve(parsedResponse);
-                                    } else {
-                                        reject(defaultError);
-                                    }
-                                }
-                            });
-                            browser.addEventListener('exit', function (event) {
-                                reject('The OAuth sign in flow was canceled');
-                            });
-                        }
-                    });
-                });
-            });
-        });
-    }
-
-    buildUrl(state, nonce): string {
-        return this.oauthService.loginUrl + '?' +
-            'client_id=' + this.oauthService.clientId + '&' +
-            'redirect_uri=' + this.oauthService.redirectUri + '&' +
-            'response_type=id_token%20token&' +
-            'scope=' + encodeURI(this.oauthService.scope) + '&' +
-            'state=' + state + '&nonce=' + nonce;
-    }
-
-    logout() {
-        if (this.platform.is('core')) {
-            // do global logout when using browser
-            this.oauthService.logOut();
-        } else {
-            // don't redirect to global logout in app
-            this.oauthService.logOut(true);
+  appLogin(cb, fail) {
+    return this.oauthLogin().then(success => {
+      const idToken = success.id_token;
+      const accessToken = success.access_token;
+      const keyValuePair = `#id_token=${encodeURIComponent(idToken)}&access_token=${encodeURIComponent(accessToken)}`;
+      this.securityService.oidc().tryLogin({
+        customHashFragment: keyValuePair,
+        disableOAuth2StateCheck: true,
+        onTokenReceived: context => {
+          console.log('login.service#onTokenReceived: ', context);
+          const claims: any = this.securityService.oidc().getIdentityClaims();
+          if (claims) {
+            this.events.publish('LOGIN_SUCCESS', claims);
+          }
+          return cb(claims);
         }
-        this.principal.authenticate(null);
+      });
+      // this.translate.use(account.langKey);
+    }, (error) => {
+      return fail(error);
+    });
+  }
+
+  oauthLogin(): Promise<any> {
+    const defaultError = 'Problem authenticating with OAuth';
+    return this.securityService.oidc().createAndSaveNonce().then(nonce => {
+      let state: string = Math.floor(Math.random() * 1000000000).toString();
+      if (window.crypto) {
+        const array = new Uint32Array(1);
+        window.crypto.getRandomValues(array);
+        state = array.join().toString();
+      }
+      return new Promise((resolve, reject) => {
+        const oauthUrl = this.buildUrl(state, nonce);
+        this.platform.ready().then(() => {
+          window.cordova.plugins.browsertab.isAvailable(function(result) {
+            if (result) {
+              console.log('BrowserTab is about to open', oauthUrl);
+              window.cordova.plugins.browsertab.openUrl(oauthUrl,
+                function(success) {
+                  console.log('BrowserTab#success: ', success);
+                  if (typeof success === 'string' && success.startsWith('No Activity found to')) {
+                    reject(defaultError);
+                  }
+                },
+                function(error) { console.log('Acutally failed, ', error); reject(defaultError); }
+              );
+            } else {
+              const browser = window.cordova.InAppBrowser.open(oauthUrl, '_blank',
+                'location=no,clearsessioncache=no,clearcache=no');
+              browser.addEventListener('loadstart', (event) => {
+                if ((event.url).indexOf('http://localhost:8100') === 0) {
+                  browser.removeEventListener('exit', () => {
+                  });
+                  browser.close();
+                  const responseParameters = ((event.url).split('#')[1]).split('&');
+                  const parsedResponse = {};
+                  for (let i = 0; i < responseParameters.length; i++) {
+                    parsedResponse[responseParameters[i].split('=')[0]] =
+                      responseParameters[i].split('=')[1];
+                  }
+                  if (parsedResponse['state'] !== state) {
+                    reject(defaultError);
+                  } else if (parsedResponse['access_token'] !== undefined &&
+                    parsedResponse['access_token'] !== null) {
+                    resolve(parsedResponse);
+                  } else {
+                    reject(defaultError);
+                  }
+                }
+              });
+              browser.addEventListener('exit', function(event) {
+                reject('The OAuth sign in flow was canceled');
+              });
+            }
+          });
+        });
+      });
+    });
+  }
+
+  buildUrl(state, nonce): string {
+    return this.securityService.oidc().loginUrl + '?' +
+      'client_id=' + this.securityService.oidc().clientId + '&' +
+      'redirect_uri=' + this.securityService.oidc().redirectUri + '&' +
+      'response_type=id_token%20token&' +
+      'scope=' + encodeURI(this.securityService.oidc().scope) + '&' +
+      'state=' + state + '&nonce=' + nonce;
+  }
+
+  logout() {
+    if (this.platform.is('core')) {
+      // do global logout when using browser
+      this.securityService.oidc().logOut();
+    } else {
+      // don't redirect to global logout in app
+      this.securityService.oidc().logOut(true);
     }
+    this.principal.authenticate(null);
+  }
+
 }

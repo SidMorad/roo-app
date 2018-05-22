@@ -20,7 +20,8 @@ import { AppVersion } from '@ionic-native/app-version';
 import { Market } from '@ionic-native/market';
 import { SwingModule } from 'angular2-swing';
 
-import { Api, Settings, User, ScoreUtil, Memory, SecureStorageHelper } from '../providers';
+import { Api, Settings, User, ScoreUtil, Memory, SecureStorageHelper,
+         SecurityService } from '../providers';
 import { DefaultSettings } from '../models';
 import { MyApp } from './app.component';
 import { LoginService } from '../providers/login/login.service';
@@ -89,6 +90,7 @@ export function provideSettings(storage: Storage, api:Api) {
     SessionStorageService,
     SecureStorage,
     SecureStorageHelper,
+    SecurityService,
     Camera,
     SplashScreen,
     StatusBar,

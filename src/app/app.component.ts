@@ -4,10 +4,9 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { Config, Nav, Platform, Events, App, ToastController } from 'ionic-angular';
-import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
 import { Subscription } from 'rxjs/Rx';
 
-import { Settings } from '../providers/providers';
+import { Settings, SecurityService } from '../providers';
 import { Api } from '../providers/api/api';
 import { Principal } from '../providers/auth/principal.service';
 import { LoginService } from '../providers/login/login.service';
@@ -60,7 +59,7 @@ export class MyApp implements OnInit {
   constructor(private translate: TranslateService, private platform: Platform,
     private settings: Settings, private config: Config, private ngZone: NgZone,
     private statusBar: StatusBar, private splashScreen: SplashScreen,
-    private oauthService: OAuthService, private api: Api, private app: App,
+    private securityService: SecurityService, private api: Api, private app: App,
     private principal: Principal, private loginService: LoginService,
     private events: Events, private toastCtrl: ToastController) {
     platform.ready().then(() => {
@@ -72,11 +71,8 @@ export class MyApp implements OnInit {
       this.initTranslate();
     });
 
-    const claims: any = this.oauthService.getIdentityClaims();
-    if (!claims) {
+    if (!this.securityService.oidc().hasValidAccessToken()) {
       this.initAuthentication();
-    } else {
-      this.oauthService.setupAutomaticSilentRefresh();
     }
 
     const me = this;
@@ -96,11 +92,11 @@ export class MyApp implements OnInit {
             const idToken = parsedResponse['id_token'];
             const accessToken = parsedResponse['access_token'];
             const keyValuePair = `#id_token=${encodeURIComponent(idToken)}&access_token=${encodeURIComponent(accessToken)}`;
-            me.oauthService.tryLogin({
+            me.securityService.oidc().tryLogin({
               customHashFragment: keyValuePair,
               disableOAuth2StateCheck: true,
               onTokenReceived: context => {
-                const claims = me.oauthService.getIdentityClaims();
+                const claims = me.securityService.oidc().getIdentityClaims();
                 if (claims) {
                   me.events.publish('LOGIN_SUCCESS', claims);
                   me.getAccount();
@@ -139,7 +135,10 @@ export class MyApp implements OnInit {
     });
     this.events.subscribe('HTTP_ERROR', (httpError: HttpErrorResponse) => {
       console.log('HTTP ERROR', httpError);
-      if (httpError && httpError.status || httpError.status === 0) {
+      if (httpError.url && httpError.url.indexOf('/api/account') !== -1) {
+        return;
+      }
+      if (httpError && (httpError.status || httpError.status === 0)) {
         this.toastCtrl.create({
           message: httpError.status + '',
           duration: 2000,
@@ -152,14 +151,7 @@ export class MyApp implements OnInit {
 
   initAuthentication() {
     const AUTH_CONFIG: string = 'authConfig';
-    this.oauthService.setStorage(localStorage);
-    this.oauthService.tokenValidationHandler = new JwksValidationHandler();
-    // use local storage to optimize authentication config
     if (localStorage.getItem(AUTH_CONFIG)) {
-      const authConfig: AuthConfig = JSON.parse(localStorage.getItem(AUTH_CONFIG));
-      this.oauthService.configure(authConfig);
-      this.oauthService.setupAutomaticSilentRefresh();
-      // localStorage.removeItem(AUTH_CONFIG);  // AuthConfig will no change oftern, so let's keep it in local storage.
       this.tryLogin();
     } else {
       // Try to get the oauth settings from the server
@@ -174,25 +166,24 @@ export class MyApp implements OnInit {
             }
             // save in localStorage so redirect back gets config immediately
             localStorage.setItem(AUTH_CONFIG, JSON.stringify(data));
-            me.oauthService.configure(data);
-            me.oauthService.setupAutomaticSilentRefresh();
+            me.securityService.oidc().configure(data);
             me.tryLogin();
           });
         });
       }, error => {
         console.error('ERROR fetching authentication information, defaulting to Keycloak settings');
-        this.oauthService.redirectUri = 'marsroo://oauth2redirect';
-        this.oauthService.clientId = 'web_app';
-        this.oauthService.scope = 'openid profile email';
-        this.oauthService.issuer = this.fallbackAuthBaseUrl + '/auth/realms/mars';
+        this.securityService.oidc().redirectUri = 'marsroo://oauth2redirect';
+        this.securityService.oidc().clientId = 'web_app';
+        this.securityService.oidc().scope = 'openid profile email offline_access';
+        this.securityService.oidc().issuer = this.fallbackAuthBaseUrl + '/auth/realms/mars';
         this.tryLogin();
       });
     }
   }
 
   tryLogin() {
-    this.oauthService.loadDiscoveryDocumentAndLogin().then(() => {
-      const claims = this.oauthService.getIdentityClaims();
+    this.securityService.oidc().loadDiscoveryDocumentAndLogin().then(() => {
+      const claims = this.securityService.oidc().getIdentityClaims();
       if (claims) {
         // this.events.publish('LOGIN_SUCCESS', claims);
         this.getAccount();

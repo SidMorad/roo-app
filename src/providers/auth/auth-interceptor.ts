@@ -6,7 +6,7 @@ import {
     HttpInterceptor, HttpErrorResponse, HttpResponse
 } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import { OAuthService } from 'angular-oauth2-oidc';
+import { SecurityService } from '../';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -15,11 +15,11 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        const oauthService = this.injector.get(OAuthService);
-        if (oauthService.hasValidAccessToken()) {
+        const securityService = this.injector.get(SecurityService);
+        if (securityService.oidc().hasValidAccessToken()) {
             request = request.clone({
                 setHeaders: {
-                    Authorization: oauthService.authorizationHeader()
+                    Authorization: securityService.oidc().authorizationHeader()
                 }
             })
         }

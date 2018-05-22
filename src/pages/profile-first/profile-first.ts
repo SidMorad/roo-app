@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { IonicPage, ViewController, NavParams, Platform } from 'ionic-angular';
 
-import { Settings, Api, Principal } from '../../providers/providers';
+import { Settings, Api, Principal } from '../../providers';
 import { DefaultSettings, Account } from '../../models';
 
 /**

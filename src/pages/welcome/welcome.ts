@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, App, Events } from 'ionic-angular';
-import { OAuthService } from 'angular-oauth2-oidc';
 
 // import { MainPage } from '../pages';
-import { LoginService, Principal } from '../../providers';
+import { LoginService, Principal, SecurityService } from '../../providers';
 
 /**
  * The Welcome Page is a splash page that quickly describes the app,
@@ -21,30 +20,30 @@ export class WelcomePage implements OnInit {
 
   constructor(private principal: Principal, private app: App,
               private loginService: LoginService, private events: Events,
-              private oauthService: OAuthService) {
+              private securityService: SecurityService) {
   }
 
   ngOnInit() {
     this.isTryingToLogin = true;
-    this.oauthService.setStorage(localStorage);
-    const claims: any = this.oauthService.getIdentityClaims();
-    if (!claims) {
-      this.oauthService.loadDiscoveryDocumentAndLogin().then(() => {
+    if (!this.securityService.oidc().hasValidAccessToken()) {
+      this.securityService.oidc().loadDiscoveryDocumentAndLogin().then(() => {
         this.geAccount();
-        console.log('Well loadAuthAndTryLogin succeed, accessTokenExpiration is ', this.oauthService.getAccessTokenExpiration());
       }).catch((error) => {
         console.log('Well loadAuthAndTryLogin failed with error ', error);
         this.isTryingToLogin = false;
       });
     } else {
       // console.log('Cliams ', claims);
-      this.events.publish('LOGIN_SUCCESS', claims);
-      this.geAccount();
+      this.events.publish('LOGIN_SUCCESS', this.securityService.oidc().getIdentityClaims());
+      console.log('Login succeed in welcome page, actually...');
+      setTimeout(() => {
+        this.geAccount();
+      }, 300);
     }
   }
 
   geAccount() {
-    this.principal.identity(true).then((account) => {
+    this.principal.identity().then((account) => {
       if (account) {
         this.home();
       } else {

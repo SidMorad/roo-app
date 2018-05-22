@@ -5,7 +5,7 @@ import { IonicPage, NavParams, ViewController, Platform, ToastController, Events
 import { AppVersion } from '@ionic-native/app-version';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Settings, Api, Principal } from '../../providers/providers';
+import { Settings, Api, Principal } from '../../providers';
 
 /**
  * The Settings page is a simple form that syncs with a Settings provider
