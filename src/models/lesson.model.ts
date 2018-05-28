@@ -1,10 +1,14 @@
+import { IMAGE_ORIGIN } from '../app/app.constants';
+import { ScoreType } from './';
 
 export class Lesson {
   constructor(
+    public type?: ScoreType,
     public uuid?: string,
     public title?: string,
     public learnDir?: string,
-    public indexOrder?: number
+    public indexOrder?: number,
+    public picture?: string
   ) { }
 
   isMotherLangRTL(): boolean {
@@ -56,6 +60,10 @@ export class Lesson {
 
   get titleKey(): string {
     return this.indexOrder === 70 ? 'LESSON_TYPE_CONVERSATION' : this.indexOrder === 80 ? 'LESSON_TYPE_WORDS' : 'LESSON_TYPE_LESSON';
+  }
+
+  get pictureUrl(): string {
+    return `${IMAGE_ORIGIN}/lessons/${this.picture}`;
   }
 
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
 
-import { Lesson, Score, DefaultSettings, Category } from '../../models';
+import { Score, DefaultSettings, Category } from '../../models';
 
 /**
  * Api is a generic(and customized for Roo domain) REST Api handler.
@@ -25,6 +25,10 @@ export class Api {
 
   updateProfile(profile: DefaultSettings): Observable<any> {
     return this.post('roo/api/user/profile/update', profile);
+  }
+
+  getDailyLesson(): Observable<any> {
+    return this.get('roo/api/user/lesson/daily');
   }
 
   getProfile(): Observable<any> {
@@ -55,8 +59,8 @@ export class Api {
     return this.get(`roo/api/public/lessons/${difficultyLevel}/${uuid}`);
   }
 
-  getQuestions(lesson: Lesson, learnDir: string, difLevel: string): Observable<any> {
-    return this.get(`roo/api/public/questions/${learnDir}/${difLevel}/${lesson.uuid}`);
+  getQuestions(lessonUuid: string, learnDir: string, difLevel: string): Observable<any> {
+    return this.get(`roo/api/public/questions/${learnDir}/${difLevel}/${lessonUuid}`);
   }
 
   createScore(score: Score): Observable<any> {
@@ -104,6 +108,9 @@ export class Api {
       this.http.get(`${Api.API_URL}roo/api/public/categories/${learnDir}`).subscribe((res: Category[]) => {
         this.cachedCategories = res;
         observer.next(this.cachedCategories);
+        observer.complete();
+      }, (err) => {
+        observer.error(err);
         observer.complete();
       });
     });

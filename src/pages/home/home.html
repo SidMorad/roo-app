@@ -53,14 +53,15 @@
     <div class="map map-inner map-webview touch-action" id="map-webview"
       [style.width.px]="mapWidth" style="height:99%; overflow-x:scroll; display:inline-block;">
 
-      <!-- <div id="pin-daily" class="pin">
-        <div class="pin-image-photo">
-          <a (click)="dailyLesson()">
+      <div id="pin-daily" class="pin" *ngIf="isDevMode">
+        <div class="pin-image-photo" [style.background-image]="'url(' + dailyLesson.pictureUrl + ')'">
+          <a (click)="startDailyLesson()">
           </a>
+          <ion-spinner *ngIf="dailyLessonIsLoading" color="light"></ion-spinner>
         </div>
         <div class="pin-image">
           <div class="date">
-            <span class="day">{{'SOON_LABEL' | translate}}</span>
+            <span class="day">{{dayOfWeek}} {{dayOfMonth}}</span>
           </div>
         </div>
         <div class="title">
@@ -70,6 +71,7 @@
         </div>
       </div>
 
+      <!--
       <div id="pin-bot" class="pin">
         <div class="pin-image-photo">
           <a (click)="dailyLesson()"></a>
@@ -87,7 +89,7 @@
         </div>
       </div>
       <div class="bot-dot">
-      </div> -->
+      </div>-->
 
       <div class="pin" id="pin-{{i+1}}" *ngFor="let category of categories; let i = index; trackBy uuid;">
        <div class="pin-image-photo">

@@ -3,7 +3,7 @@ import { IonicPage, Platform, NavParams, Slides, NavController } from 'ionic-ang
 import { NgProgress } from '@ngx-progressbar/core';
 import { Subscription } from 'rxjs/Rx';
 
-import { Category, Lesson } from '../../models';
+import { Category, Lesson, ScoreTypeFactory } from '../../models';
 import { Api, Memory, Settings } from '../../providers';
 
 @IonicPage()
@@ -74,12 +74,13 @@ export class CategoryLessonPage implements OnInit {
   }
 
   startLesson(index) {
-    this.subscription = this.api.getQuestions(this.lessons[index],
+    this.subscription = this.api.getQuestions(this.lessons[index].uuid,
                                               this.settings.learnDir,
                                               this.settings.difficultyLevel).subscribe((res) => {
+      const lesson: Lesson = new Lesson(ScoreTypeFactory.lesson, this.lessons[index].uuid, null, this.settings.learnDir, this.lessons[index].indexOrder, null);
       this.navCtrl.push('LessonQuestionPage', {
         category: this.category,
-        lesson: this.lessons[index],
+        lesson: lesson,
         questions: res.questions,
         words: res.words});
     }, (error) => {
@@ -124,7 +125,7 @@ export class CategoryLessonPage implements OnInit {
   }
 
   titleKey(lesson) {
-    const l = new Lesson(lesson.uuid, null, null, lesson.indexOrder);
+    const l = new Lesson(ScoreTypeFactory.lesson, lesson.uuid, null, null, lesson.indexOrder, null);
     return l.titleKey;
   }
 

@@ -10,7 +10,7 @@ import { Storage } from '@ionic/storage';
 import introJs from 'intro.js/intro.js';
 import { StackConfig, DragEvent, SwingStackComponent, SwingCardComponent } from 'angular2-swing';
 
-import { Category, Lesson, Question, Score, ScoreType, TwoWord } from '../../models';
+import { Category, Lesson, Question, Score, TwoWord } from '../../models';
 import { IMAGE_ORIGIN } from '../../app/app.constants';
 import { Principal } from '../../providers/auth/principal.service';
 import { LoginService } from '../../providers/login/login.service';
@@ -49,11 +49,10 @@ export class LessonQuestionPage implements OnInit {
               private settings: Settings, private storage: Storage, private toastCtrl: ToastController,
               private memory: Memory) {
     this.dir = platform.dir();
-    const l: Lesson = navParams.get('lesson');
+    this.lesson = navParams.get('lesson');
     this.category = navParams.get('category');
     this.questions = navParams.get('questions');
     this.lookupWords = navParams.get('words');
-    this.lesson = new Lesson(l.uuid, l.title, settings.allSettings.learnDir, l.indexOrder);
     // this.lesson.determinePictureCorrectIndexies(this.questions, this.lookupWords);
     this.initTranslations();
     this.initSettings();
@@ -465,8 +464,8 @@ export class LessonQuestionPage implements OnInit {
   }
 
   uploadScore() {
-    let score: Score = new Score(ScoreType[ScoreType.LESSON.toString()], this.lesson.learnDir, 10 - this.noWrong,
-                                 5 - this.noWrong, this.lesson.uuid, this.category.uuid);
+    let score: Score = new Score(this.lesson.type, this.lesson.learnDir, 10 - this.noWrong,
+                                 5 - this.noWrong, this.lesson.uuid, this.category ? this.category.uuid: null);
     this.storage.set('LAST_SCORE', JSON.stringify(score));
     if (!this.principal.isAuthenticated()) {
       this.alertCtrl.create({

@@ -5,3 +5,8 @@ copyConfig.copyFlagIcon = {
         '{{ROOT}}/node_modules/flag-icon-css/flags/**/ir.svg'],
   dest: '{{WWW}}/flags'
 };
+
+copyConfig.copySilentRefresh = {
+  src: '{{ROOT}}/silent-refresh.html',
+  dest: '{{WWW}}/silent-refresh.html'
+};

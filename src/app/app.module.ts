@@ -9,7 +9,7 @@ import { SecureStorage } from '@ionic-native/secure-storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule, Events } from 'ionic-angular';
-import { OAuthModule } from 'angular-oauth2-oidc';
+import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { NgProgressHttpModule } from '@ngx-progressbar/http';
@@ -19,6 +19,8 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { AppVersion } from '@ionic-native/app-version';
 import { Market } from '@ionic-native/market';
 import { SwingModule } from 'angular2-swing';
+import { BrowserTab } from '@ionic-native/browser-tab';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import { Api, Settings, User, ScoreUtil, Memory, SecureStorageHelper,
          SecurityService } from '../providers';
@@ -99,11 +101,14 @@ export function provideSettings(storage: Storage, api:Api) {
     AppVersion,
     Market,
     SwingModule,
+    BrowserTab,
+    InAppBrowser,
     { provide: Settings, useFactory: provideSettings, deps: [Storage, Api] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorHandlerInterceptor, deps: [Events], multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorHandlerInterceptor, deps: [Events], multi: true },
+    { provide: OAuthStorage, useValue: localStorage }
   ]
 })
 export class AppModule { }

@@ -2,12 +2,12 @@ import { Component, NgZone } from '@angular/core';
 import { IonicPage, Platform, ToastController, AlertController,
          ViewController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { BrowserTab } from '@ionic-native/browser-tab';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import { IMAGE_ORIGIN } from '../../app/app.constants';
 import { Principal, Api, LoginService } from '../../providers';
 import { SubscribeModel, SubscriptionType, Account } from '../../models';
-
-declare const window: any;
 
 /**
  * The Subscribe page is a simple form
@@ -27,11 +27,11 @@ export class SubscribePage {
   resumeSubscription: any;
   toastInstance: any;
 
-  constructor(platform: Platform,
+  constructor(platform: Platform, private browserTab: BrowserTab,
               private principal: Principal, private toastCtrl: ToastController,
               private api: Api, private alertCtrl: AlertController, private ngZone: NgZone,
               private translateService: TranslateService, private viewCtrl: ViewController,
-              private loginService: LoginService) {
+              private loginService: LoginService, private inAppBrowser: InAppBrowser) {
     this.initTranslations();
     this.resumeSubscription = platform.resume.subscribe(() => {
       console.log('onResume event occured.');
@@ -48,7 +48,7 @@ export class SubscribePage {
   }
 
   subscribe(subscriptionType: SubscriptionType) {
-    let that = this;
+    const that = this;
     this.ngZone.run(() => {
       this.inProgress = true;
       if (!this.principal.isAuthenticated()) {
@@ -74,19 +74,19 @@ export class SubscribePage {
                   handler: () => {
                     let subscribeModel = new SubscribeModel(paymentDescription, subscriptionType);
                     that.api.startPayUrl(subscribeModel).subscribe((paymentUrl) => {
-                      window.cordova.plugins.browsertab.isAvailable(function(result) {
+                      that.browserTab.isAvailable().then(function(result) {
                         if (result) {
-                          window.cordova.plugins.browsertab.openUrl(paymentUrl,
+                          that.browserTab.openUrl(paymentUrl + '').then(
                             function(success) { console.log('BrowserTab#success', success); },
                             function(error) { console.log('BrowserTab#error', error); }
                           );
                         } else {
-                          const browser = window.cordova.InAppBrowser.open(paymentUrl, '_blank',
+                          const browser = that.inAppBrowser.create(paymentUrl + '', '_blank',
                               'location=no,clearsessioncache=no,clearcache=no');
-                          browser.addEventListener('loadstart', (event) => {
+                          browser.on('loadstart').subscribe((event) => {
                             console.log('InAppBrowser#loadStart', event);
                           });
-                          browser.addEventListener('exit', function (event) {
+                          browser.on('exit').subscribe((event) => {
                             console.log('InAppBrowser#exit', event);
                             that.reCheckMembership();
                           });

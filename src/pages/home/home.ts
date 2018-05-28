@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, NgZone, ViewChild, ElementRef, isDevMode } from '@angular/core';
 import { IonicPage, NavController, Platform, ModalController, PopoverController,
          Events, Content, ToastController } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
@@ -10,7 +10,7 @@ import introJs from 'intro.js/intro.js';
 
 import { Principal } from '../../providers/auth/principal.service';
 import { Api, Settings } from '../../providers';
-import { Category, ScoreLookup, Account } from '../../models';
+import { Category, ScoreLookup, Account, Lesson, ScoreTypeFactory } from '../../models';
 
 @IonicPage()
 @Component({
@@ -23,12 +23,17 @@ export class HomePage implements OnInit {
 
   account: Account = {};
   categories: Category[];
+  dailyLesson: Lesson = new Lesson(ScoreTypeFactory.daily, null, null, null, null, 'lesson-daily.jpg');
   mapWidth: number;
   showRetryButton: boolean;
   showUpgradeButton: boolean;
+  dailyLessonIsLoading: boolean;
   showHelpHint: boolean = true;
   hideBackward: boolean = true;
   hideForward: boolean = false;
+  days: string[] = ['Sun','Mon','Tus','Wed','Thr','Fri','Sat'];
+  dayOfWeek: string = this.days[new Date().getDay()];
+  dayOfMonth: number = new Date().getDate();
 
   constructor(private navCtrl: NavController, private principal: Principal,
       private ngZone: NgZone, private market: Market, private events: Events,
@@ -64,6 +69,10 @@ export class HomePage implements OnInit {
           this.showHelpHint = false;
           this.navCtrl.push('ProfileFirstPage');
         }
+      });
+      this.api.getDailyLesson().subscribe((dl: Lesson) => {
+        console.log('DailyLesson ', dl);
+        this.dailyLesson = new Lesson(ScoreTypeFactory.daily, dl.uuid, dl.title, this.settings.allSettings.learnDir, 0, dl.picture);
       });
     }
   }
@@ -164,18 +173,6 @@ export class HomePage implements OnInit {
     this.hideForward = false;
   }
 
-  // scrollToTheFarLeft() {
-  //   console.log('Scroll to far left triggered.');
-  //   this.panel.nativeElement.scrollLeft = 0;
-  //   this.hideBackward = true;
-  // }
-  //
-  // scrollToTheFarRight() {
-  //   console.log('Scroll to far right triggered.');
-  //   this.panel.nativeElement.scrollLeft = this.mapWidth - window.screen.width;
-  //   this.hideForward = true;
-  // }
-
   lastTimeScreenTouched: number;
   touchMove1($event) {
     this.hideBackward = true;
@@ -213,6 +210,23 @@ export class HomePage implements OnInit {
     }
   }
 
+  startDailyLesson() {
+    this.dailyLessonIsLoading = true;
+    this.api.getQuestions(this.dailyLesson.uuid,
+                          this.settings.learnDir,
+                          'Beginner').subscribe((res) => {
+      this.navCtrl.push('LessonQuestionPage', {
+        lesson: this.dailyLesson,
+        questions: res.questions,
+        words: res.words}).then(() => {
+          this.dailyLessonIsLoading = false;
+        });
+    }, (error) => {
+      console.log('Oops this should not happend, TODO');
+      this.dailyLessonIsLoading = false;
+    });
+  }
+
   get isAuthenticated(): boolean {
     return this.principal.isAuthenticated();
   }
@@ -234,6 +248,10 @@ export class HomePage implements OnInit {
       this.fetchCategories(true);
     });
     popover.present({ ev: $event });
+  }
+
+  get isDevMode() {
+    return isDevMode();
   }
 
   showHelp() {

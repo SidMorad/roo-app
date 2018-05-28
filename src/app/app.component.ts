@@ -2,6 +2,7 @@ import { Component, ViewChild, OnInit, NgZone } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
+import { BrowserTab } from '@ionic-native/browser-tab';
 import { TranslateService } from '@ngx-translate/core';
 import { Config, Nav, Platform, Events, App, ToastController } from 'ionic-angular';
 import { Subscription } from 'rxjs/Rx';
@@ -11,6 +12,7 @@ import { Api } from '../providers/api/api';
 import { Principal } from '../providers/auth/principal.service';
 import { LoginService } from '../providers/login/login.service';
 import { Account } from '../models/';
+import { AUTH_REDIRECT_URI } from './app.constants';
 
 declare const window: any;
 
@@ -61,7 +63,7 @@ export class MyApp implements OnInit {
     private statusBar: StatusBar, private splashScreen: SplashScreen,
     private securityService: SecurityService, private api: Api, private app: App,
     private principal: Principal, private loginService: LoginService,
-    private events: Events, private toastCtrl: ToastController) {
+    private events: Events, private toastCtrl: ToastController, private browserTab: BrowserTab) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -78,7 +80,7 @@ export class MyApp implements OnInit {
     const me = this;
     window.handleOpenURL = (url) => {
       setTimeout(function() {
-        if (url === 'marsroo://oauth2redirect') {
+        if (url === AUTH_REDIRECT_URI) {
           me.getAccount();
         } else {
           const responseParameters = (url.split('#')[1]).split('&');
@@ -158,9 +160,9 @@ export class MyApp implements OnInit {
       this.api.get('api/auth-info').subscribe((data: any) => {
         const me = this;
         this.platform.ready().then(() => {
-          window.cordova.plugins.browsertab.isAvailable(function(result) {
-            if (result) {
-              data.redirectUri = 'marsroo://oauth2redirect';
+          this.browserTab.isAvailable().then((isAvailable) => {
+            if (isAvailable) {
+              data.redirectUri = AUTH_REDIRECT_URI;
             } else {
               data.redirectUri = 'http://localhost:8100';
             }
@@ -172,7 +174,7 @@ export class MyApp implements OnInit {
         });
       }, error => {
         console.error('ERROR fetching authentication information, defaulting to Keycloak settings');
-        this.securityService.oidc().redirectUri = 'marsroo://oauth2redirect';
+        this.securityService.oidc().redirectUri = AUTH_REDIRECT_URI;
         this.securityService.oidc().clientId = 'web_app';
         this.securityService.oidc().scope = 'openid profile email offline_access';
         this.securityService.oidc().issuer = this.fallbackAuthBaseUrl + '/auth/realms/mars';
@@ -183,6 +185,12 @@ export class MyApp implements OnInit {
 
   tryLogin() {
     this.securityService.oidc().loadDiscoveryDocumentAndLogin().then(() => {
+      this.securityService.oidc().events.filter(e => e.type === 'token_expires')
+          .subscribe(() => {
+            // this.securityService.oidc().refreshToken().then((refToken) => {  // TODO FIXME
+            //   console.log('RefershToken really happend: ', refToken);
+            // }).catch((err) => { console.log('RefereshToken error: ', err); });
+          });
       const claims = this.securityService.oidc().getIdentityClaims();
       if (claims) {
         // this.events.publish('LOGIN_SUCCESS', claims);
