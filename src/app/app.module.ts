@@ -23,7 +23,7 @@ import { BrowserTab } from '@ionic-native/browser-tab';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import { Api, Settings, User, ScoreUtil, Memory, SecureStorageHelper,
-         SecurityService } from '../providers';
+         SecurityService, QuestionGenerator } from '../providers';
 import { DefaultSettings } from '../models';
 import { MyApp } from './app.component';
 import { LoginService } from '../providers/login/login.service';
@@ -93,6 +93,7 @@ export function provideSettings(storage: Storage, api:Api) {
     SecureStorage,
     SecureStorageHelper,
     SecurityService,
+    QuestionGenerator,
     Camera,
     SplashScreen,
     StatusBar,

@@ -8,3 +8,4 @@ export * from './settings/settings';
 export * from './user/user';
 export * from './score/score.util';
 export * from './storage/secure-storage.helper';
+export * from './question-generator/question-generator';

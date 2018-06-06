@@ -16,10 +16,12 @@ export class Question {
     catch(error) { console.warn('Parsing dynamicPart failed!'); };
     switch(this.type.toString()) {
       case 'MultiSelect':
+        this.answer;
         this.initOptions(false);
         this.multiSelectOptions();
         break;
       case 'OneCheck':
+        this.d.options = this.shuffle(this.d.options);
         this.initOptions(false);
         this.oneCheckChoices();
         this.toneCheckAnswer;  // for initalize answer into variable and also speak function works as expected.
@@ -314,7 +316,8 @@ export class Question {
   }
 
   public writingAnswer(): string {
-    return this.answer;
+    let writingAnswer = this.answer;
+    return this.replaceAll(writingAnswer, '‌', ' '); // Replaces in Farsi keyboard(SHIFT+SPACE) character with simple space.
   }
 
   public speakingAnswer(): string {
@@ -373,7 +376,11 @@ export class Question {
   }
 
   get answer(): string {
-    return this.isNormal() ? this.lookupWords[this.d.question]['m']: this.lookupWords[this.d.question]['t'];
+    const answer = this.isNormal()
+      ? this.lookupWords[this.d.question]['c'] ? this.capitalizeFirstLetter(this.lookupWords[this.d.question]['m']) : this.lookupWords[this.d.question]['m']
+      : this.lookupWords[this.d.question]['c'] ? this.capitalizeFirstLetter(this.lookupWords[this.d.question]['t']) : this.lookupWords[this.d.question]['t'];
+    this.d.dallow = this.hasDuplicateOption(answer);
+    return answer;
   }
 
   get tmultiSelectOptions(): any[] {
@@ -474,6 +481,19 @@ export class Question {
       }
     });
     return result;
+  }
+
+  hasDuplicateOption(text: string) {
+    let res: boolean = false;
+    let unique = [];
+    text.split(' ').forEach((option: string) => {
+      if (unique.indexOf(option) === -1) {
+        unique.push(option);
+      } else {
+        res = true;
+      }
+    });
+    return res;
   }
 
   private determineOptionValue(option: any, dir: string, removeDot?: boolean): string {

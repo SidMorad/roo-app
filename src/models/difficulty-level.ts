@@ -1,6 +1,6 @@
 
 export enum DifficultyLevel {
-  'Beginner',
-  'Intermediate',
-  'Advanced'
+  'Beginner' = 'Beginner',
+  'Intermediate' = 'Intermediate',
+  'Advanced' = 'Advanced'
 }

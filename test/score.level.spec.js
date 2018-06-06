@@ -1,4 +1,4 @@
-var test = require('unit.js');
+const test = require('unit.js');
 
 function between(x, min, max) {
   return x >= min && x <= max;
@@ -88,4 +88,4 @@ for (var i = 0; i < 100; i++) {
   // test.dump(i, resolveScoreFrom(i), determineDivider(resolveScoreFrom(i)), resolveLevelFrom(resolveScoreFrom(i)));
   test.value(resolveLevelFrom(resolveMaxScoreFrom(i))).isEqualTo(i);
 }
-test.dump(determineDivider(resolveMaxScoreFrom(99)), resolveLevelFrom(resolveMaxScoreFrom(99)));
+// test.dump(determineDivider(resolveMaxScoreFrom(99)), resolveLevelFrom(resolveMaxScoreFrom(99)));
