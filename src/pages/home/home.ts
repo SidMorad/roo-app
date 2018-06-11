@@ -9,7 +9,7 @@ import { Observable } from 'rxjs/Rx';
 import introJs from 'intro.js/intro.js';
 
 import { Principal } from '../../providers/auth/principal.service';
-import { Api, Settings } from '../../providers';
+import { Api, Settings, QuestionGenerator } from '../../providers';
 import { Category, ScoreLookup, Account, Lesson, ScoreTypeFactory } from '../../models';
 
 @IonicPage()
@@ -40,7 +40,8 @@ export class HomePage implements OnInit {
       private appVersion: AppVersion, private platform: Platform, private storage: Storage,
       private modalCtrl: ModalController, private elementRef: ElementRef, private api: Api,
       private translateService: TranslateService, private settings: Settings,
-      private popoverCtrl: PopoverController, private toastCtrl: ToastController) {
+      private popoverCtrl: PopoverController, private toastCtrl: ToastController,
+      private questionGenerator: QuestionGenerator) {
     this.categories = [];
     this.mapWidth = (window.screen.height * 6);
   }
@@ -72,7 +73,7 @@ export class HomePage implements OnInit {
       });
       this.api.getDailyLesson().subscribe((dl: Lesson) => {
         console.log('DailyLesson ', dl);
-        this.dailyLesson = new Lesson(ScoreTypeFactory.daily, dl.uuid, dl.title, this.settings.allSettings.learnDir, 0, dl.picture);
+        this.dailyLesson = new Lesson(ScoreTypeFactory.daily, dl.uuid, dl.title, this.settings.allSettings.learnDir, dl.indexOrder, dl.picture);
       });
     }
   }
@@ -153,6 +154,7 @@ export class HomePage implements OnInit {
         this.categories = response;
       });
     }, (error) => {
+      console.log('Fetching CategoryList actually failed with: ', error);
       this.showRetryButton = true;
     });
   }
@@ -215,9 +217,17 @@ export class HomePage implements OnInit {
     this.api.getQuestions(this.dailyLesson.uuid,
                           this.settings.learnDir,
                           'Beginner').subscribe((res) => {
+      if (res.words.lenth === 0) {
+        this.toastCtrl.create({
+          message: 'Incorrect format',
+          duration: 3000
+        }).present();
+        return;
+      }
+      const questions = this.questionGenerator.generate(res.words, this.settings.difficultyLevel);
       this.navCtrl.push('LessonQuestionPage', {
         lesson: this.dailyLesson,
-        questions: res.questions,
+        questions: questions,
         words: res.words}).then(() => {
           this.dailyLessonIsLoading = false;
         });

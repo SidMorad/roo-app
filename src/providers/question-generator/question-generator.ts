@@ -40,7 +40,7 @@ export class QuestionGenerator {
   private analysis(data) {
     this.pictures = [];
     this.subjects = [];
-    for (let i = 1; i < Object.keys(data).length; i++) {
+    for (let i = 1; i <= Object.keys(data).length; i++) {
       if (data[i].p) {
         this.pictures.push(i);
       } else if (data[i].v || data[i].b) {
@@ -142,63 +142,29 @@ export class QuestionGenerator {
                                    data[pictures[2]], data[pictures[3]], 60,
                                    pictures[0], pictures[1], pictures[2], pictures[3]));
     }
-    if (maxIndex >= 7) {
-      res.push(this.generateMultiSelect(subjects[7], 70, [subjects[7], subjects[this.randomLessThan(7)]], this.trueOrFalse()));
+    for (let i = 0; i < 15; i = i + 5) {
+      if (maxIndex >= i) {
+        res.push(this.generateSpeaking(50+i*20, subjects[i]));
+        if (i !== 0) {
+          res.push(this.generateMultiSelect(subjects[i], 50+i*20, [subjects[this.randomLessThan(i)]], this.trueOrFalse()));
+        }
+      }
+      if (maxIndex >= i+3) {
+        res.push(this.generateOneCheck(subjects[i], 60+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
+      }
+      if (maxIndex >= i+1) {
+        res.push(this.generateMultiSelect(subjects[i+1], 70+i*20, [subjects[this.randomLessThan(i+1)]], this.trueOrFalse()));
+      }
+      if (maxIndex >= i+2) {
+        res.push(this.generateMultiSelect(subjects[i+2], 90+i*20, [subjects[this.randomLessThan(i+2)]], this.trueOrFalse()));
+      }
+      if (maxIndex >= i+3) {
+        res.push(this.generateOneCheck(subjects[i+3], 80+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
+      }
+      if (maxIndex >= i+4) {
+        res.push(this.generateMultiSelect(subjects[i+4], 100+i*20, [subjects[this.randomLessThan(i+4)]], this.trueOrFalse()));
+      }
     }
-    if (maxIndex >= 8) {
-      res.push(this.generateSpeaking(80, subjects[8]));
-    }
-    if (maxIndex >= 9) {
-      res.push(this.generateMultiSelect(subjects[9], 90, [subjects[9], subjects[this.randomLessThan(9)]], this.trueOrFalse()));
-    }
-    if (maxIndex >= 10) {
-      res.push(this.generateSpeaking(100, subjects[10]));
-    }
-    if (maxIndex >= 14) {
-      res.push(this.generateOneCheck(subjects[11], 110, [subjects[11], subjects[12], subjects[13], subjects[14]]));
-    }
-    if (maxIndex >= 12) {
-      res.push(this.generateMultiSelect(subjects[12], 120, [subjects[12], subjects[this.randomLessThan(12)]], this.trueOrFalse()));
-    }
-    if (maxIndex >= 14) {
-      res.push(this.generateOneCheck(subjects[13], 130, [subjects[11], subjects[12], subjects[13], subjects[14]]));
-    }
-    if (maxIndex >= 14) {
-      res.push(this.generateMultiSelect(subjects[14], 140, [subjects[14], subjects[this.randomLessThan(14)]], this.trueOrFalse()));
-    }
-
-    if (maxIndex >= 15) {
-      res.push(this.generateSpeaking(150, subjects[15]));
-    }
-    if (maxIndex >= 19) {
-      res.push(this.generateOneCheck(subjects[16], 160, [subjects[16], subjects[17], subjects[18], subjects[19]]));
-    }
-    if (maxIndex >= 20) {
-      res.push(this.generateMultiSelect(subjects[17], 170, [subjects[17], subjects[this.randomLessThan(17)]], this.trueOrFalse()));
-    }
-    if (maxIndex >= 19) {
-      res.push(this.generateOneCheck(subjects[18], 180, [subjects[16], subjects[17], subjects[18], subjects[19]]));
-    }
-    if (maxIndex >= 19) {
-      res.push(this.generateMultiSelect(subjects[19], 190, [subjects[19], subjects[this.randomLessThan(19)]], this.trueOrFalse()));
-    }
-
-    if (maxIndex >= 20) {
-      res.push(this.generateSpeaking(200, subjects[20]));
-    }
-    if (maxIndex >= 24) {
-      res.push(this.generateOneCheck(subjects[21], 210, [subjects[21], subjects[22], subjects[23], subjects[24]]));
-    }
-    if (maxIndex >= 22) {
-      res.push(this.generateMultiSelect(subjects[22], 220, [subjects[22], subjects[this.randomLessThan(22)]], this.trueOrFalse()));
-    }
-    if (maxIndex >= 24) {
-      res.push(this.generateOneCheck(subjects[23], 230, [subjects[21], subjects[22], subjects[23], subjects[24]]));
-    }
-    if (maxIndex >= 24) {
-      res.push(this.generateMultiSelect(subjects[24], 240, [subjects[24], subjects[this.randomLessThan(24)]], this.trueOrFalse()));
-    }
-
     return res;
   }
 
@@ -227,28 +193,31 @@ export class QuestionGenerator {
                                    data[pictures[2]], data[pictures[3]], 44,
                                    pictures[0], pictures[1], pictures[2], pictures[3]));
     }
-
     for (let i = 0; i < 15; i = i + 5) {
       if (maxIndex >= i) {
         res.push(this.generateSpeaking(50+i*20, subjects[i]));
+        if (i !== 0) {
+          const tOrf = this.trueOrFalse();
+          res.push(this.generateMultiSelect(subjects[i], 50+i*20, [subjects[this.randomLessThan(i)]], tOrf, tOrf ? true : undefined));
+        }
       }
       if (maxIndex >= i+3) {
         res.push(this.generateOneCheck(subjects[i], 60+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
       }
       if (maxIndex >= i+1) {
         const tOrf = this.trueOrFalse();
-        res.push(this.generateMultiSelect(subjects[i+1], 70+i*20, [subjects[i+1], subjects[this.randomLessThan(i+1)]], tOrf, tOrf ? true : undefined));
+        res.push(this.generateMultiSelect(subjects[i+1], 70+i*20, [subjects[this.randomLessThan(i+1)]], tOrf, tOrf ? true : undefined));
       }
-      if (maxIndex >= i+3) {
-        res.push(this.generateOneCheck(subjects[i+2], 80+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
-      }
-      if (maxIndex >= i+3) {
+      if (maxIndex >= i+2) {
         const tOrf = this.trueOrFalse();
-        res.push(this.generateMultiSelect(subjects[i+3], 90+i*20, [subjects[i+3], subjects[this.randomLessThan(i+3)]], tOrf, tOrf ? undefined : true));
+        res.push(this.generateMultiSelect(subjects[i+2], 90+i*20, [subjects[this.randomLessThan(i+2)]], tOrf, tOrf ? undefined : true));
+      }
+      if (maxIndex >= i+3) {
+        res.push(this.generateOneCheck(subjects[i+3], 80+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
       }
       if (maxIndex >= i+4) {
         const tOrf = this.trueOrFalse();
-        res.push(this.generateMultiSelect(subjects[i+4], 100+i*20, [subjects[i+3], subjects[this.randomLessThan(i+4)]], tOrf, tOrf ? undefined : true));
+        res.push(this.generateMultiSelect(subjects[i+4], 100+i*20, [subjects[this.randomLessThan(i+4)]], tOrf, tOrf ? undefined : true));
       }
     }
     return res;

@@ -84,6 +84,7 @@ export class TabsPage implements OnInit, OnDestroy {
         else {
           const toast = this.toastCtrl.create({
             message: this.exitConfirmationText,
+            position: 'middle',
             duration: 3000
           });
           toast.onDidDismiss((data, role) => {

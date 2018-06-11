@@ -25,6 +25,7 @@ export class Question {
         this.initOptions(false);
         this.oneCheckChoices();
         this.toneCheckAnswer;  // for initalize answer into variable and also speak function works as expected.
+        this.moneCheckAnswer;  // for initalize answer into variable.
         break;
       case 'Words':
         this.initOptions(true);
@@ -295,7 +296,7 @@ export class Question {
   }
 
   public multiSelectAnswers(): any[] {
-    const arr = this.answer.split(' ');
+    const arr = /\s/.test(this.answer) ? this.answer.split(' ') : [this.answer];
     const res = [];
     for (let i = 0; i < arr.length; i++) {
       res[i] = { order: i, text: arr[i]};
@@ -379,7 +380,6 @@ export class Question {
     const answer = this.isNormal()
       ? this.lookupWords[this.d.question]['c'] ? this.capitalizeFirstLetter(this.lookupWords[this.d.question]['m']) : this.lookupWords[this.d.question]['m']
       : this.lookupWords[this.d.question]['c'] ? this.capitalizeFirstLetter(this.lookupWords[this.d.question]['t']) : this.lookupWords[this.d.question]['t'];
-    this.d.dallow = this.hasDuplicateOption(answer);
     return answer;
   }
 
@@ -388,8 +388,7 @@ export class Question {
       return this.targetMultiSelectOptions;
     }
     const extra = this.targetOptions.length > 0 ? JSON.parse(JSON.stringify(this.targetOptions)) : [];
-    const toptions = this.splitOptions(extra.concat(this.multiSelectAnswers()));
-    this.targetMultiSelectOptions = this.shuffle(toptions);
+    this.targetMultiSelectOptions = this.resolveMultiSelectOptionWithLimit(this.multiSelectAnswers(), extra);
     return this.targetMultiSelectOptions;
   }
 
@@ -398,9 +397,24 @@ export class Question {
       return this.motherMultiSelectOptions;
     }
     const extra = this.motherOptions.length > 0 ? JSON.parse(JSON.stringify(this.motherOptions)) : [];
-    const moptions = this.splitOptions(extra.concat(this.multiSelectAnswers()));
-    this.motherMultiSelectOptions = this.shuffle(moptions);
+    this.motherMultiSelectOptions = this.resolveMultiSelectOptionWithLimit(this.multiSelectAnswers(), extra);
     return this.motherMultiSelectOptions;
+  }
+
+  private resolveMultiSelectOptionWithLimit(original, extra) {
+    const origOptions = this.splitOptions(original);
+    if (origOptions.length >= 10) {
+      return origOptions;
+    }
+    const extraOptions = this.splitOptions(extra);
+    for (let i = 0; i < 10 - origOptions.length; i++) {
+      if (i < extraOptions.length && origOptions.indexOf(extraOptions[i]) === -1) {
+        origOptions.push(extraOptions[i]);
+      }
+    }
+    const res = [];
+    origOptions.forEach((option) => res.push({ text: option}));
+    return res;
   }
 
   private toptions(removeDot?: boolean): any[] {
@@ -463,37 +477,17 @@ export class Question {
   }
 
   splitOptions(array) {
-    let unique = [];
     let result = [];
     array.forEach((option: any) => {
       if (/\s/.test(option.text)) {
         option.text.split(' ').forEach((suboption) => {
-          if (unique.indexOf(suboption) === -1 || this.d.dallow) {
-            unique.push(suboption);
-            result.push({ text: suboption });
-          }
+          result.push(suboption);
         });
       } else {
-        if (unique.indexOf(option.text) === -1 || this.d.dallow) {
-          unique.push(option.text);
-          result.push({ text: option.text });
-        }
+        result.push(option.text);
       }
     });
     return result;
-  }
-
-  hasDuplicateOption(text: string) {
-    let res: boolean = false;
-    let unique = [];
-    text.split(' ').forEach((option: string) => {
-      if (unique.indexOf(option) === -1) {
-        unique.push(option);
-      } else {
-        res = true;
-      }
-    });
-    return res;
   }
 
   private determineOptionValue(option: any, dir: string, removeDot?: boolean): string {

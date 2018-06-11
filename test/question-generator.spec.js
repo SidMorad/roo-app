@@ -1,6 +1,7 @@
 const test = require('unit.js');
 const testData = require('./question-generator.test-data.js');
 const testData3 = require('./question-generator.test-data3.js');
+const testData4 = require('./question-generator.test-data4.js');
 
 function pictureName(lessonWord) {
   let picName = lessonWord['e'].split(' ').join('-');
@@ -94,61 +95,29 @@ function generateBeginner(pictures, subjects, data) {
                                  data[pictures[2]], data[pictures[3]], 60,
                                  pictures[0], pictures[1], pictures[2], pictures[3]));
   }
-  if (maxIndex >= 7) {
-    res.push(generateMultiSelect(subjects[7], 70, [subjects[7], subjects[randomLessThan(7)]], trueOrFalse()));
-  }
-  if (maxIndex >= 8) {
-    res.push(generateSpeaking(80, subjects[8]));
-  }
-  if (maxIndex >= 9) {
-    res.push(generateMultiSelect(subjects[9], 90, [subjects[9], subjects[randomLessThan(9)]], trueOrFalse()));
-  }
-  if (maxIndex >= 10) {
-    res.push(generateSpeaking(100, subjects[10]));
-  }
-  if (maxIndex >= 14) {
-    res.push(generateOneCheck(subjects[11], 110, [subjects[11], subjects[12], subjects[13], subjects[14]]));
-  }
-  if (maxIndex >= 12) {
-    res.push(generateMultiSelect(subjects[12], 120, [subjects[12], subjects[randomLessThan(12)]], trueOrFalse()));
-  }
-  if (maxIndex >= 14) {
-    res.push(generateOneCheck(subjects[13], 130, [subjects[11], subjects[12], subjects[13], subjects[14]]));
-  }
-  if (maxIndex >= 14) {
-    res.push(generateMultiSelect(subjects[14], 140, [subjects[14], subjects[randomLessThan(14)]], trueOrFalse()));
-  }
 
-  if (maxIndex >= 15) {
-    res.push(generateSpeaking(150, subjects[15]));
-  }
-  if (maxIndex >= 19) {
-    res.push(generateOneCheck(subjects[16], 160, [subjects[16], subjects[17], subjects[18], subjects[19]]));
-  }
-  if (maxIndex >= 20) {
-    res.push(generateMultiSelect(subjects[17], 170, [subjects[17], subjects[randomLessThan(17)]], trueOrFalse()));
-  }
-  if (maxIndex >= 19) {
-    res.push(generateOneCheck(subjects[18], 180, [subjects[16], subjects[17], subjects[18], subjects[19]]));
-  }
-  if (maxIndex >= 19) {
-    res.push(generateMultiSelect(subjects[19], 190, [subjects[19], subjects[randomLessThan(19)]], trueOrFalse()));
-  }
-
-  if (maxIndex >= 20) {
-    res.push(generateSpeaking(200, subjects[20]));
-  }
-  if (maxIndex >= 24) {
-    res.push(generateOneCheck(subjects[21], 210, [subjects[21], subjects[22], subjects[23], subjects[24]]));
-  }
-  if (maxIndex >= 22) {
-    res.push(generateMultiSelect(subjects[22], 220, [subjects[22], subjects[randomLessThan(22)]], trueOrFalse()));
-  }
-  if (maxIndex >= 24) {
-    res.push(generateOneCheck(subjects[23], 230, [subjects[21], subjects[22], subjects[23], subjects[24]]));
-  }
-  if (maxIndex >= 24) {
-    res.push(generateMultiSelect(subjects[24], 240, [subjects[24], subjects[randomLessThan(24)]], trueOrFalse()));
+  for (let i = 0; i < 11; i = i + 5) {
+    if (maxIndex >= i) {
+      res.push(generateSpeaking(50+i*20, subjects[i]));
+      if (i !== 0) {
+        res.push(generateMultiSelect(subjects[i], 50+i*20, [subjects[randomLessThan(i)]], trueOrFalse()));
+      }
+    }
+    if (maxIndex >= i+3) {
+      res.push(generateOneCheck(subjects[i], 60+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
+    }
+    if (maxIndex >= i+1) {
+      res.push(generateMultiSelect(subjects[i+1], 70+i*20, [subjects[randomLessThan(i+1)]], trueOrFalse()));
+    }
+    if (maxIndex >= i+2) {
+      res.push(generateMultiSelect(subjects[i+2], 90+i*20, [subjects[randomLessThan(i+2)]], trueOrFalse()));
+    }
+    if (maxIndex >= i+3) {
+      res.push(generateOneCheck(subjects[i+3], 80+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
+    }
+    if (maxIndex >= i+4) {
+      res.push(generateMultiSelect(subjects[i+4], 100+i*20, [subjects[randomLessThan(i+4)]], trueOrFalse()));
+    }
   }
 
   return res;
@@ -183,24 +152,28 @@ function generateIntermediate(pictures, subjects, data) {
   for (let i = 0; i < 15; i = i + 5) {
     if (maxIndex >= i) {
       res.push(generateSpeaking(50+i*20, subjects[i]));
+      if (i !== 0) {
+        const tOrf = trueOrFalse();
+        res.push(generateMultiSelect(subjects[i], 50+i*20, [subjects[randomLessThan(i)]], tOrf, tOrf ? true : undefined));
+      }
     }
     if (maxIndex >= i+3) {
-      res.push(generateOneCheck(subjects[i], 60+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
+      res.push(generateOneCheck(subjects[i], 60+i*20, [subjects[i+1], subjects[i+2], subjects[i+3]]));
     }
     if (maxIndex >= i+1) {
       const tOrf = trueOrFalse();
-      res.push(generateMultiSelect(subjects[i+1], 70+i*20, [subjects[i+1], subjects[randomLessThan(i+1)]], tOrf, tOrf ? true : undefined));
+      res.push(generateMultiSelect(subjects[i+1], 70+i*20, [subjects[randomLessThan(i+1)]], tOrf, tOrf ? true : undefined));
     }
-    if (maxIndex >= i+3) {
-      res.push(generateOneCheck(subjects[i+2], 80+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
-    }
-    if (maxIndex >= i+3) {
+    if (maxIndex >= i+2) {
       const tOrf = trueOrFalse();
-      res.push(generateMultiSelect(subjects[i+3], 90+i*20, [subjects[i+3], subjects[randomLessThan(i+3)]], tOrf, tOrf ? undefined : true));
+      res.push(generateMultiSelect(subjects[i+2], 90+i*20, [subjects[randomLessThan(i+2)]], tOrf, tOrf ? undefined : true));
+    }
+    if (maxIndex >= i+3) {
+      res.push(generateOneCheck(subjects[i+3], 80+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
     }
     if (maxIndex >= i+4) {
       const tOrf = trueOrFalse();
-      res.push(generateMultiSelect(subjects[i+4], 100+i*20, [subjects[i+3], subjects[randomLessThan(i+4)]], tOrf, tOrf ? undefined : true));
+      res.push(generateMultiSelect(subjects[i+4], 100+i*20, [subjects[randomLessThan(i+4)]], tOrf, tOrf ? undefined : true));
     }
   }
   return res;
@@ -254,10 +227,11 @@ function generate(lw) {
   return res;
 }
 
-let pictures = [];
-let subjects = [];
+let pictures, subjects;
 function analysis(data) {
-  for (let i = 1; i < Object.keys(data).length; i++) {
+  pictures = [];
+  subjects = [];
+  for (let i = 1; i <= Object.keys(data).length; i++) {
     if (data[i].p) {
       pictures.push(i);
     } else if (data[i].v || data[i].b) {
@@ -272,13 +246,18 @@ const res = generate(testData.data());
 const res2 = generateBeginner(pictures, subjects, testData3.data());
 const res3 = generateIntermediate(pictures, subjects, testData3.data());
 const res4 = generateAdvanced(pictures, subjects, testData3.data());
+analysis(testData4.data());
+const res5 = generateIntermediate(pictures, subjects, testData4.data());
+const res6 = generateBeginner(pictures, subjects, testData4.data());
+const res7 = generateAdvanced(pictures, subjects, testData4.data());
 
-// test.dump(res4.length);
+// test.dump(res7.length);
+test.value(11).isEqualTo(res7.length);
+test.value(16).isEqualTo(res6.length);
+test.value(16).isEqualTo(res5.length);
 test.value(23).isEqualTo(res4.length);
-test.value(24).isEqualTo(res3.length);
-test.value(18).isEqualTo(res2.length);
-test.value(20).isEqualTo(subjects.length);
-test.value(4).isEqualTo(pictures.length);
+test.value(26).isEqualTo(res3.length);
+test.value(26).isEqualTo(res2.length);
 
 // test.dump(res[17], questions[17]);
 function assertIndex(index) {

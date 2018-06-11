@@ -7,6 +7,7 @@ export class Score {
     public score?: number,
     public star?: number,
     public lessonUuid?: string,
-    public categoryUuid?: string
+    public categoryUuid?: string,
+    public difficLevel?: string
   ) { }
 }

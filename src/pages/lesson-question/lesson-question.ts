@@ -465,7 +465,7 @@ export class LessonQuestionPage implements OnInit {
 
   uploadScore() {
     let score: Score = new Score(this.lesson.type, this.lesson.learnDir, 10 - this.noWrong,
-                                 5 - this.noWrong, this.lesson.uuid, this.category ? this.category.uuid: null);
+                                 5 - this.noWrong, this.lesson.uuid, this.category ? this.category.uuid: null, this.settings.difficultyLevel);
     this.storage.set('LAST_SCORE', JSON.stringify(score));
     if (!this.principal.isAuthenticated()) {
       this.alertCtrl.create({
@@ -489,12 +489,9 @@ export class LessonQuestionPage implements OnInit {
       }).present();
     } else {
       let modal = this.modalCtrl.create('LessonScorePage');
-      modal.onDidDismiss(data => {
-        // if (data.action === 'continue') {
-        // }
-        this.dismiss(true);
-      });
+      modal.onDidDismiss((data) => { });
       modal.present();
+      this.dismiss(true);
     }
   }
 
