@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
+import { Platform } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Observable } from 'rxjs/Rx';
+import { LocalNotifications } from '@ionic-native/local-notifications';
 
 import { DefaultSettings, ScoreLookup, Score, LearnDir, DifficultyLevel } from '../../models';
 import { Api } from './../';
+
+declare var cordova: any;
 
 /**
  * A simple settings/config class for storing key/value pairs with persistence.
@@ -11,15 +15,16 @@ import { Api } from './../';
 @Injectable()
 export class Settings {
   private SETTINGS_KEY: string = '_settings';
+  private settings: any;
+  private _defaults: any;
+  public dailyLessonPictureUrl: string;
 
-  settings: any;
-
-  _defaults: any;
-  _readyPromise: Promise<any>;
-
-  constructor(private storage: Storage, public defaults: DefaultSettings, private api: Api) {
+  constructor(private storage: Storage, public defaults: DefaultSettings,
+    private api: Api, public localNotifications: LocalNotifications,
+    private platform: Platform) {
     this._defaults = defaults;
     this.loadCachedScoreLookups();
+    this.setupLocalNotifications();
   }
 
   load() {
@@ -86,6 +91,45 @@ export class Settings {
 
   get difficultyLevel() {
     return this.settings ? this.settings.difficultyLevel : 'Beginner';
+  }
+
+  setupLocalNotifications() {
+    const that = this;
+    this.platform.ready().then(() => {
+      cordova.plugins.notification.local.clearAll(function (yes) {
+        that.load().then(() => {
+          if (that.allSettings.notificationEnabled) {
+            cordova.plugins.notification.local.hasPermission(function (yes) {
+              if (yes) {
+                that.scheduleDailyNotify();
+              } else {
+                cordova.plugins.notification.local.requestPermission(function (yes) {
+                  that.scheduleDailyNotify();
+                });
+              }
+            });
+          }
+        });
+      });
+    });
+  }
+
+  scheduleDailyNotify() {
+    const today = new Date();
+    const time = this.allSettings.notificationDailyAt.split(':');
+    today.setHours(time[0]);
+    today.setMinutes(time[1]);
+    today.setSeconds(0);
+    console.log('Notify At: ', time, +time[0], +time[1]);
+    if (!isNaN(time[0]) && !isNaN(time[1])) {
+      cordova.plugins.notification.local.schedule({
+        id: 1,
+        title: 'Roo',
+        text: 'Your daily lesson is ready.',
+        icon: this.dailyLessonPictureUrl,
+        trigger: { every: { hour: +time[0], minute: +time[1] } }
+      });
+    }
   }
 
   switchLearnLevelTo(learnDir: string, difLevel: string) {
@@ -193,7 +237,6 @@ export class Settings {
         }
       }
     }
-    console.log('All possible keys: ', result);
     return result;
   }
 

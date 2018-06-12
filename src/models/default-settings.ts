@@ -7,11 +7,13 @@ export class DefaultSettings {
               public voiceSpeedRate: number,
               public dname: string,
               public learnDir: string,
-              public difficultyLevel: string) {
+              public difficultyLevel: string,
+              public notificationEnabled: boolean,
+              public notificationDailyAt: string) {
   }
 
   public static newInstance(): DefaultSettings {
-    return new DefaultSettings(false, 'fa', true, true, 80, 'Guest', 'FA_IR$EN_GB', 'Beginner');
+    return new DefaultSettings(false, 'fa', true, true, 80, 'Guest', 'FA_IR$EN_GB', 'Beginner', true, '10:00');
   }
 
   get motherLanguage(): string {

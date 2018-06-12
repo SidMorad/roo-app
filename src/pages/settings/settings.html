@@ -39,6 +39,9 @@
       <button ion-item [navPush]="subSettings" [navParams]="profileSettings">
         {{ 'SETTINGS_PAGE_PROFILE' | translate }}
       </button>
+      <button ion-item [navPush]="subSettings" [navParams]="notifySettings">
+        {{ 'SETTINGS_PAGE_NOTIFICATIONS' | translate }}
+      </button>
       <ion-item>
         <ion-label>{{ 'SETTINGS_LANGUAGE' | translate }}</ion-label>
         <ion-select formControlName="language">
@@ -67,6 +70,17 @@
       <ion-item>
         <ion-label>{{ 'PROFILE_LOGIN' | translate }}</ion-label>
         <ion-input formControlName="login"></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="page === 'notify'">
+      <ion-item>
+        <ion-label>{{ 'SETTINGS_NOTIFICATION_ENABLE' | translate }}</ion-label>
+        <ion-toggle formControlName="notificationEnabled"></ion-toggle>
+      </ion-item>
+      <ion-item *ngIf="form.value.notificationEnabled">
+        <ion-label>{{ 'SETTINGS_NOTIFICATION_DAILY_AT' | translate }}</ion-label>
+        <ion-input type="time" formControlName="notificationDailyAt"></ion-input>
       </ion-item>
     </ion-list>
 

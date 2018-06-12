@@ -8,7 +8,7 @@ import { IonicStorageModule, Storage } from '@ionic/storage';
 import { SecureStorage } from '@ionic-native/secure-storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { IonicApp, IonicErrorHandler, IonicModule, Events } from 'ionic-angular';
+import { IonicApp, IonicErrorHandler, IonicModule, Events, Platform } from 'ionic-angular';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 import { NgProgressModule } from '@ngx-progressbar/core';
@@ -21,6 +21,7 @@ import { Market } from '@ionic-native/market';
 import { SwingModule } from 'angular2-swing';
 import { BrowserTab } from '@ionic-native/browser-tab';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { LocalNotifications } from '@ionic-native/local-notifications';
 
 import { Api, Settings, User, ScoreUtil, Memory, SecureStorageHelper,
          SecurityService, QuestionGenerator } from '../providers';
@@ -39,14 +40,14 @@ export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
-export function provideSettings(storage: Storage, api:Api) {
+export function provideSettings(storage: Storage, api:Api, localNotifications: LocalNotifications, platform: Platform) {
   /**
    * The Settings provider takes a set of default settings for your app.
    *
    * You can add new settings options at any time. Once the settings are saved,
    * these values will not overwrite the saved values (this can be done manually if desired).
    */
-  return new Settings(storage, DefaultSettings.newInstance(), api);
+  return new Settings(storage, DefaultSettings.newInstance(), api, localNotifications, platform);
 }
 
 @NgModule({
@@ -104,7 +105,8 @@ export function provideSettings(storage: Storage, api:Api) {
     SwingModule,
     BrowserTab,
     InAppBrowser,
-    { provide: Settings, useFactory: provideSettings, deps: [Storage, Api] },
+    LocalNotifications,
+    { provide: Settings, useFactory: provideSettings, deps: [Storage, Api, LocalNotifications, Platform] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

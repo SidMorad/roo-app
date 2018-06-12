@@ -29,6 +29,7 @@
     "@ionic-native/camera": "4.7.0",
     "@ionic-native/core": "4.7.0",
     "@ionic-native/in-app-browser": "^4.7.0",
+    "@ionic-native/local-notifications": "^4.7.0",
     "@ionic-native/market": "4.7.0",
     "@ionic-native/secure-storage": "^4.7.0",
     "@ionic-native/speech-recognition": "4.7.0",
@@ -48,12 +49,14 @@
     "angular2-swing": "^0.14.0",
     "chart.js": "^2.7.2",
     "chartjs-plugin-datalabels": "^0.2.0",
-    "cordova-android": "7.0.0",
+    "cordova-android": "^7.1.0",
     "cordova-plugin-app-version": "^0.1.9",
+    "cordova-plugin-badge": "^0.8.7",
     "cordova-plugin-browsertab": "^0.2.0",
     "cordova-plugin-customurlscheme": "^4.3.0",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-inappbrowser": "^2.0.2",
+    "cordova-plugin-local-notification": "^0.9.0-beta.3",
     "cordova-plugin-market": "^1.2.0",
     "cordova-plugin-secure-storage": "^2.6.8",
     "cordova-plugin-speechrecognition": "^1.2.0",
@@ -81,7 +84,6 @@
     "@ionic/app-scripts": "3.1.9",
     "@types/jest": "^23.0.0",
     "@types/node": "^8.0.47",
-    "generator-jhipster": "^4.13.3",
     "jest": "^23.1.0",
     "jest-preset-angular": "^5.2.2",
     "typescript": "~2.6.2"
@@ -105,7 +107,8 @@
       "cordova-plugin-app-version": {},
       "cordova-plugin-market": {},
       "cordova-plugin-statusbar": {},
-      "cordova-plugin-secure-storage": {}
+      "cordova-plugin-secure-storage": {},
+      "cordova-plugin-local-notification": {}
     },
     "platforms": [
       "android"

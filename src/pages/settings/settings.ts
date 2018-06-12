@@ -31,6 +31,10 @@ export class SettingsPage {
     page: 'learn',
     pageTitleKey: 'SETTINGS_PAGE_LANGUAGE'
   };
+  notifySettings = {
+    page: 'notify',
+    pageTitleKey: 'SETTINGS_PAGE_NOTIFICATIONS'
+  };
   subSettings: any = SettingsPage;
 
   page: string = 'main';
@@ -81,6 +85,12 @@ export class SettingsPage {
           motherLanguage: [this.options.motherLanguage],
           targetLanguage: [this.options.targetLanguage],
           difficultyLevel: [this.options.difficultyLevel]
+        };
+        break;
+      case 'notify':
+        group = {
+          notificationEnabled: [this.options.notificationEnabled],
+          notificationDailyAt: [this.options.notificationDailyAt]
         };
         break;
     }
@@ -165,6 +175,9 @@ export class SettingsPage {
               this.viewCtrl.dismiss();
             });
           } else {
+            if (this.page === 'notify') {
+              this.settings.setupLocalNotifications();
+            }
             if (this.settings.allSettings.language !== this.translate.currentLang) {
               window.location.reload();
             } else {

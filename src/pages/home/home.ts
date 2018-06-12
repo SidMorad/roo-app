@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, ViewChild, ElementRef, isDevMode } from '@angular/core';
+import { Component, OnInit, NgZone, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, Platform, ModalController, PopoverController,
          Events, Content, ToastController } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
@@ -74,6 +74,7 @@ export class HomePage implements OnInit {
       this.api.getDailyLesson().subscribe((dl: Lesson) => {
         console.log('DailyLesson ', dl);
         this.dailyLesson = new Lesson(ScoreTypeFactory.daily, dl.uuid, dl.title, this.settings.allSettings.learnDir, dl.indexOrder, dl.picture);
+        this.settings.dailyLessonPictureUrl = this.dailyLesson.pictureUrl;
       });
     }
   }
@@ -148,15 +149,20 @@ export class HomePage implements OnInit {
   }
 
   fetchCategories(force?: boolean) {
-    this.showRetryButton = false;
+    this.showRetryButton = true;
     this.api.getCategoryPublicList(this.settings.learnDir, force).subscribe((response) => {
       this.ngZone.run(() => {
         this.categories = response;
+        this.showRetryButton = false;
       });
     }, (error) => {
       console.log('Fetching CategoryList actually failed with: ', error);
       this.showRetryButton = true;
     });
+  }
+
+  retry() {
+    window.location.reload();
   }
 
   scrollToTheRight() {
@@ -260,9 +266,9 @@ export class HomePage implements OnInit {
     popover.present({ ev: $event });
   }
 
-  get isDevMode() {
-    return isDevMode();
-  }
+  // get isDevMode() {
+  //   return isDevMode();
+  // }
 
   showHelp() {
     const intro = introJs.introJs();

@@ -14,7 +14,7 @@
       </button>
     </ion-buttons>
     <ion-buttons end *ngIf="!isRTL">
-      <button ion-button icon-only clear *ngIf="showRetryButton" (click)="fetchCategories()">
+      <button ion-button icon-only clear *ngIf="showRetryButton" (click)="retry()">
         <ion-icon name="refresh"></ion-icon>
       </button>
       <button ion-button icon-only clear *ngIf="showUpgradeButton" (click)="upgrade()" color="danger">
@@ -53,7 +53,7 @@
     <div class="map map-inner map-webview touch-action" id="map-webview"
       [style.width.px]="mapWidth" style="height:99%; overflow-x:scroll; display:inline-block;">
 
-      <div id="pin-daily" class="pin" *ngIf="isDevMode">
+      <div id="pin-daily" class="pin">
         <div class="pin-image-photo" [style.background-image]="'url(' + dailyLesson.pictureUrl + ')'">
           <a (click)="startDailyLesson()">
           </a>

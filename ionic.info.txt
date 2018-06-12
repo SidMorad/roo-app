@@ -10,7 +10,7 @@ local packages:
 System:
     Android SDK Tools : 26.0.1
     Node              : v6.9.5
-    npm               : 5.8.0
+    npm               : 6.1.0
     OS                : Linux 4.4
 Environment Variables:
     ANDROID_HOME : /i/program/android-sdk
