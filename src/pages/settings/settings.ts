@@ -176,7 +176,7 @@ export class SettingsPage {
             });
           } else {
             if (this.page === 'notify') {
-              this.settings.setupLocalNotifications();
+              this.settings.setupLocalNotifications(true);
             }
             if (this.settings.allSettings.language !== this.translate.currentLang) {
               window.location.reload();

@@ -93,33 +93,32 @@ export class Settings {
     return this.settings ? this.settings.difficultyLevel : 'Beginner';
   }
 
-  setupLocalNotifications() {
+  setupLocalNotifications(quick?: boolean) {
+    const delay = quick ? 0 : 60000;
     const that = this;
-    this.platform.ready().then(() => {
-      cordova.plugins.notification.local.clearAll(function (yes) {
-        that.load().then(() => {
-          if (that.allSettings.notificationEnabled) {
-            cordova.plugins.notification.local.hasPermission(function (yes) {
-              if (yes) {
-                that.scheduleDailyNotify();
-              } else {
-                cordova.plugins.notification.local.requestPermission(function (yes) {
+    setTimeout(() => {
+      that.platform.ready().then(() => {
+        cordova.plugins.notification.local.clearAll(function (yes) {
+          that.load().then(() => {
+            if (that.allSettings.notificationEnabled) {
+              cordova.plugins.notification.local.hasPermission(function (yes) {
+                if (yes) {
                   that.scheduleDailyNotify();
-                });
-              }
-            });
-          }
+                } else {
+                  cordova.plugins.notification.local.requestPermission(function (yes) {
+                    that.scheduleDailyNotify();
+                  });
+                }
+              });
+            }
+          });
         });
       });
-    });
+    }, delay);
   }
 
   scheduleDailyNotify() {
-    const today = new Date();
     const time = this.allSettings.notificationDailyAt.split(':');
-    today.setHours(time[0]);
-    today.setMinutes(time[1]);
-    today.setSeconds(0);
     console.log('Notify At: ', time, +time[0], +time[1]);
     if (!isNaN(time[0]) && !isNaN(time[1])) {
       cordova.plugins.notification.local.schedule({
