@@ -28,7 +28,7 @@
       </button>
     </ion-buttons>
     <ion-buttons left *ngIf="isRTL">
-      <button ion-button icon-only clear *ngIf="showRetryButton" (click)="fetchCategories()">
+      <button ion-button icon-only clear *ngIf="showRetryButton" (click)="retry()">
         <ion-icon name="refresh"></ion-icon>
       </button>
       <button ion-button icon-only clear *ngIf="showUpgradeButton" (click)="upgrade()" color="danger">

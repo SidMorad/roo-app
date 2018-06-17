@@ -1,7 +1,7 @@
 
 export enum SubscriptionType {
-  'ONE_MONTH',
-  'ONE_YEAR'
+  'ONE_MONTH' = 'ONE_MONTH',
+  'ONE_YEAR' = 'ONE_YEAR'
 }
 
 export namespace SubscriptionType {
@@ -13,7 +13,8 @@ export namespace SubscriptionType {
 export class SubscribeModel {
 
   constructor(public description?: string,
-              public subscriptionType?: SubscriptionType) {
+              public subscriptionType?: SubscriptionType,
+              public paymentApiReturnString?: string) {
   }
 
 }

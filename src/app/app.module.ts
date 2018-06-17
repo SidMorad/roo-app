@@ -22,6 +22,7 @@ import { SwingModule } from 'angular2-swing';
 import { BrowserTab } from '@ionic-native/browser-tab';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { LocalNotifications } from '@ionic-native/local-notifications';
+import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 import { Api, Settings, User, ScoreUtil, Memory, SecureStorageHelper,
          SecurityService, QuestionGenerator } from '../providers';
@@ -106,6 +107,7 @@ export function provideSettings(storage: Storage, api:Api, localNotifications: L
     BrowserTab,
     InAppBrowser,
     LocalNotifications,
+    AndroidPermissions,
     { provide: Settings, useFactory: provideSettings, deps: [Storage, Api, LocalNotifications, Platform] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler },

@@ -19,6 +19,10 @@ export class Api {
     return this.post('roo/api/user/zarinpal/payment/token', subscribeModel, { responseType: 'text' });
   }
 
+  subscribeWithCafebazaar(subscribeModel) {
+    return this.post('roo/api/user/cafebazaar/subscribe', subscribeModel);
+  }
+
   createProfile(profile: DefaultSettings): Observable<any> {
     return this.post('roo/api/user/profile/create', profile);
   }

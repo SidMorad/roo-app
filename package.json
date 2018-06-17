@@ -18,12 +18,13 @@
     "test": "jest"
   },
   "dependencies": {
-    "@angular/common": "5.2.10",
-    "@angular/core": "5.2.10",
-    "@angular/forms": "5.2.10",
-    "@angular/http": "5.2.10",
-    "@angular/platform-browser": "5.2.10",
-    "@angular/platform-browser-dynamic": "5.2.10",
+    "@angular/common": "5.2.11",
+    "@angular/core": "5.2.11",
+    "@angular/forms": "5.2.11",
+    "@angular/http": "5.2.11",
+    "@angular/platform-browser": "5.2.11",
+    "@angular/platform-browser-dynamic": "5.2.11",
+    "@ionic-native/android-permissions": "^4.7.0",
     "@ionic-native/app-version": "4.7.0",
     "@ionic-native/browser-tab": "^4.7.0",
     "@ionic-native/camera": "4.7.0",
@@ -49,10 +50,12 @@
     "angular2-swing": "^0.14.0",
     "chart.js": "^2.7.2",
     "chartjs-plugin-datalabels": "^0.2.0",
-    "cordova-android": "^7.1.0",
+    "cordova-android": "7.1.0",
+    "cordova-plugin-android-permissions": "^1.0.0",
     "cordova-plugin-app-version": "^0.1.9",
     "cordova-plugin-badge": "^0.8.7",
     "cordova-plugin-browsertab": "^0.2.0",
+    "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-customurlscheme": "^4.3.0",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-inappbrowser": "^2.0.2",
@@ -79,9 +82,9 @@
     "zone.js": "0.8.26"
   },
   "devDependencies": {
-    "@angular/compiler": "5.2.10",
-    "@angular/compiler-cli": "5.2.10",
-    "@ionic/app-scripts": "3.1.9",
+    "@angular/compiler": "5.2.11",
+    "@angular/compiler-cli": "5.2.11",
+    "@ionic/app-scripts": "3.1.10",
     "@types/jest": "^23.0.0",
     "@types/node": "^8.0.47",
     "jest": "^23.1.0",
@@ -108,7 +111,11 @@
       "cordova-plugin-market": {},
       "cordova-plugin-statusbar": {},
       "cordova-plugin-secure-storage": {},
-      "cordova-plugin-local-notification": {}
+      "cordova-plugin-android-permissions": {},
+      "cordova-plugin-local-notification": {},
+      "com.smartmobilesoftware.androidinappbilling": {
+        "BILLING_KEY": "MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwC+zFjRW1U4ZeQN6I3z3L5a5ormHIEa4Zfmz0zSaz4HeSJnbOqca6ybPXhqTmpRkR/Za2YgqH8q3gHUoE+3jTv9sw0/SM/yFO/iYJwCF3xHDR2GerOk6rjWbberP1HzAjhJa7JmwQWZ1YPlAZLKNfhZinGj7+qguHLqXMPKi5U2UumatC7P7Bnqqjh+Y1cb6IdfSfmCTxKxLt22etIM60EYeKy2YU3d7bmfbWQ9at0CAwEAAQ=="
+      }
     },
     "platforms": [
       "android"
