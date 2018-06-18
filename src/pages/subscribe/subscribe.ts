@@ -30,7 +30,7 @@ export class SubscribePage {
   reCheck: boolean = false;
   resumeSubscription: any;
   toastInstance: any;
-  cafebazarPurchaseEnabled: boolean;
+  cafebazarPurchaseEnabled: boolean = true;
   private readonly lastSubscribeKey = 'LAST_SUBSCRIBE';
 
   constructor(platform: Platform, private browserTab: BrowserTab,

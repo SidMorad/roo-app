@@ -13,7 +13,7 @@
     </div>
     <div *ngIf="!isTryingToLogin">
       <div>
-          <button ion-button block large (click)="login()" class="login">{{ 'LOGIN' | translate }}</button>
+          <button ion-button block large (click)="login()" class="login" [disabled]="isTryingToLogin">{{ 'LOGIN' | translate }}</button>
       </div>
       <div>
           <p></p>

@@ -414,7 +414,7 @@ export class Question {
     }
     const res = [];
     origOptions.forEach((option) => res.push({ text: option}));
-    return res;
+    return this.shuffle(res);
   }
 
   private toptions(removeDot?: boolean): any[] {
