@@ -101,7 +101,7 @@ export class HomePage implements OnInit {
     const scrollContentDiv = this.elementRef.nativeElement.querySelector('.scroll-content');
     const mapDiv = this.elementRef.nativeElement.querySelector('.map-container');
     setTimeout(() => {
-      scrollContentDiv.style = null;  // a fix for auto padding-top and padding-bottom set value.
+      scrollContentDiv.setAttribute('style', null);  // a fix for auto padding-top and padding-bottom set value.
       if (mapDiv.scrollLeft === 0) {
         mapDiv.scrollLeft += 38;
       }

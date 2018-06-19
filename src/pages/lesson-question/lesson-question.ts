@@ -376,7 +376,7 @@ export class LessonQuestionPage implements OnInit {
         const toast = this.toastCtrl.create({
           message: this.labelPleaseUpdateThisOtherAppFromMarket,
           duration: 4000,
-          position: 'top',
+          position: 'middle',
           showCloseButton: true,
           closeButtonText: this.labelMarket
         });

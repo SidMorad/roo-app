@@ -161,11 +161,11 @@ export class MyApp implements OnInit {
         const me = this;
         this.platform.ready().then(() => {
           this.browserTab.isAvailable().then((isAvailable) => {
-            if (isAvailable) {
+            // if (isAvailable) {
               data.redirectUri = AUTH_REDIRECT_URI;
-            } else {
-              data.redirectUri = 'http://localhost:8100';
-            }
+            // } else {
+            //   data.redirectUri = 'http://localhost:8100';
+            // }
             // save in localStorage so redirect back gets config immediately
             localStorage.setItem(AUTH_CONFIG, JSON.stringify(data));
             me.securityService.oidc().configure(data);
