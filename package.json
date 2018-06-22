@@ -51,6 +51,7 @@
     "chart.js": "^2.7.2",
     "chartjs-plugin-datalabels": "^0.2.0",
     "cordova-android": "7.1.0",
+    "cordova-custom-config": "^5.0.2",
     "cordova-plugin-android-permissions": "^1.0.0",
     "cordova-plugin-app-version": "^0.1.9",
     "cordova-plugin-badge": "^0.8.7",
@@ -117,7 +118,8 @@
       "com.smartmobilesoftware.androidinappbilling": {
         "BILLING_KEY": "MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwC+zFjRW1U4ZeQN6I3z3L5a5ormHIEa4Zfmz0zSaz4HeSJnbOqca6ybPXhqTmpRkR/Za2YgqH8q3gHUoE+3jTv9sw0/SM/yFO/iYJwCF3xHDR2GerOk6rjWbberP1HzAjhJa7JmwQWZ1YPlAZLKNfhZinGj7+qguHLqXMPKi5U2UumatC7P7Bnqqjh+Y1cb6IdfSfmCTxKxLt22etIM60EYeKy2YU3d7bmfbWQ9at0CAwEAAQ=="
       },
-      "cordova-sqlite-storage": {}
+      "cordova-sqlite-storage": {},
+      "cordova-custom-config": {}
     },
     "platforms": [
       "android"
