@@ -71,7 +71,10 @@ export function provideSettings(storage: Storage, api:Api, localNotifications: L
       autoFocusAssist: 'immediate',
       keyboardHeight: 200
     }),
-    IonicStorageModule.forRoot(),
+    IonicStorageModule.forRoot({
+      name: '__roodb',
+      driverOrder: ['sqlite', 'indexeddb', 'websql']
+    }),
     EntityPageModule,
     OAuthModule.forRoot(),
     NgProgressModule.forRoot(),
