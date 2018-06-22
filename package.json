@@ -29,6 +29,7 @@
     "@ionic-native/browser-tab": "^4.7.0",
     "@ionic-native/camera": "4.7.0",
     "@ionic-native/core": "4.7.0",
+    "@ionic-native/diagnostic": "^4.7.0",
     "@ionic-native/in-app-browser": "^4.7.0",
     "@ionic-native/local-notifications": "^4.7.0",
     "@ionic-native/market": "4.7.0",
@@ -69,6 +70,7 @@
     "cordova-plugin-tts": "^0.2.3",
     "cordova-plugin-whitelist": "^1.3.3",
     "cordova-sqlite-storage": "^2.3.2",
+    "cordova.plugins.diagnostic": "^4.0.8",
     "default-passive-events": "^1.0.10",
     "diff": "^3.5.0",
     "flag-icon-css": "^3.0.0",
@@ -119,7 +121,8 @@
         "BILLING_KEY": "MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwC+zFjRW1U4ZeQN6I3z3L5a5ormHIEa4Zfmz0zSaz4HeSJnbOqca6ybPXhqTmpRkR/Za2YgqH8q3gHUoE+3jTv9sw0/SM/yFO/iYJwCF3xHDR2GerOk6rjWbberP1HzAjhJa7JmwQWZ1YPlAZLKNfhZinGj7+qguHLqXMPKi5U2UumatC7P7Bnqqjh+Y1cb6IdfSfmCTxKxLt22etIM60EYeKy2YU3d7bmfbWQ9at0CAwEAAQ=="
       },
       "cordova-sqlite-storage": {},
-      "cordova-custom-config": {}
+      "cordova-custom-config": {},
+      "cordova.plugins.diagnostic": {}
     },
     "platforms": [
       "android"

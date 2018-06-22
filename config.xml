@@ -28,9 +28,6 @@
     <platform name="android">
         <allow-intent href="market:*" />
         <custom-preference name="android-manifest/@android:installLocation" value="preferExternal" />
-        <custom-config-file parent="/*" target="AndroidManifest.xml">
-            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-        </custom-config-file>
         <hook src="patch/patch-android-studio-check.js" type="before_plugin_install" />
         <hook src="patch/patch-android-studio-check.js" type="before_plugin_add" />
         <hook src="patch/patch-android-studio-check.js" type="before_build" />
@@ -115,5 +112,6 @@
     </plugin>
     <plugin name="cordova-sqlite-storage" spec="^2.3.2" />
     <plugin name="cordova-custom-config" spec="^5.0.2" />
-    <engine name="android" spec="7.1.0" />
+    <plugin name="cordova.plugins.diagnostic" spec="^4.0.8" />
+    <engine name="android" spec="~7.1.0" />
 </widget>

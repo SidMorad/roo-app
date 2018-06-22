@@ -23,6 +23,7 @@ import { BrowserTab } from '@ionic-native/browser-tab';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
+import { Diagnostic } from '@ionic-native/diagnostic';
 
 import { Api, Settings, User, ScoreUtil, Memory, SecureStorageHelper,
          SecurityService, QuestionGenerator } from '../providers';
@@ -41,14 +42,15 @@ export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
-export function provideSettings(storage: Storage, api:Api, localNotifications: LocalNotifications, platform: Platform) {
+export function provideSettings(storage: Storage, api:Api,
+  localNotifications: LocalNotifications, platform: Platform, diagnostic: Diagnostic) {
   /**
    * The Settings provider takes a set of default settings for your app.
    *
    * You can add new settings options at any time. Once the settings are saved,
    * these values will not overwrite the saved values (this can be done manually if desired).
    */
-  return new Settings(storage, DefaultSettings.newInstance(), api, localNotifications, platform);
+  return new Settings(storage, DefaultSettings.newInstance(), api, localNotifications, platform, diagnostic);
 }
 
 @NgModule({
@@ -111,7 +113,8 @@ export function provideSettings(storage: Storage, api:Api, localNotifications: L
     InAppBrowser,
     LocalNotifications,
     AndroidPermissions,
-    { provide: Settings, useFactory: provideSettings, deps: [Storage, Api, LocalNotifications, Platform] },
+    Diagnostic,
+    { provide: Settings, useFactory: provideSettings, deps: [Storage, Api, LocalNotifications, Platform, Diagnostic] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
