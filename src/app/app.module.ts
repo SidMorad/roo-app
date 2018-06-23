@@ -75,7 +75,7 @@ export function provideSettings(storage: Storage, api:Api,
     }),
     IonicStorageModule.forRoot({
       name: '__roodb',
-      driverOrder: ['sqlite', 'indexeddb', 'websql']
+      driverOrder: ['sqlite', 'indexeddb', 'websql', 'localstorage']
     }),
     EntityPageModule,
     OAuthModule.forRoot(),
