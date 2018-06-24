@@ -94,16 +94,18 @@ export class MyApp implements OnInit {
             const idToken = parsedResponse['id_token'];
             const accessToken = parsedResponse['access_token'];
             const keyValuePair = `#id_token=${encodeURIComponent(idToken)}&access_token=${encodeURIComponent(accessToken)}`;
-            me.securityService.oidc().tryLogin({
-              customHashFragment: keyValuePair,
-              disableOAuth2StateCheck: true,
-              onTokenReceived: context => {
-                const claims = me.securityService.oidc().getIdentityClaims();
-                if (claims) {
-                  me.events.publish('LOGIN_SUCCESS', claims);
-                  me.getAccount();
+            me.securityService.oidc().loadDiscoveryDocument().then((doc) => {
+              me.securityService.oidc().tryLogin({
+                customHashFragment: keyValuePair,
+                disableOAuth2StateCheck: true,
+                onTokenReceived: context => {
+                  const claims = me.securityService.oidc().getIdentityClaims();
+                  if (claims) {
+                    me.events.publish('LOGIN_SUCCESS', claims);
+                    me.getAccount();
+                  }
                 }
-              }
+              });
             });
           }
         }
