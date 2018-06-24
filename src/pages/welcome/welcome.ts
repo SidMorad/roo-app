@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, App, Events } from 'ionic-angular';
+import { BrowserTab } from '@ionic-native/browser-tab';
 
 // import { MainPage } from '../pages';
 import { LoginService, Principal, SecurityService } from '../../providers';
@@ -20,26 +21,33 @@ export class WelcomePage implements OnInit {
 
   constructor(private principal: Principal, private app: App,
               private loginService: LoginService, private events: Events,
-              private securityService: SecurityService) {
+              private securityService: SecurityService, private browserTab: BrowserTab) {
   }
 
   ngOnInit() {
     this.isTryingToLogin = true;
-    if (!this.securityService.oidc().hasValidAccessToken()) {
-      this.securityService.oidc().loadDiscoveryDocumentAndLogin().then(() => {
-        this.geAccount();
-      }).catch((error) => {
-        console.log('Well loadAuthAndTryLogin failed with error ', error);
+    this.browserTab.isAvailable().then((isAvailable) => {
+      console.log('So browserTab is available or not? ', isAvailable);
+      if (isAvailable) {
+        if (!this.securityService.oidc().hasValidAccessToken()) {
+          this.securityService.oidc().loadDiscoveryDocumentAndTryLogin().then(() => {
+            this.geAccount();
+          }).catch((error) => {
+            console.log('Well loadAuthAndTryLogin failed with error ', error);
+            this.isTryingToLogin = false;
+          });
+        } else {
+          // console.log('Cliams ', claims);
+          this.events.publish('LOGIN_SUCCESS', this.securityService.oidc().getIdentityClaims());
+          console.log('Login succeed in welcome page, actually...');
+          setTimeout(() => {
+            this.geAccount();
+          }, 300);
+        }
+      } else {
         this.isTryingToLogin = false;
-      });
-    } else {
-      // console.log('Cliams ', claims);
-      this.events.publish('LOGIN_SUCCESS', this.securityService.oidc().getIdentityClaims());
-      console.log('Login succeed in welcome page, actually...');
-      setTimeout(() => {
-        this.geAccount();
-      }, 300);
-    }
+      }
+    });
   }
 
   geAccount() {

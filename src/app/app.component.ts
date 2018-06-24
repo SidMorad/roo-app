@@ -161,11 +161,11 @@ export class MyApp implements OnInit {
         const me = this;
         this.platform.ready().then(() => {
           this.browserTab.isAvailable().then((isAvailable) => {
-            // if (isAvailable) {
+            if (isAvailable) {
               data.redirectUri = AUTH_REDIRECT_URI;
-            // } else {
-            //   data.redirectUri = 'http://localhost:8100';
-            // }
+            } else {
+              data.redirectUri = 'http://localhost:8100';
+            }
             // save in localStorage so redirect back gets config immediately
             localStorage.setItem(AUTH_CONFIG, JSON.stringify(data));
             me.securityService.oidc().configure(data);
@@ -184,25 +184,25 @@ export class MyApp implements OnInit {
   }
 
   tryLogin() {
-    this.securityService.oidc().loadDiscoveryDocumentAndLogin().then(() => {
-      this.securityService.oidc().events.filter(e => e.type === 'token_expires')
-          .subscribe(() => {
-            // this.securityService.oidc().refreshToken().then((refToken) => {  // TODO FIXME
-            //   console.log('RefershToken really happend: ', refToken);
-            // }).catch((err) => { console.log('RefereshToken error: ', err); });
-          });
-      const claims = this.securityService.oidc().getIdentityClaims();
-      if (claims) {
-        // this.events.publish('LOGIN_SUCCESS', claims);
-        this.getAccount();
-      }
-    }).catch(error => {
-      if (error.params && error.params.error === 'unsupported_response_type') {
-        let problem = 'You need to enable implicit flow for this app in your identity provider!';
-        problem += '\nError from IdP: ' + error.params.error_description.replace(/\+/g, ' ');
-        console.error(problem);
-      }
-    });
+    // this.securityService.oidc().loadDiscoveryDocumentAndLogin().then(() => {
+    //   this.securityService.oidc().events.filter(e => e.type === 'token_expires')
+    //       .subscribe(() => {
+    //         // this.securityService.oidc().refreshToken().then((refToken) => {  // TODO FIXME
+    //         //   console.log('RefershToken really happend: ', refToken);
+    //         // }).catch((err) => { console.log('RefereshToken error: ', err); });
+    //       });
+    //   const claims = this.securityService.oidc().getIdentityClaims();
+    //   if (claims) {
+    //     // this.events.publish('LOGIN_SUCCESS', claims);
+    //     this.getAccount();
+    //   }
+    // }).catch(error => {
+    //   if (error.params && error.params.error === 'unsupported_response_type') {
+    //     let problem = 'You need to enable implicit flow for this app in your identity provider!';
+    //     problem += '\nError from IdP: ' + error.params.error_description.replace(/\+/g, ' ');
+    //     console.error(problem);
+    //   }
+    // });
   }
 
   signin() {
