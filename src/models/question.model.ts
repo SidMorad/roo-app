@@ -403,11 +403,13 @@ export class Question {
 
   private resolveMultiSelectOptionWithLimit(original, extra) {
     const origOptions = this.splitOptions(original);
-    if (origOptions.length >= 10) {
-      return origOptions;
+    if (origOptions.length >= 8) {
+      const res = [];
+      origOptions.forEach((option) => res.push({ text: option}));
+      return this.shuffle(res);
     }
     const extraOptions = this.splitOptions(extra);
-    for (let i = 0; i < 10 - origOptions.length; i++) {
+    for (let i = 0; i < 9 - origOptions.length; i++) {
       if (i < extraOptions.length && origOptions.indexOf(extraOptions[i]) === -1) {
         origOptions.push(extraOptions[i]);
       }
