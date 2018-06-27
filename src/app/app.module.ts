@@ -8,7 +8,7 @@ import { IonicStorageModule, Storage } from '@ionic/storage';
 import { SecureStorage } from '@ionic-native/secure-storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { IonicApp, IonicErrorHandler, IonicModule, Events, Platform } from 'ionic-angular';
+import { IonicApp, IonicModule, Events, Platform } from 'ionic-angular';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 import { NgProgressModule } from '@ngx-progressbar/core';
@@ -24,9 +24,10 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
 import { Diagnostic } from '@ionic-native/diagnostic';
+import { NgxLogglyModule } from 'ngx-loggly-logger';
 
 import { Api, Settings, User, ScoreUtil, Memory, SecureStorageHelper,
-         SecurityService, QuestionGenerator } from '../providers';
+         SecurityService, QuestionGenerator, RooErrorHandler } from '../providers';
 import { DefaultSettings } from '../models';
 import { MyApp } from './app.component';
 import { LoginService } from '../providers/login/login.service';
@@ -81,7 +82,8 @@ export function provideSettings(storage: Storage, api:Api,
     OAuthModule.forRoot(),
     NgProgressModule.forRoot(),
     NgProgressHttpModule,
-    ChartsModule
+    ChartsModule,
+    NgxLogglyModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -114,9 +116,10 @@ export function provideSettings(storage: Storage, api:Api,
     LocalNotifications,
     AndroidPermissions,
     Diagnostic,
+    RooErrorHandler,
     { provide: Settings, useFactory: provideSettings, deps: [Storage, Api, LocalNotifications, Platform, Diagnostic] },
     // Keep this to enable Ionic's runtime error handling during development
-    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    { provide: ErrorHandler, useClass: RooErrorHandler },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorHandlerInterceptor, deps: [Events], multi: true },
     { provide: OAuthStorage, useValue: localStorage }

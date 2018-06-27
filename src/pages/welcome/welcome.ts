@@ -30,7 +30,7 @@ export class WelcomePage implements OnInit {
       console.log('So browserTab is available or not? ', isAvailable);
       if (isAvailable) {
         if (!this.securityService.oidc().hasValidAccessToken()) {
-          this.securityService.oidc().loadDiscoveryDocumentAndTryLogin().then(() => {
+          this.securityService.oidc().loadDiscoveryDocumentAndLogin().then(() => {
             this.geAccount();
           }).catch((error) => {
             console.log('Well loadAuthAndTryLogin failed with error ', error);

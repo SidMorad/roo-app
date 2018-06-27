@@ -133,7 +133,7 @@ export class Settings {
 
   scheduleDailyNotify() {
     const time = this.allSettings.notificationDailyAt.split(':');
-    console.log('Notify At: ', time, +time[0], +time[1]);
+    // console.log('Notify At: ', time, +time[0], +time[1]);
     if (!isNaN(time[0]) && !isNaN(time[1])) {
       cordova.plugins.notification.local.schedule({
         id: 1,

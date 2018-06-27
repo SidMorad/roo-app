@@ -35,7 +35,7 @@ export class LoginService {
           customHashFragment: keyValuePair,
           disableOAuth2StateCheck: true,
           onTokenReceived: context => {
-            console.log('login.service#onTokenReceived: ', context);
+            // console.log('login.service#onTokenReceived: ', context);
             const claims: any = this.securityService.oidc().getIdentityClaims();
             if (claims) {
               this.events.publish('LOGIN_SUCCESS', claims);
@@ -53,28 +53,22 @@ export class LoginService {
   oauthLogin(): Promise<any> {
     const defaultError = 'Problem authenticating with OAuth';
     const that = this;
-    console.log("#1debug oauthLogin");
     return this.securityService.oidc().createAndSaveNonce().then(nonce => {
       let state: string = Math.floor(Math.random() * 1000000000).toString();
-      console.log("#2debug state", state);
       if (window.crypto) {
         const array = new Uint32Array(1);
         window.crypto.getRandomValues(array);
         state = array.join().toString();
-        console.log("#2debug state+crypto", state);
       }
       return new Promise((resolve, reject) => {
         const oauthUrl = this.buildUrl(state, nonce);
-        console.log("#3debug oauthUrl", oauthUrl);
         this.platform.ready().then(() => {
-          console.log("#4debug platform is ready.");
           that.browserTab.isAvailable().then((result) => {
-            console.log("#5debug browserTab#isAvailable", result);
             if (result) {
-              console.log('BrowserTab is about to open', oauthUrl);
+              // console.log('BrowserTab is about to open', oauthUrl);
               that.browserTab.openUrl(oauthUrl).then(
                 function(success) {
-                  console.log('BrowserTab#success: ', success);
+                  // console.log('BrowserTab#success: ', success);
                   if (typeof success === 'string' && success.startsWith('No Activity found to')) {
                     reject(defaultError);
                   }
@@ -84,9 +78,9 @@ export class LoginService {
             } else {
               const browser = window.cordova.InAppBrowser.open(oauthUrl, '_blank',
                 'location=no,clearsessioncache=no,clearcache=no');
-              console.log('BrowserTab is about to open', oauthUrl);
+              // console.log('InAppBrowser is about to open', oauthUrl);
               browser.addEventListener('loadstart', (event) => {
-                console.log('So loadstart event happend: ', event);
+                // console.log('So loadstart event happend: ', event);
                 if ((event.url).indexOf('http://localhost:8100') === 0) {
                   browser.removeEventListener('exit', () => {});
                   browser.close();
@@ -117,7 +111,6 @@ export class LoginService {
   }
 
   buildUrl(state, nonce): string {
-    console.log('DEGUB: ', this.securityService.oidc());
     return `${this.securityService.oidc().issuer}/protocol/openid-connect/auth?` +
       'client_id=' + this.securityService.oidc().clientId + '&' +
       'redirect_uri=' + this.securityService.oidc().redirectUri + '&' +

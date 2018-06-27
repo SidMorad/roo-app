@@ -9,3 +9,4 @@ export * from './user/user';
 export * from './score/score.util';
 export * from './storage/secure-storage.helper';
 export * from './question-generator/question-generator';
+export * from './error-handler/roo-error-handler';
