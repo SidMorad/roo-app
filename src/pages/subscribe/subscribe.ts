@@ -139,6 +139,17 @@ export class SubscribePage {
                         console.log('Subscription failed: ', error);
                       }, `ROO_${subscriptionType.toString()}`);
                     }
+                    else if (data == 'googleplay') {
+                      console.log('Attempt to subscribe to ', `roo_play_${subscriptionType.toString().toLowerCase()}`);
+                      inappbilling.subscribe(function(success) {
+                        console.log('Subscription succeed: ', success);
+                        subscribeModel.paymentApiReturnString = JSON.stringify(success);
+                        // TODO | FIXME
+                      }, function(error) {
+                        console.log('Subscription failed: ', error);
+                      // }, `roo_play_${subscriptionType.toString().toLowerCase()}`);
+                    }, `android.test.purchased`);
+                    }
                   }
                 }
               ]
@@ -189,6 +200,7 @@ export class SubscribePage {
   resolvePaymentOptions(): any[] {
     let res = [];
     if (ENV.isPlay) {
+      // res.push({ type: 'radio', label: 'Google play', value: 'googleplay', checked: ENV.isPlay})
       res.push({ type: 'radio', label: 'Zarinpal (زرین پال)', value: 'zarinpal', checked: ENV.isPlay });
     }
     if (ENV.isCafe) {
