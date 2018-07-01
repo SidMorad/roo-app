@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="102" id="mars.roo" ios-CFBundleVersion="102" version="1.7.14" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="104" id="mars.roo" ios-CFBundleVersion="104" version="1.7.15" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Roo</name>
     <description>Learn a language with Roo</description>
     <author email="us@mars" href="https://mars.webebook.org/">Mars Team</author>
@@ -106,11 +106,9 @@
     <plugin name="cordova-plugin-market" spec="~1.2.0" />
     <plugin name="cordova-plugin-statusbar" spec="^2.4.1" />
     <plugin name="cordova-plugin-secure-storage" spec="^2.6.8" />
-    <plugin name="cordova-plugin-android-permissions" spec="^1.0.0" />
-    <plugin name="com.smartmobilesoftware.androidinappbilling" spec="file:/ws/javascript/AndroidInAppBilling">
+    <plugin name="cordova-custom-config" spec="^5.0.2" />
+    <plugin name="com.smartmobilesoftware.androidinappbilling" spec="/ws/javascript/AndroidInAppBilling">
         <variable name="BILLING_KEY" value="MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwC+zFjRW1U4ZeQN6I3z3L5a5ormHIEa4Zfmz0zSaz4HeSJnbOqca6ybPXhqTmpRkR/Za2YgqH8q3gHUoE+3jTv9sw0/SM/yFO/iYJwCF3xHDR2GerOk6rjWbberP1HzAjhJa7JmwQWZ1YPlAZLKNfhZinGj7+qguHLqXMPKi5U2UumatC7P7Bnqqjh+Y1cb6IdfSfmCTxKxLt22etIM60EYeKy2YU3d7bmfbWQ9at0CAwEAAQ==" />
     </plugin>
-    <plugin name="cordova-custom-config" spec="^5.0.2" />
-    <plugin name="cordova.plugins.diagnostic" spec="^4.0.8" />
-    <engine name="android" spec="7.1.0" />
+    <engine name="android" spec="~7.1.0" />
 </widget>

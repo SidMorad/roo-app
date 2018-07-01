@@ -4,12 +4,12 @@ import { IonicPage, Platform, ToastController, AlertController,
 import { TranslateService } from '@ngx-translate/core';
 import { BrowserTab } from '@ionic-native/browser-tab';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
-import { AndroidPermissions } from '@ionic-native/android-permissions';
 import { Storage } from '@ionic/storage';
 
 import { IMAGE_ORIGIN } from '../../app/app.constants';
 import { Principal, Api, LoginService } from '../../providers';
 import { SubscribeModel, SubscriptionType, Account } from '../../models';
+import { ENV } from '@app/env';
 
 declare var inappbilling: any;
 
@@ -30,7 +30,6 @@ export class SubscribePage {
   reCheck: boolean = false;
   resumeSubscription: any;
   toastInstance: any;
-  cafebazarPurchaseEnabled: boolean = true;
   private readonly lastSubscribeKey = 'LAST_SUBSCRIBE';
 
   constructor(platform: Platform, private browserTab: BrowserTab,
@@ -38,48 +37,20 @@ export class SubscribePage {
               private api: Api, private alertCtrl: AlertController, private ngZone: NgZone,
               private translateService: TranslateService, private viewCtrl: ViewController,
               private loginService: LoginService, private inAppBrowser: InAppBrowser,
-              private androidPermissions: AndroidPermissions, private storage: Storage) {
+              private storage: Storage) {
     this.initTranslations();
     this.resumeSubscription = platform.resume.subscribe(() => {
       console.log('onResume event occured.');
       this.reCheckMembership();
     });
-    const that = this;
     platform.ready().then(() => {
       if (platform.is('android')) {
-        that.checkPermission('com.farsitel.bazaar.permission.PAY_THROUGH_BAZAAR').then((result) => {
-          inappbilling.init(function (success) {
-            console.log('Initialize InAppBilling plugin succeed: ', success);
-            that.cafebazarPurchaseEnabled = true;
-          }, function (error) {
-            console.log('Initialize InAppBilling failed with error: ', error);
-            that.cafebazarPurchaseEnabled = false;
-          }, { showLog: true }, ['ROO_ONE_MONTH']);
-        }).catch((error) => {
-          console.log('Check Permission for PAY_THROUGH_BAZAAR failed: ', error);
-          that.cafebazarPurchaseEnabled = false;
-        });
+        inappbilling.init(function (success) {
+          console.log('Initialize InAppBilling plugin succeed: ', success);
+        }, function (error) {
+          console.log('Initialize InAppBilling failed with error: ', error);
+        }, { showLog: true }, ['ROO_ONE_MONTH']);
       }
-    });
-  }
-
-  checkPermission(permission) {
-    return new Promise((resolve, reject) => {
-        this.androidPermissions.checkPermission(permission).then((result) => {
-          console.log('HasPermission: ', result.hasPermission, result);
-          if (!result.hasPermission) {
-            this.androidPermissions.requestPermission(permission).then((result) => {
-              resolve(result);
-            }).catch((error) => { reject(error); });
-          } else {
-            resolve(result);
-          }
-        }, (error) => {
-          console.log('HasPermission error: ', error);
-          this.androidPermissions.requestPermission(permission).then((result) => {
-            resolve(result);
-          }, (error) => { reject(error); });
-        });
     });
   }
 
@@ -102,24 +73,10 @@ export class SubscribePage {
         this.principal.identity().then((account) => {
           const month = subscriptionType.toString() === SubscriptionType.toString(SubscriptionType.ONE_MONTH) ? 1 : 12;
           that.translateService.get('PAYMENT_DESCRIPTION', { month: month, customer: account.login }).subscribe((paymentDescription: string) => {
-            console.log('That.cafebazarPurchaseEnabled', that.cafebazarPurchaseEnabled);
             that.alertCtrl.create({
               title: that.continueLabel,
               message: paymentDescription,
-              inputs: [
-                {
-                  type: 'radio',
-                  label: 'Zarinpal (زرین پال)',
-                  value: 'zarinpal',
-                  checked: !that.cafebazarPurchaseEnabled
-                },
-                {
-                  type: 'radio',
-                  label: 'Cafebazaar (کافه بازار)',
-                  value: 'cafebazaar',
-                  checked: that.cafebazarPurchaseEnabled
-                }
-              ],
+              inputs: that.resolvePaymentOptions(),
               buttons: [
                 {
                   text: that.cancelLabel,
@@ -229,6 +186,17 @@ export class SubscribePage {
     });
   }
 
+  resolvePaymentOptions(): any[] {
+    let res = [];
+    if (ENV.isPlay) {
+      res.push({ type: 'radio', label: 'Zarinpal (زرین پال)', value: 'zarinpal', checked: ENV.isPlay });
+    }
+    if (ENV.isCafe) {
+      res.push({ type: 'radio', label: 'Cafebazaar (کافه بازار)', value: 'cafebazaar', checked: ENV.isCafe });
+    }
+    return res;
+  }
+
   showLoginToast(duration: number) {
     this.toastInstance = this.toastCtrl.create({
       message: this.pleaseLoginLabel,
@@ -253,7 +221,6 @@ export class SubscribePage {
       // Well didn't work.
     });
   }
-
   exit() {
     this.viewCtrl.dismiss();
   }

@@ -22,8 +22,6 @@ import { SwingModule } from 'angular2-swing';
 import { BrowserTab } from '@ionic-native/browser-tab';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { LocalNotifications } from '@ionic-native/local-notifications';
-import { AndroidPermissions } from '@ionic-native/android-permissions';
-import { Diagnostic } from '@ionic-native/diagnostic';
 import { NgxLogglyModule } from 'ngx-loggly-logger';
 
 import { Api, Settings, User, ScoreUtil, Memory, SecureStorageHelper,
@@ -44,14 +42,14 @@ export function createTranslateLoader(http: HttpClient) {
 }
 
 export function provideSettings(storage: Storage, api:Api,
-  localNotifications: LocalNotifications, platform: Platform, diagnostic: Diagnostic) {
+  localNotifications: LocalNotifications, platform: Platform) {
   /**
    * The Settings provider takes a set of default settings for your app.
    *
    * You can add new settings options at any time. Once the settings are saved,
    * these values will not overwrite the saved values (this can be done manually if desired).
    */
-  return new Settings(storage, DefaultSettings.newInstance(), api, localNotifications, platform, diagnostic);
+  return new Settings(storage, DefaultSettings.newInstance(), api, localNotifications, platform);
 }
 
 @NgModule({
@@ -114,10 +112,8 @@ export function provideSettings(storage: Storage, api:Api,
     BrowserTab,
     InAppBrowser,
     LocalNotifications,
-    AndroidPermissions,
-    Diagnostic,
     RooErrorHandler,
-    { provide: Settings, useFactory: provideSettings, deps: [Storage, Api, LocalNotifications, Platform, Diagnostic] },
+    { provide: Settings, useFactory: provideSettings, deps: [Storage, Api, LocalNotifications, Platform] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: RooErrorHandler },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

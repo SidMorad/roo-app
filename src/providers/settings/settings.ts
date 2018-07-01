@@ -3,7 +3,6 @@ import { Platform } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Observable } from 'rxjs/Rx';
 import { LocalNotifications } from '@ionic-native/local-notifications';
-import { Diagnostic } from '@ionic-native/diagnostic';
 
 import { DefaultSettings, ScoreLookup, Score, LearnDir, DifficultyLevel } from '../../models';
 import { Api } from './../';
@@ -23,22 +22,10 @@ export class Settings {
 
   constructor(private storage: Storage, public defaults: DefaultSettings,
     private api: Api, public localNotifications: LocalNotifications,
-    private platform: Platform, public diagnostic: Diagnostic) {
+    private platform: Platform) {
     this._defaults = defaults;
     this.loadCachedScoreLookups();
     this.setupLocalNotifications();
-    // if (platform.is('android')) {
-    //   platform.ready().then(() => {
-    //     diagnostic.getPermissionAuthorizationStatus(this.externalStoragePermission).then((result) => {
-    //       console.log(`Result of permission authorization status for ${this.externalStoragePermission} is ${result}`);
-    //       if (result === 'NOT_REQUESTED') {
-    //         diagnostic.requestRuntimePermission(this.externalStoragePermission).then((granted) => {
-    //           console.log('Well we did ask for permission and result was: ', granted);
-    //         });
-    //       }
-    //     });
-    //   });
-    // }
   }
 
   load() {
