@@ -107,8 +107,5 @@
     <plugin name="cordova-plugin-statusbar" spec="^2.4.1" />
     <plugin name="cordova-plugin-secure-storage" spec="^2.6.8" />
     <plugin name="cordova-custom-config" spec="^5.0.2" />
-    <plugin name="com.smartmobilesoftware.androidinappbilling" spec="/ws/javascript/AndroidInAppBilling">
-        <variable name="BILLING_KEY" value="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAj0ygf0Jqwof/R6EvAvA34A0egz43RLfeT+gEGMy+M2+blYey8qYQn5xm8RlIMj153tKHDjeZU3TWHhKFk3P8wy1V1AA7A+wQenQ7iPb1v5gxYOh3V1WkKbHvBbRK85Bx/vyBJC9ETntu8p0FgYGU2LKzZ0AY9LtHXXf4Sf5UdmzuYfSKnca8V2b3tQMXK0jcL5BaewzkwvQT5kpdLMycqR6t+mpHw3rhdaZbS1sX0uMLe6DWs4iC0s1sVU7x8nBXMJR3YMPhr2E9UXyNkHve5kcN3Ahu1l9WM7xsDt/HmfzYYn9zUpB3a3dTGcZTZYxZeSFRXIMSULPKiyC6Fy9uyQIDAQAB" />
-    </plugin>
     <engine name="android" spec="~7.1.0" />
 </widget>

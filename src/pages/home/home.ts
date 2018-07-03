@@ -9,7 +9,7 @@ import { Observable } from 'rxjs/Rx';
 import introJs from 'intro.js/intro.js';
 
 import { Principal } from '../../providers/auth/principal.service';
-import { Api, Settings, QuestionGenerator } from '../../providers';
+import { Api, Settings, QuestionGenerator, LoginService } from '../../providers';
 import { Category, ScoreLookup, Account, Lesson, ScoreTypeFactory } from '../../models';
 
 @IonicPage()
@@ -41,7 +41,7 @@ export class HomePage implements OnInit {
       private modalCtrl: ModalController, private elementRef: ElementRef, private api: Api,
       private translateService: TranslateService, private settings: Settings,
       private popoverCtrl: PopoverController, private toastCtrl: ToastController,
-      private questionGenerator: QuestionGenerator) {
+      private questionGenerator: QuestionGenerator, private loginService: LoginService) {
     this.categories = [];
     this.mapWidth = (window.screen.height * 6);
   }
@@ -219,28 +219,49 @@ export class HomePage implements OnInit {
   }
 
   startDailyLesson() {
-    this.dailyLessonIsLoading = true;
-    this.api.getQuestions(this.dailyLesson.uuid,
-                          this.settings.learnDir,
-                          'Beginner').subscribe((res) => {
-      if (res.words.lenth === 0) {
-        this.toastCtrl.create({
-          message: 'Incorrect format',
-          duration: 3000
-        }).present();
-        return;
-      }
-      const questions = this.questionGenerator.generate(res.words, this.settings.difficultyLevel);
-      this.navCtrl.push('LessonQuestionPage', {
-        lesson: this.dailyLesson,
-        questions: questions,
-        words: res.words}).then(() => {
-          this.dailyLessonIsLoading = false;
-        });
-    }, (error) => {
-      console.log('Oops this should not happend, TODO');
-      this.dailyLessonIsLoading = false;
-    });
+    if (this.principal.isAuthenticated()) {
+      this.dailyLessonIsLoading = true;
+      this.api.getQuestions(this.dailyLesson.uuid,
+                            this.settings.learnDir,
+                            'Beginner').subscribe((res) => {
+        if (res.words.lenth === 0) {
+          this.toastCtrl.create({
+            message: 'Incorrect format',
+            duration: 3000,
+            position: 'middle'
+          }).present();
+          return;
+        }
+        const questions = this.questionGenerator.generate(res.words, this.settings.difficultyLevel);
+        this.navCtrl.push('LessonQuestionPage', {
+          lesson: this.dailyLesson,
+          questions: questions,
+          words: res.words}).then(() => {
+            this.dailyLessonIsLoading = false;
+          });
+      }, (error) => {
+        console.log('Oops this should not happend, TODO');
+        this.dailyLessonIsLoading = false;
+      });
+    } else {
+      let toastInstance = this.toastCtrl.create({
+        message: this.pleaseLoginLabel,
+        duration: 3000,
+        position: 'middle',
+        showCloseButton: true,
+        closeButtonText: this.loginLabel,
+        dismissOnPageChange: true
+      });
+      toastInstance.onDidDismiss((data, role) => {
+        if (role === 'close') {
+          this.loginService.appLogin(data => {
+          }, (error) => {
+          });
+        }
+        toastInstance = null;
+      });
+      toastInstance.present();
+    }
   }
 
   get isAuthenticated(): boolean {
@@ -308,12 +329,15 @@ export class HomePage implements OnInit {
   labelAndContinueYourPath: string;
   labelToTheRight: string;
   labelSoon: string;
+  loginLabel: string;
+  pleaseLoginLabel: string;
 
   initTranslations() {
     return new Observable((observer) => {
        this.translateService.get(['OK', 'FOR_START_CLICK_ON_THE_PICTURE', 'NEXT', 'PREV',
                                  'CLICK_HERE_TO_SEE_GUIDE', 'TO_THE_RIGHT',
-                                 'AND_CONTINUE_YOUR_PATH', 'SOON_LABEL']).subscribe((translated) => {
+                                 'AND_CONTINUE_YOUR_PATH', 'SOON_LABEL',
+                                 'PLEASE_LOGIN_FIRST', 'LOGIN_BUTTON']).subscribe((translated) => {
         this.labelOk = translated.OK;
         this.labelNext = translated.NEXT;
         this.labelPrev = translated.PREV;
@@ -322,6 +346,8 @@ export class HomePage implements OnInit {
         this.labelAndContinueYourPath = translated.AND_CONTINUE_YOUR_PATH;
         this.labelToTheRight = translated.TO_THE_RIGHT;
         this.labelSoon = translated.SOON_LABEL;
+        this.loginLabel = translated.LOGIN_BUTTON;
+        this.pleaseLoginLabel = translated.PLEASE_LOGIN_FIRST;
         observer.next(translated);
         observer.complete();
       });

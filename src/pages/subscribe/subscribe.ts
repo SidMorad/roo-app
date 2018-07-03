@@ -44,12 +44,12 @@ export class SubscribePage {
       this.reCheckMembership();
     });
     platform.ready().then(() => {
-      if (platform.is('android')) {
+      if (platform.is('android') && !ENV.isPlay) {
         inappbilling.init(function (success) {
           console.log('Initialize InAppBilling plugin succeed: ', success);
         }, function (error) {
           console.log('Initialize InAppBilling failed with error: ', error);
-        }, { showLog: true }, ['ROO_ONE_MONTH']);
+        }, { showLog: true });
       }
     });
   }
@@ -213,6 +213,7 @@ export class SubscribePage {
     this.toastInstance = this.toastCtrl.create({
       message: this.pleaseLoginLabel,
       duration: duration,
+      position: 'middle',
       showCloseButton: true,
       closeButtonText: this.loginLabel,
       dismissOnPageChange: true
