@@ -296,7 +296,6 @@ export class LessonQuestionPage implements OnInit {
     if (!this.isChecking) {
       this.markPictureAsUnAnswered(2);
       this.question.d.options[index].answered = true;
-      this.check();
     }
   }
 
@@ -304,7 +303,6 @@ export class LessonQuestionPage implements OnInit {
     if (!this.isChecking) {
       this.markPictureAsUnAnswered(4);
       this.question.d.options[index].answered = true;
-      this.check();
     }
   }
 
