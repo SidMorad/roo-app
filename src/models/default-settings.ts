@@ -9,11 +9,12 @@ export class DefaultSettings {
               public learnDir: string,
               public difficultyLevel: string,
               public notificationEnabled: boolean,
-              public notificationDailyAt: string) {
+              public notificationDailyAt: string,
+              public advertismentEnabled: boolean) {
   }
 
   public static newInstance(): DefaultSettings {
-    return new DefaultSettings(false, 'fa', true, true, 80, 'Guest', 'FA_IR$EN_GB', 'Beginner', true, '10:00');
+    return new DefaultSettings(false, 'fa', true, true, 80, 'Guest', 'FA_IR$EN_GB', 'Beginner', true, '10:00', false);
   }
 
   get motherLanguage(): string {

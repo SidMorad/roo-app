@@ -52,6 +52,7 @@
     "chartjs-plugin-datalabels": "^0.2.0",
     "cordova-android": "7.1.0",
     "cordova-custom-config": "^5.0.2",
+    "cordova-plugin-adad": "git+https://github.com/miladesign/cordova-plugin-adad.git",
     "cordova-plugin-app-version": "^0.1.9",
     "cordova-plugin-badge": "^0.8.7",
     "cordova-plugin-browsertab": "^0.2.0",
@@ -113,7 +114,12 @@
       "cordova-plugin-statusbar": {},
       "cordova-plugin-secure-storage": {},
       "cordova-plugin-local-notification": {},
-      "cordova-custom-config": {}
+      "cordova-custom-config": {},
+      "cordova-plugin-adad": {
+        "ADAD_TOKEN_CODE": "942c6b4924a84058a4c0e3f6a685cf27",
+        "ADAD_TEST_MODE": "false",
+        "ADAD_LOG_MODE": "false"
+      }
     },
     "platforms": [
       "android"

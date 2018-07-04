@@ -107,5 +107,10 @@
     <plugin name="cordova-plugin-statusbar" spec="^2.4.1" />
     <plugin name="cordova-plugin-secure-storage" spec="^2.6.8" />
     <plugin name="cordova-custom-config" spec="^5.0.2" />
-    <engine name="android" spec="7.1.0" />
+    <plugin name="cordova-plugin-adad" spec="https://github.com/miladesign/cordova-plugin-adad">
+        <variable name="ADAD_TOKEN_CODE" value="942c6b4924a84058a4c0e3f6a685cf27" />
+        <variable name="ADAD_TEST_MODE" value="false" />
+        <variable name="ADAD_LOG_MODE" value="false" />
+    </plugin>
+    <engine name="android" spec="~7.1.0" />
 </widget>

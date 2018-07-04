@@ -2,6 +2,9 @@
 
 cp patch/cordova-plugin-browsertab-plugin.xml plugins/cordova-plugin-browsertab/plugin.xml
 cp patch/cordova-plugin-local-notification-plugin.xml plugins/cordova-plugin-local-notification/plugin.xml
+cp patch/cordova-plugin-adad-plugin.xml plugins/cordova-plugin-adad/plugin.xml
+# cp patch/AdadAd.java plugins/cordova-plugin-adad/src/android/
+# rm plugins/cordova-plugin-adad/src/android/MilaDesignAdad.jar
 
 if [ -z "$1" ]; then
   echo "No profile passed to $0, profile patch ignored!"

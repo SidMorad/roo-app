@@ -68,7 +68,8 @@ export class SettingsPage {
       language: [this.options.language],
       autoPlayVoice: [this.options.autoPlayVoice],
       autoContinue: [this.options.autoContinue],
-      voiceSpeedRate: [this.options.voiceSpeedRate]
+      voiceSpeedRate: [this.options.voiceSpeedRate],
+      advertismentEnabled: [this.options.advertismentEnabled]
     };
 
     switch (this.page) {

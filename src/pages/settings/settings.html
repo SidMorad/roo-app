@@ -31,7 +31,7 @@
         <ion-label>{{ 'SETTINGS_VOICE_SPEED_RATE' | translate }}
           <ion-badge color="secondary" item-end>{{options.voiceSpeedRate}}</ion-badge>
         </ion-label>
-        <ion-range formControlName="voiceSpeedRate" min="1" max="100" color="secondary" class="dir-ltr">
+        <ion-range formControlName="voiceSpeedRate" min="1" max="100" color="secondary" class="dir-ltr" pin="true">
            <ion-icon small range-left name="speedometer"></ion-icon>
            <ion-icon range-right name="speedometer"></ion-icon>
         </ion-range>
@@ -52,6 +52,10 @@
             <span class="flag-icon flag-icon-gb"></span>
             {{'LANG_ENGLISH' | translate}}</ion-option>
         </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label>{{ 'SETTINGS_ADVERTISMENT_ENABLE' | translate }}</ion-label>
+        <ion-toggle formControlName="advertismentEnabled"></ion-toggle>
       </ion-item>
       <ion-item>
         <ion-label>{{'APP_VERSION' | translate}}</ion-label>

@@ -6,6 +6,8 @@ import { Score } from '../../models';
 import { Api } from '../../providers';
 import { ScoreUtil, Settings } from '../../providers';
 
+declare const window: any;
+
 @IonicPage()
 @Component({
   selector: 'page-lesson-score',
@@ -28,8 +30,17 @@ export class LessonScorePage {
               private api: Api, private scoreUtil: ScoreUtil, private settings: Settings) {
   }
 
-  ionViewWillEnter() {
+  ionViewDidEnter() {
     this.uploadScore();
+    if (this.settings.allSettings.advertismentEnabled) {
+      window.adad.LoadInterstitial();
+    }
+  }
+
+  ionViewDidLeave() {
+    if (this.settings.allSettings.advertismentEnabled) {
+      window.adad.ShowInterstitial();
+    }
   }
 
   uploadScore() {
@@ -80,6 +91,7 @@ export class LessonScorePage {
 
   continue() {
     this.viewCtrl.dismiss({action: 'continue'});
+    window.adad.ShowInterstitial();
   }
 
 }
