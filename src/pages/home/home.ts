@@ -287,9 +287,13 @@ export class HomePage implements OnInit {
     popover.present({ ev: $event });
   }
 
-  // get isDevMode() {
-  //   return isDevMode();
-  // }
+  numberOfLessonsForCategoryByIndex(index) {
+    if (index === 24) { // 24th index is for Sport category
+      return 7;
+    } else {
+      return 8;
+    }
+  }
 
   showHelp() {
     const intro = introJs.introJs();
