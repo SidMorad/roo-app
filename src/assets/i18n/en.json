@@ -148,6 +148,11 @@
   "LOGIN_BUTTON": "Sign in",
   "SIGNOUT_BUTTON": "Sign Out",
   "LOGOUT_BUTTON": "Logout",
+  "SUPPORT_MAIL": "Support mail",
+  "SUPPORT_TELEGRAM": "Support telegram",
+  "TELEGRAM_CHANNEL": "Telegram channel",
+  "CONTACT_SUPPORT_VIA_EMAIL_NOT_AVAILABLE": "Email client not found! please send your email manually to {{email}}",
+  "CONTACT_SUPPORT_VIA_EMAIL_FAILURE": "Failure!! please try again, or send your email manually to {{email}}",
 
   "LIST_MASTER_TITLE": "Items",
   "ITEM_CREATE_TITLE": "New Item",
@@ -159,6 +164,5 @@
   "CANCEL_BUTTON": "Cancel",
   "DELETE_BUTTON": "Delete",
   "CARDS_TITLE": "Social",
-  "SEARCH_TITLE": "Search",
-  "SEARCH_PLACEHOLDER": "Search the items list, e.g. \"Hotel\""
+  "SEARCH_TITLE": "Search"
 }

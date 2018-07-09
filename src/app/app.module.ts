@@ -23,6 +23,7 @@ import { BrowserTab } from '@ionic-native/browser-tab';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { NgxLogglyModule } from 'ngx-loggly-logger';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 import { Api, Settings, User, ScoreUtil, Memory, SecureStorageHelper,
          SecurityService, QuestionGenerator, RooErrorHandler } from '../providers';
@@ -113,6 +114,7 @@ export function provideSettings(storage: Storage, api:Api,
     InAppBrowser,
     LocalNotifications,
     RooErrorHandler,
+    SocialSharing,
     { provide: Settings, useFactory: provideSettings, deps: [Storage, Api, LocalNotifications, Platform] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: RooErrorHandler },

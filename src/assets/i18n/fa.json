@@ -148,6 +148,11 @@
   "LOGIN_BUTTON": "ورود",
   "SIGNOUT_BUTTON": "خروج",
   "LOGOUT_BUTTON": "خروج",
+  "SUPPORT_MAIL": "ایمیل پشتیبانی",
+  "SUPPORT_TELEGRAM": "تلگرام پشتیبانی",
+  "TELEGRAM_CHANNEL": "کانال تلگرام",
+  "CONTACT_SUPPORT_VIA_EMAIL_NOT_AVAILABLE": "هیچ کلاینتی برای ارسال ایمیل یافت نشد! لطفا ایمیل خود را به صورت دستی به {{email}} ارسال کنید",
+  "CONTACT_SUPPORT_VIA_EMAIL_FAILURE": "ارسال ایمیل به خطا خورد! لطفا دوباره تلساش کنید و یا ایمیل خود را به صورت دستی به {{email}} ارسال کنید",
 
   "LIST_MASTER_TITLE": "موارد",
   "ITEM_CREATE_TITLE": "مورد تازه",
@@ -159,6 +164,5 @@
   "CANCEL_BUTTON": "انصراف",
   "DELETE_BUTTON": "پاک کردن",
   "CARDS_TITLE": "همبودی",
-  "SEARCH_TITLE": "جستجو",
-  "SEARCH_PLACEHOLDER": "جستجوی موارد، مثله \"هتل\""
+  "SEARCH_TITLE": "جستجو"
 }

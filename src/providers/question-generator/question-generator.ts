@@ -76,10 +76,10 @@ export class QuestionGenerator {
 
   private generateFourPicture(w1, w2, w3, w4, indexOrder, n1, n2, n3, n4) {
     const res = { type: 'FourPicture', indexOrder: indexOrder, dynamicPart: '' };
-    res.dynamicPart = `{"options":[{"name":"${w1['t']}.jpeg","text":"${n1}"},
-                                   {"name":"${w2['t']}.jpeg","text":"${n2}"},
-                                   {"name":"${w3['t']}.jpeg","text":"${n3}"},
-                                   {"name":"${w4['t']}.jpeg","text":"${n4}"}],"reverse":true}`.replace(/\s/g,'');
+    res.dynamicPart = `{"options":[{"name":"${this.pictureName(w1)}","text":"${n1}"},
+                                   {"name":"${this.pictureName(w2)}","text":"${n2}"},
+                                   {"name":"${this.pictureName(w3)}","text":"${n3}"},
+                                   {"name":"${this.pictureName(w4)}","text":"${n4}"}],"reverse":true}`.replace(/\s/g,'');
     return res;
   }
 

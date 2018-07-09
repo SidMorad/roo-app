@@ -94,7 +94,7 @@ export class LessonQuestionPage implements OnInit {
           if (this.isChecking) {
             this.continue();
           }
-        }, 2000);
+        }, 1000);
       }
     } else {
       this.wasWrong = true;
@@ -374,7 +374,7 @@ export class LessonQuestionPage implements OnInit {
         const toast = this.toastCtrl.create({
           message: this.labelPleaseUpdateThisOtherAppFromMarket,
           duration: 4000,
-          position: 'middle',
+          position: 'top',
           showCloseButton: true,
           closeButtonText: this.labelMarket
         });
@@ -639,11 +639,13 @@ export class LessonQuestionPage implements OnInit {
     }
     else if (this.isType('TwoPicture')) {
       introSteps = [
-        { element: '#twoPicture-' + this.pictureCorrectIndex, intro: this.labelSelectACorrectPicture, position: 'auto' } ];
+        { element: '#twoPicture-' + this.pictureCorrectIndex, intro: this.labelSelectACorrectPicture, position: 'auto' },
+        { element: '#checkButton', intro: this.labelClickCheckButton, position: 'auto'} ];
     }
     else if (this.isType('FourPicture')) {
       introSteps = [
-        { element: '#fourPicture-' + this.pictureCorrectIndex, intro: this.labelSelectACorrectPicture, position: 'auto' } ];
+        { element: '#fourPicture-' + this.pictureCorrectIndex, intro: this.labelSelectACorrectPicture, position: 'auto' },
+        { element: '#checkButton', intro: this.labelClickCheckButton, position: 'auto'} ];
     }
     else if (this.isType('MutliCheck')) {
       introSteps = [

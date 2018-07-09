@@ -3,6 +3,7 @@ import { Platform, Events } from 'ionic-angular';
 import { BrowserTab } from '@ionic-native/browser-tab';
 
 import { Principal, SecurityService } from '../';
+import { AUTH_IAB_REDIRECT_URI } from '../../app/app.constants';
 
 declare const window: any;
 
@@ -81,7 +82,7 @@ export class LoginService {
               // console.log('InAppBrowser is about to open', oauthUrl);
               browser.addEventListener('loadstart', (event) => {
                 // console.log('So loadstart event happend: ', event);
-                if ((event.url).indexOf('http://localhost:8100') === 0) {
+                if ((event.url).indexOf(AUTH_IAB_REDIRECT_URI) === 0) {
                   browser.removeEventListener('exit', () => {});
                   browser.close();
                   const responseParameters = ((event.url).split('#')[1]).split('&');

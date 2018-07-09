@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="108" id="mars.roo" ios-CFBundleVersion="108" version="1.7.17" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="110" id="mars.roo" ios-CFBundleVersion="110" version="1.7.18" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Roo</name>
     <description>Learn a language with Roo</description>
     <author email="us@mars" href="https://mars.webebook.org/">Mars Team</author>
@@ -27,7 +27,7 @@
     <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application" />
     <platform name="android">
         <allow-intent href="market:*" />
-        <custom-preference name="android-manifest/@android:installLocation" value="preferExternal" />
+        <custom-preference name="android-manifest/@android:installLocation" value="auto" />
         <hook src="patch/patch-android-studio-check.js" type="before_plugin_install" />
         <hook src="patch/patch-android-studio-check.js" type="before_plugin_add" />
         <hook src="patch/patch-android-studio-check.js" type="before_build" />
@@ -91,7 +91,7 @@
     <plugin name="cordova-plugin-whitelist" spec="^1.3.3" />
     <plugin name="cordova-plugin-device" spec="^2.0.1" />
     <plugin name="cordova-plugin-splashscreen" spec="^5.0.2" />
-    <plugin name="cordova-plugin-inappbrowser" spec="~2.0.2" />
+    <plugin name="cordova-plugin-inappbrowser" spec="~3.0.0" />
     <plugin name="cordova-plugin-local-notification" spec="^0.9.0-beta.3" />
     <plugin name="cordova-plugin-browsertab" spec="~0.2.0" />
     <plugin name="cordova-plugin-customurlscheme" spec="~4.3.0">
@@ -112,5 +112,6 @@
         <variable name="ADAD_TEST_MODE" value="false" />
         <variable name="ADAD_LOG_MODE" value="false" />
     </plugin>
-    <engine name="android" spec="7.1.0" />
+    <plugin name="cordova-plugin-x-socialsharing" spec="^5.4.1" />
+    <engine name="android" spec="~7.1.0" />
 </widget>

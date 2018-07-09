@@ -20,6 +20,7 @@ export class CategoryLessonPage implements OnInit {
   isEnd: boolean;
   isBeginning: boolean;
   subscription: Subscription;
+  initialIndexToGo: number;
 
   constructor(public platform: Platform, navParams: NavParams, private navCtrl: NavController,
               private api: Api, public ngProgress: NgProgress, private ngZone: NgZone,
@@ -30,18 +31,39 @@ export class CategoryLessonPage implements OnInit {
   }
 
   ngOnInit() {
+    const that = this;
     this.isBeginning = true;
     this.api.getLessonPublicList(this.settings.difficultyLevel, this.category.uuid).subscribe((res) => {
       this.lessons = res;
+      this.initialIndexToGo = 0;
+      for (let i = 0; i < this.lessons.length; i++) {
+        let noStars = this.starLookup(this.lessons[i]);
+        console.log('Iterator ', i , ' noStars: ', noStars);
+        if (!noStars || noStars !== 5) {
+          i = this.lessons.length;
+          setTimeout(() => {
+            if (that.initialIndexToGo) {
+              that.goToSlide(this.initialIndexToGo);
+            }
+          }, 300);
+        } else {
+          this.initialIndexToGo++;
+        }
+      }
     }, (error) => {
       console.log('Oops category-lesson load failed! TODO');
     });
   }
 
+  ngAfterViewInit() {
+  }
+
   ionViewDidEnter() {
-    this.renderPaginationBulletRender();
-    this.slides.update();
-    this.slides.resize();
+    setTimeout(() => {
+      this.renderPaginationBulletRender();
+      this.slides.update();
+      this.slides.resize();
+    }, 300);
     if (this.memory.isLessonDoneSuccessfully() && !this.isEnd) {
       const currentIndex = this.slides.getActiveIndex();
       setTimeout(() => {
@@ -49,6 +71,7 @@ export class CategoryLessonPage implements OnInit {
           this.slides.slideNext(1000);
         }
       }, 1000);
+      this.memory.setLessonDoneSuccessfully(false);
     }
   }
 
@@ -108,7 +131,9 @@ export class CategoryLessonPage implements OnInit {
   }
 
   goToSlide(index) {
-    this.slides.slideTo(index);
+    this.ngZone.run(() => {
+      this.slides.slideTo(index);
+    });
   }
 
   onSlideChangeStart(slider) {
