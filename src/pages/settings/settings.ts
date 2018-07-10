@@ -170,26 +170,34 @@ export class SettingsPage {
         learnDir = this.form.value.motherLanguage + '$' + this.form.value.targetLanguage;
       }
       this.settings.setValue('learnDir', learnDir).then(() => {
-        this.api.updateProfile(this.settings.allSettings).subscribe(() => {
-          if (this.page === 'learn') {
-            this.settings.switchLearnLevelTo(this.settings.learnDir, this.settings.difficultyLevel).subscribe(() => {
-              this.viewCtrl.dismiss();
-            });
-          } else {
-            if (this.page === 'notify') {
-              this.settings.setupLocalNotifications(true);
-            }
-            if (this.settings.allSettings.language !== this.translate.currentLang) {
-              window.location.reload();
-            } else {
-              this.viewCtrl.dismiss();
-            }
-          }
-        }, (error) => {
-          this.saveInProgress = false;
-        });
+        if (this.principal.isAuthenticated()) {
+          this.api.updateProfile(this.settings.allSettings).subscribe(() => {
+            this.doThisBeforeExit();
+          }, (error) => {
+            this.saveInProgress = false;
+          });
+        } else {
+          this.doThisBeforeExit();
+        }
       });
     });
+  }
+
+  doThisBeforeExit() {
+    if (this.page === 'learn') {
+      this.settings.switchLearnLevelTo(this.settings.learnDir, this.settings.difficultyLevel).subscribe(() => {
+        this.viewCtrl.dismiss();
+      });
+    } else {
+      if (this.page === 'notify') {
+        this.settings.setupLocalNotifications(true);
+      }
+      if (this.settings.allSettings.language !== this.translate.currentLang) {
+        window.location.reload();
+      } else {
+        this.viewCtrl.dismiss();
+      }
+    }
   }
 
   ngOnChanges() {
