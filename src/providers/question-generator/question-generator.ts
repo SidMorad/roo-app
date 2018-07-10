@@ -11,39 +11,181 @@ export class QuestionGenerator {
   constructor() {
   }
 
-  public generate(lessonWords, difficultyLevel: DifficultyLevel): any[] {
+  public generate(lessonWords, difficultyLevel: DifficultyLevel, isDialyLesson?: boolean): any[] {
     switch(DifficultyLevel[difficultyLevel]) {
       case DifficultyLevel.Beginner:
-        return this.generateBeginnerQuestions(lessonWords);
+        return this.generateBeginnerQuestions(lessonWords, isDialyLesson);
       case DifficultyLevel.Intermediate:
-        return this.generateIntermediateQuestions(lessonWords);
+        return this.generateIntermediateQuestions(lessonWords, isDialyLesson);
       case DifficultyLevel.Advanced:
-        return this.generateAdvancedQuestions(lessonWords);
+        return this.generateAdvancedQuestions(lessonWords, isDialyLesson);
     }
   }
 
-  private generateBeginnerQuestions(lessonwords): any[] {
-    this.analysis(lessonwords);
+  private generateBeginner(pictures, subjects, data) {
+    let res = [];
+    const maxIndex = subjects.length - 1;
+    const maxPicIndex = pictures.length - 1;
+    if (maxPicIndex >= 1) {
+      res.push(this.generateTwoPicture(data[pictures[0]], data[pictures[1]], 10, pictures[0], pictures[1]));
+    }
+    if (maxPicIndex >= 3) {
+      res.push(this.generateTwoPicture(data[pictures[2]], data[pictures[3]], 20, pictures[2], pictures[3]));
+    }
+    if (maxPicIndex >= 3) {
+      res.push(this.generateOneCheck(pictures[this.randomBetween(0,1)], 30, [pictures[0], pictures[1], pictures[2], pictures[3]]));
+    }
+    if (maxPicIndex >= 3) {
+      res.push(this.generateFourPicture(data[pictures[0]], data[pictures[1]],
+                                   data[pictures[2]], data[pictures[3]], 40,
+                                   pictures[0], pictures[1], pictures[2], pictures[3]));
+    }
+    if (maxPicIndex >= 3) {
+      res.push(this.generateFourPicture(data[pictures[0]], data[pictures[1]],
+                                   data[pictures[2]], data[pictures[3]], 60,
+                                   pictures[0], pictures[1], pictures[2], pictures[3]));
+    }
+    if (maxPicIndex >= 3) {
+      res.push(this.generateOneCheck(pictures[this.randomBetween(2,3)], 50, [pictures[0], pictures[1], pictures[2], pictures[3]]));
+    }
+    for (let i = 0; i < 13; i = i + 6) {
+      if (maxIndex >= i+5) {
+        res.push(this.generateSpeaking(50+i*20, subjects[this.randomBetween(i, i+5)]));
+      }
+      if (maxIndex >= i+3) {
+        res.push(this.generateOneCheck(subjects[i], 60+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
+      }
+      if (maxIndex >= i+1) {
+        res.push(this.generateMultiSelect(subjects[i+1], 70+i*20, [subjects[this.randomLessThan(i+1)]], this.trueOrFalse()));
+      }
+      if (maxIndex >= i+2) {
+        res.push(this.generateMultiSelect(subjects[i+2], 90+i*20, [subjects[this.randomLessThan(i+2)]], this.trueOrFalse()));
+      }
+      if (maxIndex >= i+3) {
+        res.push(this.generateOneCheck(subjects[i+3], 80+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
+      }
+      if (maxIndex >= i+4) {
+        res.push(this.generateMultiSelect(subjects[i+4], 100+i*20, [subjects[this.randomLessThan(i+4)]], this.trueOrFalse()));
+      }
+      if (maxIndex >= i+5) {
+        res.push(this.generateMultiSelect(subjects[i+5], 50+i*20, [subjects[this.randomLessThan(i+5)]], this.trueOrFalse()));
+      }
+    }
+    if (maxPicIndex >= 3) {
+      res.push(this.generateWriting(1099, pictures[this.randomBetween(0,3)], this.trueOrFalse()));
+    } else if (maxPicIndex >= 1) {
+      res.push(this.generateWriting(1099, pictures[this.randomBetween(0,1)], this.trueOrFalse()));
+    }
+    return res;
+  }
+
+  private generateIntermediate(pictures, subjects, data) {
+    let res = [];
+    const maxIndex = subjects.length - 1;
+    const maxPicIndex = pictures.length - 1;
+    if (maxPicIndex >= 1) {
+      res.push(this.generateTwoPicture(data[pictures[0]], data[pictures[1]], 10, pictures[0], pictures[1]));
+    }
+    if (maxPicIndex >= 3) {
+      res.push(this.generateTwoPicture(data[pictures[2]], data[pictures[3]], 20, pictures[2], pictures[3]));
+    }
+    if (maxPicIndex >= 1) {
+      res.push(this.generateWriting(22, pictures[this.randomBetween(0,1)], this.trueOrFalse()));
+    }
+    if (maxPicIndex >= 3) {
+      res.push(this.generateFourPicture(data[pictures[0]], data[pictures[1]],
+                                   data[pictures[2]], data[pictures[3]], 40,
+                                   pictures[0], pictures[1], pictures[2], pictures[3]));
+    }
+    if (maxPicIndex >= 3) {
+      res.push(this.generateFourPicture(data[pictures[0]], data[pictures[1]],
+                                   data[pictures[2]], data[pictures[3]], 44,
+                                   pictures[0], pictures[1], pictures[2], pictures[3]));
+    }
+    if (maxPicIndex >= 3) {
+      res.push(this.generateWriting(48, pictures[this.randomBetween(2,3)], this.trueOrFalse()));
+    }
+    for (let i = 0; i < 11; i = i + 5) {
+      if (maxIndex >= i+4) {
+        res.push(this.generateSpeaking(50+i*20, subjects[this.randomBetween(i, i+4)]));
+      }
+      if (maxIndex >= i+3) {
+        res.push(this.generateOneCheck(subjects[i], 60+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
+      }
+      if (maxIndex >= i+1) {
+        const tOrf = this.trueOrFalse();
+        res.push(this.generateMultiSelect(subjects[i+1], 70+i*20, [subjects[this.randomLessThan(i+1)]], tOrf, tOrf ? true : undefined));
+      }
+      if (maxIndex >= i+2) {
+        const tOrf = this.trueOrFalse();
+        res.push(this.generateMultiSelect(subjects[i+2], 80+i*20, [subjects[this.randomLessThan(i+2)]], tOrf, tOrf ? undefined : true));
+      }
+      if (maxIndex >= i+3) {
+        const tOrf = this.trueOrFalse();
+        res.push(this.generateMultiSelect(subjects[i+3], 90+i*20, [subjects[this.randomLessThan(i+3)]], tOrf, tOrf ? undefined : true));
+      }
+      if (maxIndex >= i+4) {
+        const tOrf = this.trueOrFalse();
+        res.push(this.generateMultiSelect(subjects[i+4], 100+i*20, [subjects[this.randomLessThan(i+4)]], tOrf, tOrf ? true : undefined));
+      }
+      if (maxIndex >= i+4) {
+        res.push(this.generateWriting(120+i*20, subjects[this.randomBetween(i, i+4)], this.trueOrFalse()));
+      }
+    }
+    return res;
+  }
+
+  private generateAdvanced(pictures, subjects, data) {
+    let res = [];
+    const maxPicIndex = pictures.length - 1;
+    if (maxPicIndex >= 1) {
+      res.push(this.generateWriting(10, pictures[this.randomBetween(0,1)], this.trueOrFalse()));
+    }
+    if (maxPicIndex >= 3) {
+      res.push(this.generateWriting(20, pictures[this.randomBetween(2,3)], this.trueOrFalse()));
+    }
+    if (maxPicIndex >= 3) {
+      res.push(this.generateFourPicture(data[pictures[0]], data[pictures[1]],
+                                   data[pictures[2]], data[pictures[3]], 30,
+                                   pictures[0], pictures[1], pictures[2], pictures[3]));
+    }
+
+    const randomReverseWritingCounter = this.randomBetween(2,5);
+    for (let i = 0; i < subjects.length; i++) {
+      if (i % randomReverseWritingCounter === 0) {
+        res.push(this.generateWriting(40+i, subjects[i], true));
+      } else {
+        res.push(this.generateWriting(40+i, subjects[i]));
+      }
+    }
+    return res;
+  }
+
+  private generateBeginnerQuestions(lessonwords, isDialyLesson?: boolean): any[] {
+    this.analysis(lessonwords, isDialyLesson);
     return this.generateBeginner(this.pictures, this.subjects, lessonwords);
   }
 
-  private generateIntermediateQuestions(lessonwords): any[] {
-    this.analysis(lessonwords);
+  private generateIntermediateQuestions(lessonwords, isDialyLesson?: boolean): any[] {
+    this.analysis(lessonwords, isDialyLesson);
     return this.generateIntermediate(this.pictures, this.subjects, lessonwords);
   }
 
-  private generateAdvancedQuestions(lessonwords): any[] {
-    this.analysis(lessonwords);
+  private generateAdvancedQuestions(lessonwords, isDialyLesson?: boolean): any[] {
+    this.analysis(lessonwords, isDialyLesson);
     return this.generateAdvanced(this.pictures, this.subjects, lessonwords);
   }
 
-  private analysis(data) {
+  private analysis(data, isDialyLesson?: boolean) {
     this.pictures = [];
     this.subjects = [];
     for (let i = 1; i <= Object.keys(data).length; i++) {
       if (data[i].p) {
         this.pictures.push(i);
       } else if (data[i].v || data[i].b) {
+        if (isDialyLesson) {
+          this.subjects.push(i);
+        }
       } else {
         this.subjects.push(i);
       }
@@ -115,136 +257,6 @@ export class QuestionGenerator {
 
   private trueOrFalse(): boolean {
     return Math.random() >= 0.5;
-  }
-
-  private generateBeginner(pictures, subjects, data) {
-    let res = [];
-    const maxIndex = subjects.length - 1;
-    if (pictures.length >= 2) {
-      res.push(this.generateTwoPicture(data[pictures[0]], data[pictures[1]], 10, pictures[0], pictures[1]));
-    }
-    if (pictures.length >= 4) {
-      res.push(this.generateTwoPicture(data[pictures[2]], data[pictures[3]], 20, pictures[2], pictures[3]));
-    }
-    if (maxIndex >= 4) {
-      res.push(this.generateOneCheck(subjects[0], 30, [subjects[0], subjects[1], subjects[2], subjects[3]]));
-    }
-    if (pictures.length >= 4) {
-      res.push(this.generateFourPicture(data[pictures[0]], data[pictures[1]],
-                                   data[pictures[2]], data[pictures[3]], 40,
-                                   pictures[0], pictures[1], pictures[2], pictures[3]));
-    }
-    if (maxIndex >= 4) {
-      res.push(this.generateOneCheck(subjects[1], 50, [subjects[0], subjects[1], subjects[2], subjects[3]]));
-    }
-    if (pictures.length >= 4) {
-      res.push(this.generateFourPicture(data[pictures[0]], data[pictures[1]],
-                                   data[pictures[2]], data[pictures[3]], 60,
-                                   pictures[0], pictures[1], pictures[2], pictures[3]));
-    }
-    for (let i = 0; i < 15; i = i + 5) {
-      if (maxIndex >= i) {
-        res.push(this.generateSpeaking(50+i*20, subjects[i]));
-        if (i !== 0) {
-          res.push(this.generateMultiSelect(subjects[i], 50+i*20, [subjects[this.randomLessThan(i)]], this.trueOrFalse()));
-        }
-      }
-      if (maxIndex >= i+3) {
-        res.push(this.generateOneCheck(subjects[i], 60+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
-      }
-      if (maxIndex >= i+1) {
-        res.push(this.generateMultiSelect(subjects[i+1], 70+i*20, [subjects[this.randomLessThan(i+1)]], this.trueOrFalse()));
-      }
-      if (maxIndex >= i+2) {
-        res.push(this.generateMultiSelect(subjects[i+2], 90+i*20, [subjects[this.randomLessThan(i+2)]], this.trueOrFalse()));
-      }
-      if (maxIndex >= i+3) {
-        res.push(this.generateOneCheck(subjects[i+3], 80+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
-      }
-      if (maxIndex >= i+4) {
-        res.push(this.generateMultiSelect(subjects[i+4], 100+i*20, [subjects[this.randomLessThan(i+4)]], this.trueOrFalse()));
-      }
-    }
-    return res;
-  }
-
-  private generateIntermediate(pictures, subjects, data) {
-    let res = [];
-    const maxIndex = subjects.length - 1;
-    if (pictures.length >= 2) {
-      res.push(this.generateTwoPicture(data[pictures[0]], data[pictures[1]], 10, pictures[0], pictures[1]));
-    }
-    if (pictures.length >= 4) {
-      res.push(this.generateTwoPicture(data[pictures[2]], data[pictures[3]], 20, pictures[2], pictures[3]));
-    }
-    if (pictures.length >= 2) {
-      res.push(this.generateWriting(30, pictures[this.randomBetween(0,1)]));
-    }
-    if (pictures.length >= 4) {
-      res.push(this.generateFourPicture(data[pictures[0]], data[pictures[1]],
-                                   data[pictures[2]], data[pictures[3]], 40,
-                                   pictures[0], pictures[1], pictures[2], pictures[3]));
-    }
-    if (pictures.length >= 4) {
-      res.push(this.generateWriting(42, pictures[this.randomBetween(2,3)]));
-    }
-    if (pictures.length >= 4) {
-      res.push(this.generateFourPicture(data[pictures[0]], data[pictures[1]],
-                                   data[pictures[2]], data[pictures[3]], 44,
-                                   pictures[0], pictures[1], pictures[2], pictures[3]));
-    }
-    for (let i = 0; i < 15; i = i + 5) {
-      if (maxIndex >= i) {
-        res.push(this.generateSpeaking(50+i*20, subjects[i]));
-        if (i !== 0) {
-          const tOrf = this.trueOrFalse();
-          res.push(this.generateMultiSelect(subjects[i], 50+i*20, [subjects[this.randomLessThan(i)]], tOrf, tOrf ? true : undefined));
-        }
-      }
-      if (maxIndex >= i+3) {
-        res.push(this.generateOneCheck(subjects[i], 60+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
-      }
-      if (maxIndex >= i+1) {
-        const tOrf = this.trueOrFalse();
-        res.push(this.generateMultiSelect(subjects[i+1], 70+i*20, [subjects[this.randomLessThan(i+1)]], tOrf, tOrf ? true : undefined));
-      }
-      if (maxIndex >= i+2) {
-        const tOrf = this.trueOrFalse();
-        res.push(this.generateMultiSelect(subjects[i+2], 90+i*20, [subjects[this.randomLessThan(i+2)]], tOrf, tOrf ? undefined : true));
-      }
-      if (maxIndex >= i+3) {
-        res.push(this.generateOneCheck(subjects[i+3], 80+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
-      }
-      if (maxIndex >= i+4) {
-        const tOrf = this.trueOrFalse();
-        res.push(this.generateMultiSelect(subjects[i+4], 100+i*20, [subjects[this.randomLessThan(i+4)]], tOrf, tOrf ? undefined : true));
-      }
-    }
-    return res;
-  }
-
-  private generateAdvanced(pictures, subjects, data) {
-    let res = [];
-    if (pictures.length >= 2) {
-      res.push(this.generateWriting(10, pictures[this.randomBetween(0,1)]));
-    }
-    if (pictures.length >= 4) {
-      res.push(this.generateWriting(20, pictures[this.randomBetween(2,3)]));
-    }
-    if (pictures.length >= 4) {
-      res.push(this.generateFourPicture(data[pictures[0]], data[pictures[1]],
-                                   data[pictures[2]], data[pictures[3]], 30,
-                                   pictures[0], pictures[1], pictures[2], pictures[3]));
-    }
-
-    for (let i = 0; i < subjects.length; i++) {
-      if (i % 5 === 0) {
-        res.push(this.generateWriting(40+i, subjects[i], true));
-      } else {
-        res.push(this.generateWriting(40+i, subjects[i]));
-      }
-    }
-    return res;
   }
 
 }

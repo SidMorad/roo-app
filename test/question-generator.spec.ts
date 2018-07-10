@@ -50,14 +50,14 @@ describe('Question Generator', () => {
     const res3_1 = questionGenerator.generate(testData3.data(), 'Beginner');
     const res3_2 = questionGenerator.generate(testData3.data(), 'Intermediate');
     const res3_3 = questionGenerator.generate(testData3.data(), 'Advanced');
-    expect(res3_1.length).toBe(26);
-    expect(res3_2.length).toBe(26);
+    expect(res3_1.length).toBe(28);
+    expect(res3_2.length).toBe(27);
     expect(res3_3.length).toBe(23);
     const res4_1 = questionGenerator.generate(testData4.data(), 'Beginner');
     const res4_2 = questionGenerator.generate(testData4.data(), 'Intermediate');
     const res4_3 = questionGenerator.generate(testData4.data(), 'Advanced');
-    expect(res4_1.length).toBe(16);
-    expect(res4_2.length).toBe(16);
+    expect(res4_1.length).toBe(15);
+    expect(res4_2.length).toBe(15);
     expect(res4_3.length).toBe(11);
   });
 

@@ -76,7 +76,7 @@ export class MyApp implements OnInit {
   fallbackAuthBaseUrl: string = 'https://mars.webebook.org';
   onLangChangeSubscription: Subscription;
   appVersionNumber: string;
-  appVersionCode: string;
+  appVersionCode: any;
 
   constructor(private translate: TranslateService, private platform: Platform,
     private settings: Settings, private config: Config, private ngZone: NgZone,

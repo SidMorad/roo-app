@@ -31,7 +31,6 @@ export class CategoryLessonPage implements OnInit {
   }
 
   ngOnInit() {
-    const that = this;
     this.isBeginning = true;
     this.api.getLessonPublicList(this.settings.difficultyLevel, this.category.uuid).subscribe((res) => {
       this.lessons = res;
@@ -41,11 +40,13 @@ export class CategoryLessonPage implements OnInit {
         console.log('Iterator ', i , ' noStars: ', noStars);
         if (!noStars || noStars !== 5) {
           i = this.lessons.length;
-          setTimeout(() => {
-            if (that.initialIndexToGo) {
-              that.goToSlide(this.initialIndexToGo);
-            }
-          }, 300);
+          if (this.initialIndexToGo) {
+            setTimeout(() => {
+              if (this.initialIndexToGo) {
+                this.goToSlide(this.initialIndexToGo);
+              }
+            }, 300);
+          }
         } else {
           this.initialIndexToGo++;
         }

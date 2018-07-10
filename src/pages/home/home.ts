@@ -122,7 +122,7 @@ export class HomePage implements OnInit {
   }
 
   ionViewWillLeave() {
-    introJs.introJs().hideHints();
+    // introJs().hideHints();
   }
 
   doneLessons(category) {
@@ -232,7 +232,8 @@ export class HomePage implements OnInit {
           }).present();
           return;
         }
-        const questions = this.questionGenerator.generate(res.words, this.settings.difficultyLevel);
+        const questions = this.questionGenerator.generate(res.words, this.settings.difficultyLevel, true);
+        // console.log('Generated questions were : ', questions);
         this.navCtrl.push('LessonQuestionPage', {
           lesson: this.dailyLesson,
           questions: questions,
@@ -296,7 +297,7 @@ export class HomePage implements OnInit {
   }
 
   showHelp() {
-    const intro = introJs.introJs();
+    const intro = introJs();
     intro.setOptions({
       steps: [
         { element: '#pin-1', intro: this.labelStartFromHere, position: 'auto' },
@@ -315,7 +316,7 @@ export class HomePage implements OnInit {
   }
 
   showHelpHintHint() {
-    const intro = introJs.introJs();
+    const intro = introJs();
     intro.setOptions({
       hints: [
         { hint: this.labelClickHereToSeeInstructions, element: '#helpButton', hintPosition: 'middle-middle'}

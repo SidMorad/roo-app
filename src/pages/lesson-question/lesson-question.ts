@@ -629,7 +629,7 @@ export class LessonQuestionPage implements OnInit {
   }
 
   showHelp() {
-    let introInstance = introJs.introJs();
+    let introInstance = introJs();
     let introSteps = [];
     if (this.isType('MultiSelect')) {
       introSteps = [

@@ -1,11 +1,9 @@
 import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { Camera } from '@ionic-native/camera';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { IonicStorageModule, Storage } from '@ionic/storage';
-import { SecureStorage } from '@ionic-native/secure-storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicModule, Events, Platform } from 'ionic-angular';
@@ -25,7 +23,7 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
 import { NgxLogglyModule } from 'ngx-loggly-logger';
 import { SocialSharing } from '@ionic-native/social-sharing';
 
-import { Api, Settings, User, ScoreUtil, Memory, SecureStorageHelper,
+import { Api, Settings, User, ScoreUtil, Memory,
          SecurityService, QuestionGenerator, RooErrorHandler } from '../providers';
 import { DefaultSettings } from '../models';
 import { MyApp } from './app.component';
@@ -98,11 +96,8 @@ export function provideSettings(storage: Storage, api:Api,
     AccountService,
     LocalStorageService,
     SessionStorageService,
-    SecureStorage,
-    SecureStorageHelper,
     SecurityService,
     QuestionGenerator,
-    Camera,
     SplashScreen,
     StatusBar,
     TextToSpeech,
