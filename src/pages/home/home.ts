@@ -289,7 +289,7 @@ export class HomePage implements OnInit {
   }
 
   numberOfLessonsForCategoryByIndex(index) {
-    if (index === 24) { // 24th index is for Sport category
+    if (index === 24 || index === 15) {
       return 7;
     } else {
       return 8;

@@ -31,6 +31,8 @@ export class QuestionGenerator {
     }
     if (maxPicIndex >= 3) {
       res.push(this.generateTwoPicture(data[pictures[2]], data[pictures[3]], 20, pictures[2], pictures[3]));
+    } else if (maxPicIndex >= 1) {
+      res.push(this.generateTwoPicture(data[pictures[1]], data[pictures[0]], 20, pictures[1], pictures[0]));
     }
     if (maxPicIndex >= 3) {
       res.push(this.generateOneCheck(pictures[this.randomBetween(0,1)], 30, [pictures[0], pictures[1], pictures[2], pictures[3]]));
@@ -88,6 +90,8 @@ export class QuestionGenerator {
     }
     if (maxPicIndex >= 3) {
       res.push(this.generateTwoPicture(data[pictures[2]], data[pictures[3]], 20, pictures[2], pictures[3]));
+    } else if (maxPicIndex >= 1) {
+      res.push(this.generateTwoPicture(data[pictures[1]], data[pictures[0]], 20, pictures[1], pictures[0]));
     }
     if (maxPicIndex >= 1) {
       res.push(this.generateWriting(22, pictures[this.randomBetween(0,1)], this.trueOrFalse()));
