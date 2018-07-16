@@ -62,7 +62,7 @@
   "CORRECT_ANSWER": "پاسخ درست",
 
   "TAB1_TITLE": "گروه ها",
-  "TAB2_TITLE": "آموزه ها",
+  "TAB2_TITLE": "درس ها",
   "TAB3_TITLE": "آمار",
   "MAP_TITLE": "نقشه",
   "NAME": "نام",
@@ -142,6 +142,7 @@
   "LESSON_TYPE_CONVERSATION": "مکالمه",
   "LESSON_TYPE_WORDS": "لغت",
   "LESSON_TYPE_LESSON": "درس",
+  "LOADING_MORE_DATA": "بارگیری داده بیشتر...",
 
   "LOGIN_TITLE": "ورود",
   "LOGIN_ERROR": "ورود ناموفق، لطفا بعد از بررسی اطلاعات حسابتون، دوباره تلاش کنید.",

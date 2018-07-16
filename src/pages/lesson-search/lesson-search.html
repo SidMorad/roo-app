@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-searchbar [(ngModel)]="searchText" (ionInput)="ionInput($event)" (ionCancel)="ionCancel($event)"
+     [showCancelButton]="true" placeholder="{{placeholderKey | translate}}"></ion-searchbar>
+    <ion-buttons end>
+      <button ion-button (click)="switchSearchLangauge()">
+        <span class="flag-icon flag-icon-{{alternFlag}}" style="position:absolute; top: 0; left: 0; opacity: 0.5"></span>
+        <span class="flag-icon flag-icon-{{searchFlag}}"></span>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list [virtualScroll]="searchResults" [headerFn]="myHeaderFn">
+    <ion-item-divider (click)="openCategory(lesson.cUuid)" *virtualHeader="let lesson">
+      <ion-avatar item-start>
+        <img [src]="resolveCategoryImageUrl(lesson.cIndex)"/>
+      </ion-avatar>
+      <h2>{{lesson.cTitle}}</h2>
+    </ion-item-divider>
+    <ion-item *virtualItem="let lesson" (click)="openLesson(lesson)">
+      <h2>{{lessonTitleKey(lesson) | translate}} {{lessonNumber(lesson)}}
+        <ion-spinner *ngIf="lesson.isLoading"></ion-spinner>
+      </h2>
+      <p *ngIf="starLookup(lesson) !== 0" item-end>
+        <span *ngFor="let i of [1, 2, 3, 4, 5]">
+          <ion-icon name="star" color="gold" *ngIf="i <= starLookup(lesson)" style="zoom:2;"></ion-icon>
+          <ion-icon name="star-outline" color="gold" *ngIf="i > starLookup(lesson)" style="zoom:2;"></ion-icon>
+        </span>
+      </p>
+    </ion-item>
+  </ion-list>
+
+   <ion-infinite-scroll (ionInfinite)="doInfinite($event, page + 1)">
+     <ion-infinite-scroll-content loadingText="{{'LOADING_MORE_DATA' | translate}}">
+     </ion-infinite-scroll-content>
+   </ion-infinite-scroll>
+   <br />
+   <br />
+   <br />
+</ion-content>

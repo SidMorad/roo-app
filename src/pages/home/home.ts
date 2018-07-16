@@ -289,8 +289,10 @@ export class HomePage implements OnInit {
   }
 
   numberOfLessonsForCategoryByIndex(index) {
-    if (index === 24 || index === 15) {
+    if (index === 24 || index === 15 || index === 17) {
       return 7;
+    } else if (index === 18 || index === 19 || index === 20 || index === 21) {
+      return 6;
     } else {
       return 8;
     }

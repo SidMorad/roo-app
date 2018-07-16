@@ -18,7 +18,6 @@ export class Settings {
   private settings: any;
   private _defaults: any;
   public dailyLessonPictureUrl: string;
-  public readonly externalStoragePermission: string = 'WRITE_EXTERNAL_STORAGE';
 
   constructor(private storage: Storage, public defaults: DefaultSettings,
     private api: Api, public localNotifications: LocalNotifications,
@@ -89,6 +88,11 @@ export class Settings {
   get learnDir() {
     return this.settings ? this.settings.learnDir : 'FA_IR$EN_GB';
   }
+  get motherLang() { return this.learnDir.split('$')[0].split('_')[0]; }
+  get motherFlag() { return this.learnDir.split('$')[0].split('_')[1]; }
+  get targetLang() { return this.learnDir.split('$')[1].split('_')[0]; }
+  get targetFlag() { return this.learnDir.split('$')[1].split('_')[1]; }
+
 
   get difficultyLevel() {
     return this.settings ? this.settings.difficultyLevel : 'Beginner';

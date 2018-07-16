@@ -63,6 +63,10 @@ export class Api {
     return this.get(`roo/api/public/lessons/${difficultyLevel}/${uuid}`);
   }
 
+  searchLesson(difficultyLevel: string, params?: any): Observable<any> {
+    return this.get(`roo/api/public/lesson/search/${difficultyLevel}`, params, { observe: 'response' });
+  }
+
   getQuestions(lessonUuid: string, learnDir: string, difLevel: string): Observable<any> {
     return this.get(`roo/api/public/questions/${learnDir}/${difLevel}/${lessonUuid}`);
   }
@@ -72,20 +76,20 @@ export class Api {
   }
 
   get(endpoint: string, params?: any, reqOpts?: any) {
+    let options: HttpParams = new HttpParams();
     if (!reqOpts) {
       reqOpts = {
-        params: new HttpParams()
+        params: options
       };
     }
 
     // Support easy query params for GET requests
     if (params) {
-      reqOpts.params = new HttpParams();
       for (let k in params) {
-        reqOpts.params.set(k, params[k]);
-      }
+        options = options.set(k, params[k]);
+      };
+      reqOpts.params = options;
     }
-
     return this.http.get(Api.API_URL + endpoint, reqOpts);
   }
 

@@ -23,8 +23,8 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
 import { NgxLogglyModule } from 'ngx-loggly-logger';
 import { SocialSharing } from '@ionic-native/social-sharing';
 
-import { Api, Settings, User, ScoreUtil, Memory,
-         SecurityService, QuestionGenerator, RooErrorHandler } from '../providers';
+import { Api, Settings, User, ScoreUtil, Memory, CategoryService,
+         SecurityService, QuestionGenerator, RooErrorHandler, JhiParseLinks } from '../providers';
 import { DefaultSettings } from '../models';
 import { MyApp } from './app.component';
 import { LoginService } from '../providers/login/login.service';
@@ -32,7 +32,6 @@ import { Principal } from '../providers/auth/principal.service';
 import { AccountService } from '../providers/auth/account.service';
 import { AuthInterceptor } from '../providers/auth/auth-interceptor';
 import { HttpErrorHandlerInterceptor } from '../providers/api/http-error-handler-interceptor';
-import { EntityPageModule } from '../pages/entities/entity.module';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
@@ -75,7 +74,6 @@ export function provideSettings(storage: Storage, api:Api,
       name: '__roodb',
       driverOrder: ['sqlite', 'indexeddb', 'websql', 'localstorage']
     }),
-    EntityPageModule,
     OAuthModule.forRoot(),
     NgProgressModule.forRoot(),
     NgProgressHttpModule,
@@ -110,6 +108,8 @@ export function provideSettings(storage: Storage, api:Api,
     LocalNotifications,
     RooErrorHandler,
     SocialSharing,
+    CategoryService,
+    JhiParseLinks,
     { provide: Settings, useFactory: provideSettings, deps: [Storage, Api, LocalNotifications, Platform] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: RooErrorHandler },

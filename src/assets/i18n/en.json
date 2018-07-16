@@ -142,6 +142,7 @@
   "LESSON_TYPE_CONVERSATION": "Conversation",
   "LESSON_TYPE_WORDS": "Word",
   "LESSON_TYPE_LESSON": "Lesson",
+  "LOADING_MORE_DATA": "Loading more data...",
 
   "LOGIN_TITLE": "Sign in",
   "LOGIN_ERROR": "Unable to sign in. Please check your account information and try again.",

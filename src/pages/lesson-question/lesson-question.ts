@@ -123,15 +123,6 @@ export class LessonQuestionPage implements OnInit {
 
   goToNextQuestion() {
     this.ngZone.run(() => {
-    // if (this.isType('FourPicture') && this.fourPictures.length === 3) {
-    //   this.pictureCorrectIndex = this.determinePictureCorrectIndex();
-    //   this.fourPictures.splice(1, 1);
-    //   this.markPictureAsUnAnswered(4);
-    //   this.isChecking = false;
-    //   if (this.autoPlayVoice) {
-    //     this.speak();
-    //   }
-    // }
     if (this.isType('Conversation')) {
       this.noTotal = this.question.d.options.length;
       this.checkIfIsEnd();
@@ -154,9 +145,11 @@ export class LessonQuestionPage implements OnInit {
       this.checkIfIsEndFailure();
       this.questionCounter++;
       this.isChecking = false;
-      this.cards = [this.words[this.questionCounter-1]];
-      if (this.autoPlayVoice) {
-        this.speak();
+      if (this.noTotal >= this.questionCounter) {
+        this.cards = [this.words[this.questionCounter-1]];
+        if (this.autoPlayVoice) {
+          this.speak();
+        }
       }
     }
     else {
