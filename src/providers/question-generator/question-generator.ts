@@ -197,7 +197,7 @@ export class QuestionGenerator {
   }
 
   private pictureName(lessonWord): string {
-    let picName = lessonWord['e'].split(' ').join('-');
+    const picName = lessonWord['e'].split(' ').join('-');
     return `${picName}.jpeg`;
   }
 
