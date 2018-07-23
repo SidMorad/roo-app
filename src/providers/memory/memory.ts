@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 export class Memory {
 
   private lessonDoneSuccessfully: boolean;
+  private numberOfDoneLessons: number;
 
   public setLessonDoneSuccessfully(value: boolean) {
     this.lessonDoneSuccessfully = value;
@@ -11,6 +12,14 @@ export class Memory {
 
   public isLessonDoneSuccessfully(): boolean {
     return this.lessonDoneSuccessfully;
+  }
+
+  public setNumberOfDoneLessons(value: number) {
+    this.numberOfDoneLessons = value;
+  }
+
+  public getNumberOfDoneLessons(): number {
+    return this.numberOfDoneLessons;
   }
 
 }

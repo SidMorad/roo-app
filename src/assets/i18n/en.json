@@ -143,6 +143,11 @@
   "LESSON_TYPE_WORDS": "Word",
   "LESSON_TYPE_LESSON": "Lesson",
   "LOADING_MORE_DATA": "Loading more data...",
+  "CATEGORY_COMPLETED_TITLE": "Congrats!",
+  "YOU_DID_FINISH_THIS_CATEGORY": "You did finish this category",
+  "SHARE_VIA": "Share via",
+  "TELEGRAM": "Telegram",
+  "I_DID_FINISH_X_CATEGORY": "I did finish '{{categoryTitle}}' category.",
 
   "LOGIN_TITLE": "Sign in",
   "LOGIN_ERROR": "Unable to sign in. Please check your account information and try again.",

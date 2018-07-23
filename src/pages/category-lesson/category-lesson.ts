@@ -36,7 +36,7 @@ export class CategoryLessonPage implements OnInit {
       this.lessons = res;
       this.initialIndexToGo = 0;
       for (let i = 0; i < this.lessons.length; i++) {
-        let noStars = this.starLookup(this.lessons[i]);
+        const noStars = this.starLookup(this.lessons[i]);
         console.log('Iterator ', i , ' noStars: ', noStars);
         if (!noStars || noStars !== 5) {
           i = this.lessons.length;
@@ -51,6 +51,13 @@ export class CategoryLessonPage implements OnInit {
           this.initialIndexToGo++;
         }
       }
+      let numberOfDoneLessons = 0;
+      for (let i = 0; i < this.lessons.length; i++) {
+        const noStars = this.starLookup(this.lessons[i]);
+        if (noStars)
+          numberOfDoneLessons++;
+      }
+      this.memory.setNumberOfDoneLessons(numberOfDoneLessons);
     }, (error) => {
       console.log('Oops category-lesson load failed! TODO');
     });
@@ -73,6 +80,11 @@ export class CategoryLessonPage implements OnInit {
         }
       }, 1000);
       this.memory.setLessonDoneSuccessfully(false);
+    }
+    console.log('Number of done lessons was ', this.memory.getNumberOfDoneLessons());
+    if (this.memory.isLessonDoneSuccessfully() && this.memory.getNumberOfDoneLessons() === 7) {
+      this.navCtrl.push('CategoryCompletePage', { category: this.category });
+      this.memory.setNumberOfDoneLessons(0);
     }
   }
 

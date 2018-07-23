@@ -58,7 +58,7 @@ declare const window: any;
       </ion-content>
       <ion-footer>
         <button menuClose ion-item (click)="openTelegramChannel()">
-          <ion-icon name="paper-plane" color="tblue"></ion-icon>
+          <ion-icon name="paper-plane" color="telegram"></ion-icon>
           {{'TELEGRAM_CHANNEL' | translate}}
         </button>
       </ion-footer>

@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-navbar>
+    <ion-buttons start>
+      <ion-spinner *ngIf="shareInProgress"></ion-spinner>
+    </ion-buttons>
+    <ion-title>{{'CATEGORY_COMPLETED_TITLE' | translate}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="category-complete">
+  <ion-grid text-center>
+    <ion-row>
+      <ion-col>
+        <h1>{{'YOU_DID_FINISH_THIS_CATEGORY' | translate}}</h1>
+      </ion-col>
+    </ion-row>
+    <ion-row></ion-row>
+    <ion-row>
+      <ion-col>
+        <h2>{{category.title}}</h2>
+      </ion-col>
+    </ion-row>
+    <ion-row></ion-row>
+    <ion-row style="min-height: 210px">
+      <ion-col>
+        <div class="glow-cup">
+          <div class="glow"></div>
+          <div class="badge category-content">
+            <div class="category-pic" [style.background-image]="categoryImageUrl | safe: 'style'">
+            </div>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <button ion-button round icon-only (click)="shareViaTelegram()" color="telegram" [disabled]="shareInProgress">
+          <ion-icon name="paper-plane"></ion-icon>
+        </button>
+        <button ion-button round icon-only (click)="shareViaInstagram()" color="instagram" [disabled]="shareInProgress">
+          <ion-icon name="logo-instagram"></ion-icon>
+        </button>
+        <button ion-button round icon-only (click)="shareViaWhatsApp()" color="whatsapp" [disabled]="shareInProgress">
+          <ion-icon name="logo-whatsapp"></ion-icon>
+        </button>
+      </ion-col>
+    </ion-row>
+    <ion-row></ion-row>
+    <ion-row>
+      <ion-col>
+        <button ion-button (click)="continue()" color="secondary" style="min-width: 40vw" [disabled]="shareInProgress">
+          {{'CONTINUE' | translate}}
+        </button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

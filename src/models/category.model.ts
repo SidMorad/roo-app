@@ -1,3 +1,5 @@
+import { IMAGE_ORIGIN } from '../app/app.constants';
+
 export class Category {
   constructor(
     public uuid?: string,
@@ -12,4 +14,9 @@ export class Category {
     this.cameNew = false;
     this.commingSoon = false;
   }
+
+  get imageUrl(): string {
+    return `${IMAGE_ORIGIN}categories/category-${this.indexOrder}.jpeg`;
+  }
+
 }

@@ -173,7 +173,7 @@ export class LessonQuestionPage implements OnInit {
   }
 
   checkIfIsEndFailure() {
-    if (this.noWrong === 5) {
+    if (this.noWrong === 6) {
       this.showFailureModal();
       return;
     }

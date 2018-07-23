@@ -143,6 +143,11 @@
   "LESSON_TYPE_WORDS": "لغت",
   "LESSON_TYPE_LESSON": "درس",
   "LOADING_MORE_DATA": "بارگیری داده بیشتر...",
+  "CATEGORY_COMPLETED_TITLE": "تبریک!",
+  "YOU_DID_FINISH_THIS_CATEGORY": "شما این رده را کامل کرده‌اید",
+  "SHARE_VIA": "اشتراک با",
+  "TELEGRAM": "تلگرام",
+  "I_DID_FINISH_X_CATEGORY": "من رده '{{categoryTitle}}' را کامل کردم.",
 
   "LOGIN_TITLE": "ورود",
   "LOGIN_ERROR": "ورود ناموفق، لطفا بعد از بررسی اطلاعات حسابتون، دوباره تلاش کنید.",
