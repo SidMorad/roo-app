@@ -10,7 +10,7 @@ export class RooErrorHandler extends IonicErrorHandler {
     super();
     if (!isDevMode()) {
       logglyService.push({
-        logglyKey: '91fc3c09-faae-4bb7-bc8c-341090d8d593',
+        logglyKey: 'f3f529be-5a1b-4d86-94d6-b4b84fe3177b',
         sendConsoleErrors: true,
         tag: 'roo-app'
       });
