@@ -1,5 +1,4 @@
 #!/bin/sh
 
-ionic cordova build ios
-sh patch.sh
-ionic cordova build ios --prod --release --buildConfig
+sh patch.sh ios
+ionic cordova build ios --prod --release
