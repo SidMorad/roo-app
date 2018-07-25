@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, ViewController } from 'ionic-angular';
+import { IonicPage, ViewController, Platform } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { Score } from '../../models';
@@ -26,20 +26,24 @@ export class LessonScorePage {
   topMembersLoaded: boolean;
   topMembers: any[];
 
-  constructor(private viewCtrl: ViewController, private storage: Storage,
+  constructor(private viewCtrl: ViewController, private storage: Storage, private platform: Platform,
               private api: Api, private scoreUtil: ScoreUtil, private settings: Settings) {
   }
 
   ionViewDidEnter() {
     this.uploadScore();
-    if (this.settings.allSettings.advertismentEnabled) {
-      window.adad.LoadInterstitial();
+    if (this.platform.is('android')) {
+      if (this.settings.allSettings.advertismentEnabled) {
+        window.adad.LoadInterstitial();
+      }
     }
   }
 
   ionViewDidLeave() {
-    if (this.settings.allSettings.advertismentEnabled) {
-      window.adad.ShowInterstitial();
+    if (this.platform.is('android')) {
+      if (this.settings.allSettings.advertismentEnabled) {
+        window.adad.ShowInterstitial();
+      }
     }
   }
 
@@ -91,7 +95,6 @@ export class LessonScorePage {
 
   continue() {
     this.viewCtrl.dismiss({action: 'continue'});
-    window.adad.ShowInterstitial();
   }
 
 }

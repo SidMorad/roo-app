@@ -92,7 +92,7 @@ export class MyApp implements OnInit {
       this.statusBar.backgroundColorByHexString('#f4f4f4');
       this.splashScreen.hide();
       this.initTranslate();
-      this.initAd();
+      this.initAddAd();
       this.initAppVersion();
     });
 
@@ -245,27 +245,29 @@ export class MyApp implements OnInit {
     });
   }
 
-  initAd() {
-    window.adad.setUp();
-    window.adad.DisableBanner();
-    window.adad.onAdLoaded = function () {
-      console.log('Adad#onAdLoaded');
-    };
-    window.adad.onAdFailedToLoad = function () {
-      console.log('Adad#onAdFailedToLoad');
-    };
-    window.adad.onInterstitialAdDisplayed = function () {
-      console.log('Adad#onInterstitialAdDisplayed');
-    };
-    window.adad.onRemoveAdsRequested = function () {
-      console.log('Adad#onRemoveAdsRequested');
-    };
-    window.adad.onMessageReceive = function () {
-      console.log('Adad#onMessageReceive');
-    };
-    window.adad.onInterstitialClosed = function () {
-      console.log('Adad#onInterstitialClosed');
-    };
+  initAddAd() {
+    if (this.platform.is('android')) {
+      window.adad.setUp();
+      window.adad.DisableBanner();
+      window.adad.onAdLoaded = function () {
+        console.log('Adad#onAdLoaded');
+      };
+      window.adad.onAdFailedToLoad = function () {
+        console.log('Adad#onAdFailedToLoad');
+      };
+      window.adad.onInterstitialAdDisplayed = function () {
+        console.log('Adad#onInterstitialAdDisplayed');
+      };
+      window.adad.onRemoveAdsRequested = function () {
+        console.log('Adad#onRemoveAdsRequested');
+      };
+      window.adad.onMessageReceive = function () {
+        console.log('Adad#onMessageReceive');
+      };
+      window.adad.onInterstitialClosed = function () {
+        console.log('Adad#onInterstitialClosed');
+      };
+    }
   }
 
   initAppVersion() {
