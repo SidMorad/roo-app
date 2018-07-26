@@ -56,9 +56,9 @@ describe('Question Generator', () => {
     const res4_1 = questionGenerator.generate(testData4.data(), 'Beginner');
     const res4_2 = questionGenerator.generate(testData4.data(), 'Intermediate');
     const res4_3 = questionGenerator.generate(testData4.data(), 'Advanced');
-    expect(res4_1.length).toBe(15);
-    expect(res4_2.length).toBe(15);
-    expect(res4_3.length).toBe(12);
+    expect(res4_1.length).toBe(14);
+    expect(res4_2.length).toBe(13);
+    expect(res4_3.length).toBe(10);
   });
 
 });

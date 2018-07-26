@@ -1,18 +1,10 @@
 function data() {
   return {
-    "11": {
-      "t": "She falls on the ice.",
-      "m": "او روی یخ می‌افتد."
-    },
     "1": {
       "t": "darkness",
       "m": "تاریکی",
       "e": "darkness",
       "p": 1
-    },
-    "12": {
-      "t": "I shout loud over the loud noise.",
-      "m": "من بلندتر از سروصدای بلند داد می‌زنم."
     },
     "2": {
       "t": "light",
