@@ -19,6 +19,7 @@ else
   fi
   if [ $1 = "ios" ]; then
     ionic cordova platform rm ios
+    ionic cordova platform rm android
     ionic cordova plugin rm cordova-plugin-adad
     ionic cordova platform add ios
   fi
