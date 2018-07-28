@@ -59,6 +59,7 @@
     "cordova-plugin-customurlscheme": "^4.3.0",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-inappbrowser": "^3.0.0",
+    "cordova-plugin-ionic-webview": "^2.0.1",
     "cordova-plugin-local-notification": "^0.9.0-beta.3",
     "cordova-plugin-market": "^1.2.0",
     "cordova-plugin-speechrecognition": "^1.2.0",
@@ -119,7 +120,8 @@
         "ADAD_TEST_MODE": "false",
         "ADAD_LOG_MODE": "false"
       },
-      "cordova-plugin-x-socialsharing": {}
+      "cordova-plugin-x-socialsharing": {},
+      "cordova-plugin-ionic-webview": {}
     },
     "platforms": [
       "android"
