@@ -31,7 +31,8 @@ export class WelcomePage implements OnInit {
       if (isAvailable) {
         if (!this.securityService.oidc().hasValidAccessToken()) {
           this.securityService.oidc().loadDiscoveryDocumentAndTryLogin().then(() => {
-            this.geAccount();
+            // this.geAccount();
+            this.isTryingToLogin = false;
           }).catch((error) => {
             console.log('Well loadAuthAndTryLogin failed with error ', error);
             this.isTryingToLogin = false;
@@ -62,10 +63,10 @@ export class WelcomePage implements OnInit {
 
   login() {
     this.isTryingToLogin = true;
-    this.principal.identity().then((account) => {
-      if (account) {
-        this.home();
-      } else {
+    // this.principal.identity().then((account) => {
+      // if (account) {
+        // this.home();
+      // } else {
         this.loginService.appLogin((data) => {
           this.isTryingToLogin = false;
           this.home();
@@ -73,8 +74,8 @@ export class WelcomePage implements OnInit {
           console.log('WelcomePage: Login failed.', err);
           this.isTryingToLogin = false;
         });
-      }
-    });
+      // }
+    // });
   }
 
   home() {
