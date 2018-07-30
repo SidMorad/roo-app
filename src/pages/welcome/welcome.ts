@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicPage, App, Events } from 'ionic-angular';
+import { IonicPage, App, Events, Platform } from 'ionic-angular';
 import { BrowserTab } from '@ionic-native/browser-tab';
 
 // import { MainPage } from '../pages';
@@ -21,11 +21,13 @@ export class WelcomePage implements OnInit {
 
   constructor(private principal: Principal, private app: App,
               private loginService: LoginService, private events: Events,
-              private securityService: SecurityService, private browserTab: BrowserTab) {
+              private securityService: SecurityService, private browserTab: BrowserTab,
+              private platform: Platform) {
   }
 
   ngOnInit() {
     this.isTryingToLogin = true;
+    this.platform.ready().then(() => {
     this.browserTab.isAvailable().then((isAvailable) => {
       console.log('So browserTab is available or not? ', isAvailable);
       if (isAvailable) {
@@ -48,6 +50,7 @@ export class WelcomePage implements OnInit {
       } else {
         this.isTryingToLogin = false;
       }
+    });
     });
   }
 
