@@ -21,6 +21,8 @@ else
     ionic cordova platform rm ios
     ionic cordova platform rm android
     ionic cordova plugin rm cordova-plugin-adad
+    ionic cordova plugin rm cordova-plugin-local-notification
+    ionic cordova plugin rm cordova-plugin-device
     ionic cordova platform add ios
   fi
   if [ $1 = "cafe" ]; then
