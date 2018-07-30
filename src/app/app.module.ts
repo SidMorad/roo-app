@@ -19,7 +19,6 @@ import { Market } from '@ionic-native/market';
 import { SwingModule } from 'angular2-swing';
 import { BrowserTab } from '@ionic-native/browser-tab';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
-import { LocalNotifications } from '@ionic-native/local-notifications';
 import { NgxLogglyModule } from 'ngx-loggly-logger';
 import { SocialSharing } from '@ionic-native/social-sharing';
 
@@ -39,15 +38,14 @@ export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
-export function provideSettings(storage: Storage, api:Api,
-  localNotifications: LocalNotifications, platform: Platform) {
+export function provideSettings(storage: Storage, api:Api, platform: Platform) {
   /**
    * The Settings provider takes a set of default settings for your app.
    *
    * You can add new settings options at any time. Once the settings are saved,
    * these values will not overwrite the saved values (this can be done manually if desired).
    */
-  return new Settings(storage, DefaultSettings.newInstance(), api, localNotifications, platform);
+  return new Settings(storage, DefaultSettings.newInstance(), api, platform);
 }
 
 @NgModule({
@@ -105,12 +103,11 @@ export function provideSettings(storage: Storage, api:Api,
     SwingModule,
     BrowserTab,
     InAppBrowser,
-    LocalNotifications,
     RooErrorHandler,
     SocialSharing,
     CategoryService,
     JhiParseLinks,
-    { provide: Settings, useFactory: provideSettings, deps: [Storage, Api, LocalNotifications, Platform] },
+    { provide: Settings, useFactory: provideSettings, deps: [Storage, Api, Platform] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: RooErrorHandler },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

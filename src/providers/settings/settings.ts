@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Observable } from 'rxjs/Rx';
-import { LocalNotifications } from '@ionic-native/local-notifications';
 
 import { DefaultSettings, ScoreLookup, Score, LearnDir, DifficultyLevel } from '../../models';
 import { Api } from './../';
@@ -20,11 +19,12 @@ export class Settings {
   public dailyLessonPictureUrl: string;
 
   constructor(private storage: Storage, public defaults: DefaultSettings,
-    private api: Api, public localNotifications: LocalNotifications,
-    private platform: Platform) {
+    private api: Api, private platform: Platform) {
     this._defaults = defaults;
     this.loadCachedScoreLookups();
-    this.setupLocalNotifications();
+    if (this.platform.is('android')) {
+      this.setupLocalNotifications();
+    }
   }
 
   load() {

@@ -204,4 +204,8 @@ export class SettingsPage {
     console.log('Ng All Changes');
   }
 
+  get isAndroid(): boolean {
+    return this.platform.is('android');
+  }
+
 }

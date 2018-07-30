@@ -39,7 +39,7 @@
       <button ion-item [navPush]="subSettings" [navParams]="profileSettings">
         {{ 'SETTINGS_PAGE_PROFILE' | translate }}
       </button>
-      <button ion-item [navPush]="subSettings" [navParams]="notifySettings">
+      <button ion-item [navPush]="subSettings" [navParams]="notifySettings" *ngIf="isAndroid">
         {{ 'SETTINGS_PAGE_NOTIFICATIONS' | translate }}
       </button>
       <ion-item>
@@ -53,7 +53,7 @@
             {{'LANG_ENGLISH' | translate}}</ion-option>
         </ion-select>
       </ion-item>
-      <ion-item>
+      <ion-item *ngIf="isAndroid">
         <ion-label>{{ 'SETTINGS_ADVERTISMENT_ENABLE' | translate }}</ion-label>
         <ion-toggle formControlName="advertismentEnabled"></ion-toggle>
       </ion-item>
