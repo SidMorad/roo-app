@@ -43,6 +43,7 @@ export class WelcomePage implements OnInit {
           // console.log('Cliams ', claims);
           this.events.publish('LOGIN_SUCCESS', this.securityService.oidc().getIdentityClaims());
           console.log('Login succeed in welcome page, actually...');
+          this.browserTab.close();
           setTimeout(() => {
             this.geAccount();
           }, 300);
