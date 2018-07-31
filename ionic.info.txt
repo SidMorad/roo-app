@@ -1,7 +1,7 @@
 
 Ionic:
 
-   ionic (Ionic CLI)  : 4.0.1
+   ionic (Ionic CLI)  : 4.0.2 (/home/developer/.nvm/versions/node/v8.11.3/lib/node_modules/ionic)
    Ionic Framework    : ionic-angular 3.9.2
    @ionic/app-scripts : 3.1.11
 
@@ -13,7 +13,7 @@ Cordova:
 System:
 
    Android SDK Tools : 26.0.1
-   NodeJS            : v8.11.3
+   NodeJS            : v8.11.3 (/home/developer/.nvm/versions/node/v8.11.3/bin/node)
    npm               : 6.2.0
    OS                : Linux 4.4
 
