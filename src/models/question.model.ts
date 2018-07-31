@@ -108,7 +108,7 @@ export class Question {
     }
     else if (this.isType('Writing')) {
       const actual = viewComp.writingAnswer.replace(/\s+/g, ' ').trim();
-      const expected = this.writingAnswer();
+      const expected = actual.indexOf('_') > -1 ? this.writingAnswer() : this.replaceAll(this.writingAnswer(), '_', '');
       const correctPercentage = compareTwoStrings(expected, actual);
       console.log('Writing answer was ', correctPercentage, ' right.', expected, actual);
       if (correctPercentage > this.writingCompareAcceptablePercentage) {
@@ -193,7 +193,8 @@ export class Question {
       }
     }
     else if (this.isType('Writing')) {
-      viewComp.writingAnswerDiff = diffWords(this.writingAnswer(), viewComp.writingAnswer, { ignoreCase: true });
+      let expected = viewComp.writingAnswer.indexOf('_') > -1 ? this.writingAnswer() : this.replaceAll(this.writingAnswer(), '_', '');
+      viewComp.writingAnswerDiff = diffWords(expected, viewComp.writingAnswer, { ignoreCase: true });
       result = this.writingAnswer();
     }
     else if (this.isType('Speaking')) {
@@ -325,7 +326,7 @@ export class Question {
     let answer: string = this.face(null);
     answer = answer && answer.indexOf('.') > -1 ? this.replaceAll(answer, '.', ' .') : answer;
     answer = answer && answer.indexOf('?') > -1 ? this.replaceAll(answer, '?', ' ?') : answer;
-    return answer;
+    return this.replaceAll(answer, '_', '');
   }
 
   public conversationAnswer(index: number): string {
@@ -351,29 +352,31 @@ export class Question {
   }
 
   public faceForSpeak(viewComp): string {
+    let res = '';
     if (this.isType('TwoPicture')) {
-      return this.pictureLabel(viewComp.pictureCorrectIndex);
+      res = this.pictureLabel(viewComp.pictureCorrectIndex);
     }
     else if (this.isType('FourPicture')) {
-      return this.pictureLabel(viewComp.pictureCorrectIndex);
+      res = this.pictureLabel(viewComp.pictureCorrectIndex);
     }
     else if (this.isType('Conversation')) {
-      return this.conversationAnswer(viewComp.questionCounter-1);
+      res = this.conversationAnswer(viewComp.questionCounter-1);
     }
     else if (this.isType('OneCheck')) {
-      return this.toneCheckAnswer ? this.toneCheckAnswer.text : '';
+      res = this.toneCheckAnswer ? this.toneCheckAnswer.text : '';
     }
     else if (this.isType('Words')) {
       console.log('noTotal', viewComp.noTotal, ' wordsInQueue', viewComp.words.length ,' questionCounter', viewComp.questionCounter, ' questionsLength', this.d.options.length, ' targeted', viewComp.questionCounter - this.d.options.length);
       if (viewComp.questionCounter > this.d.options.length) {
-        return this.targetOptions[(viewComp.questionCounter - this.d.options.length)-1].text;
+        res = this.targetOptions[(viewComp.questionCounter - this.d.options.length)-1].text;
       } else {
-        return this.targetOptions[viewComp.questionCounter-1].text;
+        res = this.targetOptions[viewComp.questionCounter-1].text;
       }
     }
     else {
-      return this.lookupWords[this.d.question]['t'];
+      res =  this.lookupWords[this.d.question]['t'];
     }
+    return this.replaceAll(res, '_', '');
   }
 
   get answer(): string {
@@ -506,7 +509,7 @@ export class Question {
   }
 
   public replaceAll(str, find, replace) {
-      return str.replace(new RegExp(this.escapeRegExp(find), 'g'), replace);
+      return str ? str.replace(new RegExp(this.escapeRegExp(find), 'g'), replace) : null;
   }
 
 }
