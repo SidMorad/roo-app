@@ -1,6 +1,6 @@
 import { Component, OnInit, NgZone, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, Platform, ModalController, PopoverController,
-         Events, Content, ToastController } from 'ionic-angular';
+         Events, Content, ToastController, AlertController } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { Market } from '@ionic-native/market';
 import { Storage } from '@ionic/storage';
@@ -41,7 +41,8 @@ export class HomePage implements OnInit {
       private modalCtrl: ModalController, private elementRef: ElementRef, private api: Api,
       private translateService: TranslateService, private settings: Settings,
       private popoverCtrl: PopoverController, private toastCtrl: ToastController,
-      private questionGenerator: QuestionGenerator, private loginService: LoginService) {
+      private questionGenerator: QuestionGenerator, private loginService: LoginService,
+      private alertCtrl: AlertController) {
     this.categories = [];
     this.mapWidth = (window.screen.height * 6);
   }
@@ -56,6 +57,25 @@ export class HomePage implements OnInit {
           this.ngZone.run(() => {
             this.showUpgradeButton = true;
           });
+          setTimeout(() => {
+            this.alertCtrl.create({
+              title: this.labelUpdate,
+              message: this.labelNewVersionIsAvaialable,
+              buttons: [
+                {
+                  text: this.labelCancel,
+                  role: 'cancel'
+                },
+                {
+                  text: this.labelUpgrade,
+                  cssClass: 'btn-success',
+                  handler: () => {
+                    this.upgrade();
+                  }
+                }
+              ]
+            }).present();
+          }, 3000);
         }
       });
     });
@@ -94,7 +114,7 @@ export class HomePage implements OnInit {
       if (this.showHelpHint) {
         this.showHelpHintHint();
       }
-    }, 4000);
+    }, 2000);
   }
 
   ionViewWillEnter() {
@@ -338,13 +358,18 @@ export class HomePage implements OnInit {
   labelSoon: string;
   loginLabel: string;
   pleaseLoginLabel: string;
+  labelUpdate: string;
+  labelUpgrade: string;
+  labelNewVersionIsAvaialable: string;
+  labelCancel: string;
 
   initTranslations() {
     return new Observable((observer) => {
        this.translateService.get(['OK', 'FOR_START_CLICK_ON_THE_PICTURE', 'NEXT', 'PREV',
                                  'CLICK_HERE_TO_SEE_GUIDE', 'TO_THE_RIGHT',
                                  'AND_CONTINUE_YOUR_PATH', 'SOON_LABEL',
-                                 'PLEASE_LOGIN_FIRST', 'LOGIN_BUTTON']).subscribe((translated) => {
+                                 'PLEASE_LOGIN_FIRST', 'LOGIN_BUTTON', 'CANCEL_BUTTON',
+                                 'UPDATE', 'UPGRADE', 'NEW_VERSION_IS_AVAILABLE']).subscribe((translated) => {
         this.labelOk = translated.OK;
         this.labelNext = translated.NEXT;
         this.labelPrev = translated.PREV;
@@ -355,6 +380,10 @@ export class HomePage implements OnInit {
         this.labelSoon = translated.SOON_LABEL;
         this.loginLabel = translated.LOGIN_BUTTON;
         this.pleaseLoginLabel = translated.PLEASE_LOGIN_FIRST;
+        this.labelUpdate = translated.UPDATE;
+        this.labelUpgrade = translated.UPGRADE;
+        this.labelNewVersionIsAvaialable = translated.NEW_VERSION_IS_AVAILABLE;
+        this.labelCancel = translated.CANCEL_BUTTON;
         observer.next(translated);
         observer.complete();
       });
