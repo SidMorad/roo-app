@@ -442,24 +442,24 @@ export class Question {
     if (this.targetOneCheckAnswer) {
       return this.targetOneCheckAnswer;
     }
-    this.targetOptions.forEach((row) => {
-      if (row.isCorrect) {
-        this.targetOneCheckAnswer = row;
+    for (let i = 0; i < this.targetOptions.length; i++) {
+      if (this.targetOptions[i].isCorrect) {
+        this.targetOneCheckAnswer = this.targetOptions[i];
         return this.targetOneCheckAnswer;
       }
-    });
+    }
   }
 
   get moneCheckAnswer(): any {
     if (this.motherOneCheckAnswer) {
       return this.motherOneCheckAnswer;
     }
-    this.motherOptions.forEach((row) => {
-      if (row.isCorrect) {
-        this.motherOneCheckAnswer = row;
+    for (let i = 0; i < this.motherOptions.length; i++) {
+      if (this.motherOptions[i].isCorrect) {
+        this.motherOneCheckAnswer = this.motherOptions[i];
         return this.motherOneCheckAnswer;
       }
-    });
+    }
   }
 
   public shuffle(array) {

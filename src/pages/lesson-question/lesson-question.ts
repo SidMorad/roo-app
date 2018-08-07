@@ -247,6 +247,7 @@ export class LessonQuestionPage implements OnInit {
         this.writingAnswerTextarea.nativeElement.focus();
       }, 300);
     }
+    console.log(text, this.lesson.targetLocale(), this.settings.allSettings.voiceSpeedRate /100);
     return this.textToSpeech.speak({
       text: text,
       locale: this.lesson.targetLocale(),
@@ -256,6 +257,7 @@ export class LessonQuestionPage implements OnInit {
       const toast = this.toastCtrl.create({
         message: this.labelPleaseUpdateThisOtherAppFromMarket,
         duration: 10000,
+        position: 'middle',
         showCloseButton: true,
         closeButtonText: this.labelMarket
       });
