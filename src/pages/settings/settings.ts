@@ -102,6 +102,9 @@ export class SettingsPage {
       if (v.motherLanguage === 'EN_GB' && v.targetLanguage === 'EN_GB') {
         this.form.controls['motherLanguage'].setValue('FA_IR');
       }
+      if (v.language && v.language !== this.translate.currentLang) {
+        this.ok();
+      }
     });
   }
 

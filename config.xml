@@ -113,6 +113,6 @@
         <variable name="ADAD_LOG_MODE" value="false" />
     </plugin>
     <plugin name="cordova-plugin-x-socialsharing" spec="^5.4.1" />
-    <plugin name="cordova-plugin-ionic-webview" spec="^2.0.1" />
-    <engine name="android" spec="7.1.0" />
+    <plugin name="cordova-plugin-ionic-webview" spec="^2.0.2" />
+    <engine name="android" spec="7.1.1" />
 </widget>

@@ -14,7 +14,7 @@ export class DefaultSettings {
   }
 
   public static newInstance(): DefaultSettings {
-    return new DefaultSettings(false, 'fa', true, true, 80, 'Guest', 'FA_IR$EN_GB', 'Beginner', false, '10:00', true);
+    return new DefaultSettings(false, 'fa', true, true, 100, 'Guest', 'FA_IR$EN_GB', 'Beginner', false, '10:00', true);
   }
 
   get motherLanguage(): string {
