@@ -1,5 +1,6 @@
 export const ENV = {
   profile: 'play',
   isPlay: true,
-  isCafe: false
+  isCafe: false,
+  isAval: false
 }

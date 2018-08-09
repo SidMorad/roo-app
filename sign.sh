@@ -10,6 +10,9 @@ if [ -z "$1" ]
     if [ $1 = "cafe" ]; then
       cp src/environments/environment.cafe.ts src/environments/environment.ts
     fi
+    if [ $1 = "aval" ]; then
+      cp src/environments/environment.aval.ts src/environments/environment.ts
+    fi
     sh patch.sh $1
     ionic cordova build android --prod --release --buildConfig
 fi

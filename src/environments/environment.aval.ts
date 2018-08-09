@@ -1,5 +1,5 @@
 export const ENV = {
-  profile: 'dev',
+  profile: 'aval',
   isPlay: false,
   isCafe: false,
   isAval: true

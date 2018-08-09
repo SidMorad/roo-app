@@ -35,4 +35,14 @@ else
     ionic cordova plugin add /ws/javascript/AndroidInAppBilling --variable BILLING_KEY="MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwC+zFjRW1U4ZeQN6I3z3L5a5ormHIEa4Zfmz0zSaz4HeSJnbOqca6ybPXhqTmpRkR/Za2YgqH8q3gHUoE+3jTv9sw0/SM/yFO/iYJwCF3xHDR2GerOk6rjWbberP1HzAjhJa7JmwQWZ1YPlAZLKNfhZinGj7+qguHLqXMPKi5U2UumatC7P7Bnqqjh+Y1cb6IdfSfmCTxKxLt22etIM60EYeKy2YU3d7bmfbWQ9at0CAwEAAQ=="
     ionic cordova platform add android@7.1.1
   fi
+  if [ $1 = "aval" ]; then
+    ionic cordova platform rm android
+    ionic cordova plugin rm com.smartmobilesoftware.androidinappbilling --variable BILLING_KEY="foo"
+    cd /ws/javascript/AndroidInAppBilling
+    git checkout -- .
+    git checkout avvalmarket
+    cd "${cwd}"
+    ionic cordova plugin add /ws/javascript/AndroidInAppBilling --variable BILLING_KEY="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3TTBCyc8veMGZi5XfEP2Bf0acDRC2XG5vf4mNV4/Y4XUahr6sclPVKw3CNIJeq4ZSUHjMfU2nWah7D7rk4UCxtCyjyAuKZxmx6dXf+U1BjEtV9TpwDYHlbKMcus5FLPhutdAJ8Ee9eSMNiB8/B9g1YI7d3BL/RtDBWLhPWq8zkNYFETk/rqakz/EvRIrgq+dAasD54VpNaInUXjTr4FBhWDReCuPBXWwLyCb8GvqUV9hJfEyXJ5xguO0S4L8xNDUH+3G9iNyPmp+rXGRy2X5xokQz0FjEX5VUoAsQlD6vuzvtG0ARCdyEv5ibAY4camZiBoISRpSnIK0qtCqs8RWnQIDAQAB"
+    ionic cordova platform add android@7.1.1
+  fi
 fi

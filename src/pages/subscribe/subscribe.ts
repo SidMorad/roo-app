@@ -129,17 +129,37 @@ export class SubscribePage {
                           that.storage.set(that.lastSubscribeKey, JSON.stringify(subscribeModel)).then((res) => {
                             that.reCheck = true;
                           });
-                          that.toastCtrl.create({
-                            message: 'Error occured on server-side: ' + error,
-                            duration: 4000,
-                            position: 'middle'
-                          }).present();
+                          that.toastCtrl.create({ message: 'Error server-side: ' + error,
+                            duration: 4000, position: 'middle' }).present();
+                          that.inProgress = false;
                         });
                       }, function (error) {
-                        console.log('Subscription failed: ', error);
+                        that.toastCtrl.create({ message: 'Error client-side: ' + error,
+                          duration: 4000, position: 'middle' }).present();
+                        that.inProgress = false;
                       }, `ROO_${subscriptionType.toString()}`);
-                    }
-                    else if (data == 'googleplay') {
+                    } else if (data === 'avvalmarket') {
+                      console.log('Attempt to subscribe with AvvalMarket to ', `ROO_${subscriptionType.toString()}_TEST`);
+                      inappbilling.subscribe(function (success) {
+                        subscribeModel.paymentApiReturnString = JSON.stringify(success);
+                        console.log('Subscription succeed: ', success);
+                        that.api.subscribeWithAvvalMarket(subscribeModel).subscribe(success => {
+                          console.log('Subscription stored in server successfully.', success);
+                          that.reCheckMembership();
+                        }, error => {
+                          that.storage.set(that.lastSubscribeKey, JSON.stringify(subscribeModel)).then( res => {
+                            that.reCheck = true;
+                          });
+                          that.toastCtrl.create({ message: 'Error server-side: ' + error,
+                            duration: 4000, position: 'middle' }).present();
+                          that.inProgress = false;
+                        });
+                      }, function (error) {
+                        that.toastCtrl.create({ message: 'Error client-side: ' + error,
+                          duration: 4000, position: 'middle' }).present();
+                        that.inProgress = false;
+                      }, `ROO_${subscriptionType.toString()}_TEST`);
+                    } else if (data == 'googleplay') {
                       console.log('Attempt to subscribe to ', `roo_play_${subscriptionType.toString().toLowerCase()}`);
                       inappbilling.subscribe(function(success) {
                         console.log('Subscription succeed: ', success);
@@ -198,6 +218,7 @@ export class SubscribePage {
   }
 
   resolvePaymentOptions(): any[] {
+    console.log('ENV#', ENV.isPlay, ENV.isCafe, ENV.isAval);
     let res = [];
     if (ENV.isPlay) {
       // res.push({ type: 'radio', label: 'Google play', value: 'googleplay', checked: ENV.isPlay})
@@ -205,6 +226,9 @@ export class SubscribePage {
     }
     if (ENV.isCafe) {
       res.push({ type: 'radio', label: 'Cafebazaar (کافه بازار)', value: 'cafebazaar', checked: ENV.isCafe });
+    }
+    if (ENV.isAval) {
+      res.push({ type: 'radio', label: 'AvvalMarket (اول مارکت)', value: 'avvalmarket', checked: ENV.isAval });
     }
     return res;
   }
