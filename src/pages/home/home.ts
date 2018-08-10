@@ -91,11 +91,7 @@ export class HomePage implements OnInit {
           this.navCtrl.push('ProfileFirstPage');
         }
       });
-      this.api.getDailyLesson().subscribe((dl: Lesson) => {
-        console.log('DailyLesson ', dl);
-        this.dailyLesson = new Lesson(ScoreTypeFactory.daily, dl.uuid, dl.title, this.settings.allSettings.learnDir, dl.indexOrder, dl.picture);
-        this.settings.dailyLessonPictureUrl = this.dailyLesson.pictureUrl;
-      });
+      this.fetchDailyLesson();
     }
   }
 
@@ -178,6 +174,14 @@ export class HomePage implements OnInit {
     }, (error) => {
       console.log('Fetching CategoryList actually failed with: ', error);
       this.showRetryButton = true;
+    });
+  }
+
+  fetchDailyLesson() {
+    this.api.getDailyLesson().subscribe((dl: Lesson) => {
+      this.dailyLesson = new Lesson(ScoreTypeFactory.daily, dl.uuid, dl.title, this.settings.learnDir, dl.indexOrder, dl.picture);
+      console.log('DailyLesson ', this.dailyLesson);
+      this.settings.dailyLessonPictureUrl = this.dailyLesson.pictureUrl;
     });
   }
 
@@ -304,6 +308,7 @@ export class HomePage implements OnInit {
       this.content.resize();
       this.settings.loadCachedScoreLookups(true);
       this.fetchCategories(true);
+      this.fetchDailyLesson();
     });
     popover.present({ ev: $event });
   }

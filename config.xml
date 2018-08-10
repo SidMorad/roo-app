@@ -113,9 +113,6 @@
         <variable name="ADAD_LOG_MODE" value="false" />
     </plugin>
     <plugin name="cordova-plugin-x-socialsharing" spec="^5.4.1" />
-    <plugin name="cordova-plugin-ionic-webview" spec="^2.0.2" />
-    <plugin name="com.smartmobilesoftware.androidinappbilling" spec="/ws/javascript/AndroidInAppBilling">
-        <variable name="BILLING_KEY" value="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3TTBCyc8veMGZi5XfEP2Bf0acDRC2XG5vf4mNV4/Y4XUahr6sclPVKw3CNIJeq4ZSUHjMfU2nWah7D7rk4UCxtCyjyAuKZxmx6dXf+U1BjEtV9TpwDYHlbKMcus5FLPhutdAJ8Ee9eSMNiB8/B9g1YI7d3BL/RtDBWLhPWq8zkNYFETk/rqakz/EvRIrgq+dAasD54VpNaInUXjTr4FBhWDReCuPBXWwLyCb8GvqUV9hJfEyXJ5xguO0S4L8xNDUH+3G9iNyPmp+rXGRy2X5xokQz0FjEX5VUoAsQlD6vuzvtG0ARCdyEv5ibAY4camZiBoISRpSnIK0qtCqs8RWnQIDAQAB" />
-    </plugin>
-    <engine name="android" spec="7.1.1" />
+    <plugin name="cordova-plugin-ionic-webview" spec="^1.2.1" />
+    <engine name="android" spec="~7.1.1" />
 </widget>
