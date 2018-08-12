@@ -25,13 +25,16 @@
       <ion-col>
         <div class="glow-cup">
           <div class="glow"></div>
-          <div class="badge category-content">
-            <div class="category-pic" [style.background-image]="categoryImageUrl | safe: 'style'">
+          <div class="cup">
+            <div class="badge category-content">
+              <div class="category-pic" [style.background-image]="categoryImageUrl | safe: 'style'">
+              </div>
             </div>
           </div>
         </div>
       </ion-col>
     </ion-row>
+    <ion-row><ion-col><br></ion-col></ion-row>
     <ion-row>
       <ion-col>
         <button ion-button round icon-only (click)="shareViaTelegram()" color="telegram" [disabled]="shareInProgress">
@@ -45,7 +48,6 @@
         </button>
       </ion-col>
     </ion-row>
-    <ion-row></ion-row>
     <ion-row>
       <ion-col>
         <button ion-button (click)="continue()" color="secondary" style="min-width: 40vw" [disabled]="shareInProgress">

@@ -6,6 +6,7 @@ cp patch/cordova-plugin-adad-plugin.xml plugins/cordova-plugin-adad/plugin.xml
 # cp patch/AdadAd.java plugins/cordova-plugin-adad/src/android/
 # rm plugins/cordova-plugin-adad/src/android/MilaDesignAdad.jar
 cp patch/cordova-plugin-x-socialsharing-plugin.xml plugins/cordova-plugin-x-socialsharing/plugin.xml
+cp patch/cordova-plugin-nativeaudio-plugin.xml plugins/cordova-plugin-nativeaudio/plugin.xml
 
 if [ -z "$1" ]; then
   echo "No profile passed to $0, profile patch ignored!"

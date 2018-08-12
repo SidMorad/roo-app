@@ -1,10 +1,12 @@
 
 import { Component } from '@angular/core';
-import { IonicPage, ViewController, NavParams } from 'ionic-angular';
+import { IonicPage, ViewController, NavParams, Platform } from 'ionic-angular';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService } from '@ngx-translate/core';
+import { NativeAudio } from '@ionic-native/native-audio';
 
 import { Category } from '../../models';
+import { Settings } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -17,9 +19,20 @@ export class CategoryCompletePage {
   shareInProgress: boolean;
 
   constructor(private viewCtrl: ViewController, private navParams: NavParams,
-              private socialSharing: SocialSharing, private translateService: TranslateService) {
+              private socialSharing: SocialSharing, private translateService: TranslateService,
+              private platform: Platform, private nativeAudio: NativeAudio,
+              private settings: Settings) {
     this.category = this.navParams.get('category');
     this.initTranslations();
+    this.platform.ready().then(() => {
+      this.nativeAudio.preloadSimple('categoryCompleted', 'assets/sounds/categoryCompleted.mp3');
+    });
+  }
+
+  ionViewDidEnter() {
+    if (this.settings.allSettings.soundEffects) {
+      this.nativeAudio.play('categoryCompleted');
+    }
   }
 
   continue() {

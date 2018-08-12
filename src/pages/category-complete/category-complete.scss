@@ -25,6 +25,16 @@ page-category-complete {
     transform: translateY(-50%);
   }
 
+  .category-complete .cup {
+    width: 310px;
+    height: 269px;
+    margin: 0 auto;
+    padding-top: 11px;
+    position: relative;
+    background-image: url(https://mars.webebook.org/static/roo/img/cup@2x-7eeaa187654b1c0c08ced1e0c93ab3ab.png);
+    background-size: 100% 100%;
+  }
+
   .category-complete .glow {
     width: 650px;
     height: 650px;

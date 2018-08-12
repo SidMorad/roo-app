@@ -20,6 +20,10 @@
         {{ 'SETTINGS_PAGE_LANGUAGE' | translate }}
       </button>
       <ion-item>
+        <ion-label>{{ 'SETTINGS_SOUND_EFFECTS' | translate }}</ion-label>
+        <ion-toggle formControlName="soundEffects"></ion-toggle>
+      </ion-item>
+      <ion-item>
         <ion-label>{{ 'SETTINGS_AUTO_PLAY_VOICE' | translate }}</ion-label>
         <ion-toggle formControlName="autoPlayVoice"></ion-toggle>
       </ion-item>

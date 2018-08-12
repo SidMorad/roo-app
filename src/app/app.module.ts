@@ -21,6 +21,7 @@ import { BrowserTab } from '@ionic-native/browser-tab';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { NgxLogglyModule } from 'ngx-loggly-logger';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { NativeAudio } from '@ionic-native/native-audio';
 
 import { Api, Settings, User, ScoreUtil, Memory, CategoryService,
          SecurityService, QuestionGenerator, RooErrorHandler, JhiParseLinks } from '../providers';
@@ -107,6 +108,7 @@ export function provideSettings(storage: Storage, api:Api, platform: Platform) {
     SocialSharing,
     CategoryService,
     JhiParseLinks,
+    NativeAudio,
     { provide: Settings, useFactory: provideSettings, deps: [Storage, Api, Platform] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: RooErrorHandler },

@@ -5,9 +5,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { BrowserTab } from '@ionic-native/browser-tab';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { Storage } from '@ionic/storage';
+import { NativeAudio } from '@ionic-native/native-audio';
 
 import { IMAGE_ORIGIN } from '../../app/app.constants';
-import { Principal, Api, LoginService } from '../../providers';
+import { Principal, Api, LoginService, Settings } from '../../providers';
 import { SubscribeModel, SubscriptionType, Account } from '../../models';
 import { ENV } from '@app/env';
 
@@ -37,7 +38,8 @@ export class SubscribePage {
               private api: Api, private alertCtrl: AlertController, private ngZone: NgZone,
               private translateService: TranslateService, private viewCtrl: ViewController,
               private loginService: LoginService, private inAppBrowser: InAppBrowser,
-              private storage: Storage) {
+              private storage: Storage, private nativeAudio: NativeAudio,
+              private settings: Settings) {
     this.initTranslations();
     this.resumeSubscription = platform.resume.subscribe(() => {
       console.log('onResume event occured.');
@@ -51,7 +53,15 @@ export class SubscribePage {
           console.log('Initialize InAppBilling failed with error: ', error);
         }, { showLog: true });
       }
+      this.nativeAudio.preloadSimple('coinSparkle', 'assets/sounds/coinSparkle.mp3');
     });
+  }
+
+  ionViewDidEnter() {
+    this.reCheckMembership();
+    if (this.settings.allSettings.soundEffects) {
+      this.nativeAudio.play('coinSparkle');
+    }
   }
 
   ionViewWillUnload() {
@@ -260,10 +270,6 @@ export class SubscribePage {
   }
   exit() {
     this.viewCtrl.dismiss();
-  }
-
-  ionViewDidEnter() {
-    this.reCheckMembership();
   }
 
   continueLabel: string;

@@ -1,10 +1,10 @@
 
 import { Component } from '@angular/core';
-import { IonicPage, ViewController, NavParams } from 'ionic-angular';
+import { IonicPage, ViewController, Platform } from 'ionic-angular';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService } from '@ngx-translate/core';
+import { NativeAudio } from '@ionic-native/native-audio';
 
-import { Category } from '../../models';
 import { ScoreUtil, Settings } from '../../providers';
 
 @IonicPage()
@@ -18,12 +18,22 @@ export class LevelUpPage {
   totalScore: number;
   shareInProgress: boolean;
 
-  constructor(private viewCtrl: ViewController, private navParams: NavParams,
-              private socialSharing: SocialSharing, private translateService: TranslateService,
-              private scoreUtil: ScoreUtil, private settings: Settings) {
+  constructor(private viewCtrl: ViewController, private translateService: TranslateService,
+              private socialSharing: SocialSharing, private platform: Platform,
+              private scoreUtil: ScoreUtil, private settings: Settings,
+              private nativeAudio: NativeAudio) {
     this.totalScore = this.settings.cachedScoreLookup.total;
     this.toLevel = this.scoreUtil.resolveLevelFrom(this.totalScore);
     this.initTranslations();
+    this.platform.ready().then(() => {
+      this.nativeAudio.preloadSimple('levelUp', 'assets/sounds/categoryCompleted.mp3');
+    });
+  }
+
+  ionViewDidEnter() {
+    if (this.settings.allSettings.soundEffects) {
+      this.nativeAudio.play('levelUp');
+    }
   }
 
   continue() {

@@ -66,6 +66,7 @@ export class SettingsPage {
   _buildForm() {
     let group: any = {
       language: [this.options.language],
+      soundEffects: [this.options.soundEffects],
       autoPlayVoice: [this.options.autoPlayVoice],
       autoContinue: [this.options.autoContinue],
       voiceSpeedRate: [this.options.voiceSpeedRate],

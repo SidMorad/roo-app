@@ -9,6 +9,7 @@ import { findBestMatch } from 'string-similarity';
 import { Storage } from '@ionic/storage';
 import introJs from 'intro.js/intro.js';
 import { StackConfig, DragEvent, SwingStackComponent, SwingCardComponent } from 'angular2-swing';
+import { NativeAudio } from '@ionic-native/native-audio';
 
 import { Category, Lesson, Question, Score, TwoWord } from '../../models';
 import { IMAGE_ORIGIN } from '../../app/app.constants';
@@ -47,7 +48,7 @@ export class LessonQuestionPage implements OnInit {
               private modalCtrl: ModalController, private ngZone: NgZone, private market: Market,
               private textToSpeech: TextToSpeech, private speechRecognition: SpeechRecognition,
               private settings: Settings, private storage: Storage, private toastCtrl: ToastController,
-              private memory: Memory) {
+              private memory: Memory, private nativeAudio: NativeAudio) {
     this.dir = platform.dir();
     this.lesson = navParams.get('lesson');
     this.category = navParams.get('category');
@@ -57,6 +58,12 @@ export class LessonQuestionPage implements OnInit {
     this.initTranslations();
     this.initSettings();
     this.initSwingStackConfig();
+    this.platform.ready().then(() => {
+      this.nativeAudio.preloadSimple('correctSound', 'assets/sounds/correct.mp3');
+      this.nativeAudio.preloadSimple('wrongSound', 'assets/sounds/wrong.mp3');
+      this.nativeAudio.preloadSimple('lessonCompleted', 'assets/sounds/lessonCompleted.mp3');
+      this.nativeAudio.preloadSimple('lessonFailed', 'assets/sounds/lessonFailed.mp3');
+    });
   }
 
   ngOnInit() {
@@ -96,9 +103,15 @@ export class LessonQuestionPage implements OnInit {
           }
         }, 1000);
       }
+      if (this.settings.allSettings.soundEffects) {
+        this.nativeAudio.play('correctSound');
+      }
     } else {
       this.wasWrong = true;
       this.noWrong++;
+      if (this.settings.allSettings.soundEffects) {
+        this.nativeAudio.play('wrongSound');
+      }
     }
     this.question.resolveRightAnswerString(this, true);
     setTimeout(() => {
@@ -167,6 +180,9 @@ export class LessonQuestionPage implements OnInit {
 
   checkIfIsEnd() {
     if (this.questionCounter >= this.noTotal) {
+      if (this.settings.allSettings.soundEffects) {
+        this.nativeAudio.play('lessonCompleted');
+      }
       this.uploadScore();
       return;
     }
@@ -174,6 +190,9 @@ export class LessonQuestionPage implements OnInit {
 
   checkIfIsEndFailure() {
     if (this.noWrong === 6) {
+      if (this.settings.allSettings.soundEffects) {
+        this.nativeAudio.play('lessonFailed');
+      }
       this.showFailureModal();
       return;
     }
