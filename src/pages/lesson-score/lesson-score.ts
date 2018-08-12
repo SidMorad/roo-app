@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, ViewController, Platform } from 'ionic-angular';
+import { IonicPage, ViewController, Platform, NavController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { Score } from '../../models';
 import { Api } from '../../providers';
-import { ScoreUtil, Settings } from '../../providers';
+import { ScoreUtil, Settings, Memory } from '../../providers';
 
 declare const window: any;
 
@@ -25,13 +25,20 @@ export class LessonScorePage {
   progressLevelMax: number;
   topMembersLoaded: boolean;
   topMembers: any[];
+  levelUpFlag: boolean;
+  scoreUploadedFlag: boolean;
 
   constructor(private viewCtrl: ViewController, private storage: Storage, private platform: Platform,
-              private api: Api, private scoreUtil: ScoreUtil, private settings: Settings) {
+              private api: Api, private scoreUtil: ScoreUtil, private settings: Settings,
+              private memory: Memory, private navCtrl: NavController) {
   }
 
   ionViewDidEnter() {
-    this.uploadScore();
+    console.log('Previous score(', this.settings.cachedScoreLookup.total, ') level is ', this.scoreUtil.resolveLevelFrom(this.settings.cachedScoreLookup.total));
+    this.memory.setPreviousScoreLevel(this.scoreUtil.resolveLevelFrom(this.settings.cachedScoreLookup.total));
+    if (!this.scoreUploadedFlag) {
+      this.uploadScore();
+    }
     if (this.platform.is('android')) {
       if (this.settings.allSettings.advertismentEnabled) {
         window.adad.LoadInterstitial();
@@ -40,7 +47,7 @@ export class LessonScorePage {
   }
 
   ionViewDidLeave() {
-    if (this.platform.is('android')) {
+    if (this.platform.is('android') && !this.levelUpFlag) {
       if (this.settings.allSettings.advertismentEnabled) {
         window.adad.ShowInterstitial();
       }
@@ -58,7 +65,8 @@ export class LessonScorePage {
         this.resolveScoreStats();
         this.api.createScore(score).subscribe((res) => {
             this.settings.updateCachedScoreLookupWith(score);
-            this.storage.remove('LAST_SCORE').then().catch((err) => console.log('LAST_SCORE remove failure.'));
+            this.displayLevelUpPageIfNecessary();
+            this.storage.remove('LAST_SCORE').then().catch((err) => console.error('LAST_SCORE remove failure.'));
             setTimeout(() => {
               me.inProgress = false;
               me.resolveScoreStats();
@@ -83,6 +91,7 @@ export class LessonScorePage {
     this.progressLevelTo = this.progressLevelFrom + 1;
     this.progressLevelValue =  this.total - this.scoreUtil.resolveMaxScoreFrom(this.progressLevelFrom-1);
     this.progressLevelMax = this.scoreUtil.determineDivider(this.total);
+    console.log(`Total ${this.total} LevelFrom ${this.progressLevelFrom} LevelTo ${this.progressLevelTo} LevelValue ${this.progressLevelValue} LevelMax ${this.progressLevelMax}`);
   }
 
   loadTopMembers() {
@@ -91,6 +100,17 @@ export class LessonScorePage {
       this.topMembers = res.topMembers;
       this.topMembersLoaded = true;
     });
+  }
+
+  displayLevelUpPageIfNecessary() {
+    const currentLevel = this.scoreUtil.resolveLevelFrom(this.settings.cachedScoreLookup.total);
+    console.log('Current score (', this.settings.cachedScoreLookup.total,') level is ', currentLevel);
+    if (this.memory.getPreviousScoreLevel() < currentLevel) {
+      this.levelUpFlag = true;
+      this.navCtrl.push('LevelUpPage').then(() => {
+        this.scoreUploadedFlag = true;
+      });
+    }
   }
 
   continue() {

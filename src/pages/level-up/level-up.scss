@@ -1,0 +1,90 @@
+page-level-up {
+
+  .level-up {
+    color: #f4f4f4;
+    background-color: #392e73;
+  }
+
+  .level-up h1 {
+    margin-top: 0;
+    font-weight: 400;
+  }
+
+  .level-up .glow-cup {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+
+  .level-up .glow {
+    width: 650px;
+    height: 650px;
+    position: absolute;
+    left: -100%;
+    right: -100%;
+    top: -40vh;
+    margin: 0 auto;
+    background-image: url(https://mars.webebook.org/static/roo/img/glow@2x-7e5746fa3f5aca9906c25ea84f525d9b.png);
+    background-size: 100% 100%;
+  }
+
+  .level-up .cup {
+    width: 310px;
+    height: 269px;
+    margin: 0 auto;
+    padding-top: 11px;
+    position: relative;
+    background-image: url(https://mars.webebook.org/static/roo/img/cup@2x-7eeaa18….png);
+    background-size: 100% 100%;
+  }
+
+  .level-up .badge {
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    background-size: 100% 100%;
+    width: 178px;
+    height: 210px;
+    padding-bottom: 33px;
+    background-image: url(https://mars.webebook.org/static/roo/img/medal@2x-b00487043bc2624f8f3e9d0fb79aba35.png);
+  }
+
+  .level-up .badge .badge-content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    line-height: 1;
+  }
+
+  .level-up .badge .badge-center {
+    width: 100%;
+    padding: 0 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+  }
+
+  .level-up .badge span.level {
+    font-size: 4em;
+    font-weight: 700;
+    display: inline-block;
+  }
+
+  .level-up .badge .sep {
+    width: 100px;
+    height: 1px;
+    margin: 5px auto;
+    background-color: rgba(0,0,0,.4);
+  }
+
+  .level-up .badge span.score {
+    font-size: 1.3em;
+  }
+
+}

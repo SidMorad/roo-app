@@ -148,6 +148,10 @@
   "SHARE_VIA": "Share via",
   "TELEGRAM": "Telegram",
   "I_DID_FINISH_X_CATEGORY": "I did finish '{{categoryTitle}}' category.",
+  "I_HAVE_JUST_REACHED_LEVEL_X_AT_ROO": "I have just reached level {{level}} at Roo.",
+  "LEVEL_UP": "Level up!",
+  "LEVEL": "Level",
+  "POINTS": "points",
 
   "LOGIN_TITLE": "Sign in",
   "LOGIN_ERROR": "Unable to sign in. Please check your account information and try again.",

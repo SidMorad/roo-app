@@ -63,6 +63,7 @@ export class ScoreUtil {
   }
 
   resolveMaxScoreFrom(level: number): number {
+    if (level < 0) level = 0;
     switch(level) {
       case 0: case 1:
         return 50 + level * 50 - 1;

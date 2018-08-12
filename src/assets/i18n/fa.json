@@ -148,6 +148,10 @@
   "SHARE_VIA": "اشتراک با",
   "TELEGRAM": "تلگرام",
   "I_DID_FINISH_X_CATEGORY": "من رده '{{categoryTitle}}' را کامل کردم.",
+  "I_HAVE_JUST_REACHED_LEVEL_X_AT_ROO": "من همین الان به سطح {{level}} در «روو» رسیدم.",
+  "LEVEL_UP": "ارتقاء سطح!",
+  "LEVEL": "سطح",
+  "POINTS": "امتیاز",
 
   "LOGIN_TITLE": "ورود",
   "LOGIN_ERROR": "ورود ناموفق، لطفا بعد از بررسی اطلاعات حسابتون، دوباره تلاش کنید.",

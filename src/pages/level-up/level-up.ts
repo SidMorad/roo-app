@@ -5,20 +5,24 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Category } from '../../models';
+import { ScoreUtil, Settings } from '../../providers';
 
 @IonicPage()
 @Component({
-  selector: 'page-category-complete',
-  templateUrl: 'category-complete.html'
+  selector: 'page-level-up',
+  templateUrl: 'level-up.html'
 })
-export class CategoryCompletePage {
+export class LevelUpPage {
 
-  category: Category;
+  toLevel: number;
+  totalScore: number;
   shareInProgress: boolean;
 
   constructor(private viewCtrl: ViewController, private navParams: NavParams,
-              private socialSharing: SocialSharing, private translateService: TranslateService) {
-    this.category = this.navParams.get('category');
+              private socialSharing: SocialSharing, private translateService: TranslateService,
+              private scoreUtil: ScoreUtil, private settings: Settings) {
+    this.totalScore = this.settings.cachedScoreLookup.total;
+    this.toLevel = this.scoreUtil.resolveLevelFrom(this.totalScore);
     this.initTranslations();
   }
 
@@ -28,9 +32,9 @@ export class CategoryCompletePage {
 
   shareViaTelegram() {
     this.shareInProgress = true;
-    const messageBody = `${this.iDidFinishXCategoryLabel}\n\nRoo @mars_roo`;
+    const messageBody = `${this.messageLabel}\n\nRoo @mars_roo`;
     this.socialSharing.shareVia('telegram',
-      messageBody, '', this.categoryImage
+      messageBody, '', null
     ).then(() => {
       this.shareInProgress = false;
     }).catch(error => {
@@ -41,7 +45,7 @@ export class CategoryCompletePage {
 
   shareViaInstagram() {
     this.shareInProgress = true;
-    const messageBody = `${this.iDidFinishXCategoryLabel}\n\nRoo @mars_roo`;
+    const messageBody = `${this.messageLabel}\n\nRoo @mars_roo`;
     this.socialSharing.shareViaInstagram(messageBody, null)
     .then(() => {
       this.shareInProgress = false;
@@ -53,8 +57,8 @@ export class CategoryCompletePage {
 
   shareViaWhatsApp() {
     this.shareInProgress = true;
-    const messageBody = `https://chat.whatsapp.com/7SQgQjqaHUbFWqojC7F363)\n\n${this.iDidFinishXCategoryLabel}`;
-    this.socialSharing.shareViaWhatsApp(messageBody, this.categoryImage, null)
+    const messageBody = `https://chat.whatsapp.com/7SQgQjqaHUbFWqojC7F363)\n\n${this.messageLabel}`;
+    this.socialSharing.shareViaWhatsApp(messageBody, null, null)
     .then(() => {
       this.shareInProgress = false;
     }).catch(error => {
@@ -63,20 +67,11 @@ export class CategoryCompletePage {
     });
   }
 
-  get categoryImage(): string {
-    const cat = new Category(null, null, null, this.category.indexOrder, null, null, null);
-    return cat.imageUrl;
-  }
-
-  get categoryImageUrl(): string {
-    return `url('${this.categoryImage}')`;
-  }
-
-  iDidFinishXCategoryLabel: string;
+  messageLabel: string;
 
   initTranslations() {
-    this.translateService.get('I_DID_FINISH_X_CATEGORY', { categoryTitle: this.category.title }).subscribe(translated => {
-      this.iDidFinishXCategoryLabel = translated;
+    this.translateService.get('I_HAVE_JUST_REACHED_LEVEL_X_AT_ROO', { level: this.toLevel }).subscribe(translated => {
+      this.messageLabel = translated;
     });
   }
 

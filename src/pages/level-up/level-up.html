@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-navbar>
+    <ion-buttons start>
+      <ion-spinner *ngIf="shareInProgress"></ion-spinner>
+    </ion-buttons>
+    <ion-title>{{'LEVEL_UP' | translate}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="level-up">
+  <ion-grid text-center>
+    <ion-row>
+      <ion-col>
+        <h1>{{'LEVEL' | translate}} {{toLevel}}</h1>
+      </ion-col>
+    </ion-row>
+    <ion-row></ion-row>
+    <ion-row style="min-height: 210px">
+      <ion-col>
+        <div class="glow-cup">
+          <div class="glow"></div>
+          <div class="badge">
+            <div class="badge-content">
+              <div class="badge-center">
+                <span class="level">{{toLevel}}</span>
+                <div class="sep"></div>
+                <span class="score">{{totalScore}}</span>
+                <br>
+                <small>{{'POINTS' | translate}}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <button ion-button round icon-only (click)="shareViaTelegram()" color="telegram" [disabled]="shareInProgress">
+          <ion-icon name="paper-plane"></ion-icon>
+        </button>
+        <button ion-button round icon-only (click)="shareViaInstagram()" color="instagram" [disabled]="shareInProgress">
+          <ion-icon name="logo-instagram"></ion-icon>
+        </button>
+        <button ion-button round icon-only (click)="shareViaWhatsApp()" color="whatsapp" [disabled]="shareInProgress">
+          <ion-icon name="logo-whatsapp"></ion-icon>
+        </button>
+      </ion-col>
+    </ion-row>
+    <ion-row></ion-row>
+    <ion-row>
+      <ion-col>
+        <button ion-button (click)="continue()" color="secondary" style="min-width: 40vw" [disabled]="shareInProgress">
+          {{'CONTINUE' | translate}}
+        </button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

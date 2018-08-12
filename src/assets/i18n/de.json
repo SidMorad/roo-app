@@ -148,6 +148,10 @@
   "SHARE_VIA": "Teilen per",
   "TELEGRAM": "Telegram",
   "I_DID_FINISH_X_CATEGORY": "Ich habe die Kategorie '{{categoryTitle}}' beendet.",
+  "I_HAVE_JUST_REACHED_LEVEL_X_AT_ROO": "Ich habe gerade das Level {{level}} bei Roo erreicht.",
+  "LEVEL_UP": "Aufleveln!",
+  "LEVEL": "Level",
+  "POINTS": "punkte",
 
   "LOGIN_TITLE": "Anmelden",
   "LOGIN_ERROR": "Anmeldung nicht möglich. Bitte überprüfen Sie Ihre Kontoinformationen und versuchen Sie es erneut.",

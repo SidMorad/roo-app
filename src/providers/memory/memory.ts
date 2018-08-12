@@ -5,6 +5,7 @@ export class Memory {
 
   private lessonDoneSuccessfully: boolean;
   private numberOfDoneLessons: number;
+  private previousScoreLevel: number;
 
   public setLessonDoneSuccessfully(value: boolean) {
     this.lessonDoneSuccessfully = value;
@@ -20,6 +21,14 @@ export class Memory {
 
   public getNumberOfDoneLessons(): number {
     return this.numberOfDoneLessons;
+  }
+
+  public setPreviousScoreLevel(value: number) {
+    this.previousScoreLevel;
+  }
+
+  public getPreviousScoreLevel() {
+    return this.previousScoreLevel;
   }
 
 }

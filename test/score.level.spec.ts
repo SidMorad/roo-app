@@ -17,6 +17,9 @@ describe('Score Util', () => {
     for (let i = 0; i < 100; i++) {
       expect(scoreUtil.resolveLevelFrom(scoreUtil.resolveMaxScoreFrom(i))).toBe(i);
     }
+    expect(scoreUtil.resolveMaxScoreFrom(0)).toBe(49);
+    expect(scoreUtil.resolveMaxScoreFrom(1)).toBe(99);
+    expect(scoreUtil.resolveMaxScoreFrom(-1)).toBe(49);
   });
 
 });
