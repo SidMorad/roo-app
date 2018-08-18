@@ -23,8 +23,10 @@ export class WelcomePage implements OnInit {
               private loginService: LoginService, private events: Events,
               private securityService: SecurityService, private browserTab: BrowserTab,
               private platform: Platform) {
-    this.platform.resume.subscribe(() => {
-      this.isTryingToLogin = false;
+    this.platform.ready().then(() => {
+      this.platform.resume.subscribe(() => {
+        this.isTryingToLogin = false;
+      });
     });
   }
 
