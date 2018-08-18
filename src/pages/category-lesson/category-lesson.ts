@@ -111,23 +111,16 @@ export class CategoryLessonPage implements OnInit {
   }
 
   startLesson(index) {
-    this.subscription = this.api.getQuestions(this.lessons[index].uuid,
-                                              this.settings.learnDir,
-                                              this.settings.difficultyLevel).subscribe((res) => {
+    this.subscription = this.api.getWords(this.lessons[index].uuid,
+                                              this.settings.learnDir).subscribe((res) => {
       const lesson: Lesson = new Lesson(ScoreTypeFactory.lesson, this.lessons[index].uuid, null, this.settings.learnDir, this.lessons[index].indexOrder, null);
       if (res.words.length === 0) {
-        this.toastCtrl.create({
-          message: 'Incorrect format',
-          duration: 3000
-        }).present();
+        this.toastCtrl.create({ message: 'Incorrect format', duration: 3000 }).present();
         return;
       }
       const questions = res.questions.length === 0 ? this.questionGenerator.generate(res.words, this.settings.difficultyLevel) : res.questions;
       this.navCtrl.push('LessonQuestionPage', {
-        category: this.category,
-        lesson: lesson,
-        questions: questions,
-        words: res.words});
+        category: this.category, lesson: lesson, questions: questions, words: res.words});
     }, (error) => {
       console.log('Oops this should not happend, TODO');
     });

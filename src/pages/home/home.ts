@@ -178,10 +178,12 @@ export class HomePage implements OnInit {
   }
 
   fetchDailyLesson() {
+    this.dailyLessonIsLoading = true;
     this.api.getDailyLesson().subscribe((dl: Lesson) => {
       this.dailyLesson = new Lesson(ScoreTypeFactory.daily, dl.uuid, dl.title, this.settings.learnDir, dl.indexOrder, dl.picture);
       console.log('DailyLesson ', this.dailyLesson);
       this.settings.dailyLessonPictureUrl = this.dailyLesson.pictureUrl;
+      this.dailyLessonIsLoading = false;
     });
   }
 
@@ -231,11 +233,7 @@ export class HomePage implements OnInit {
     }
     else {
       if (category.commingSoon) {
-        this.toastCtrl.create({
-          message: this.labelSoon,
-          duration: 1000,
-          position: 'middle'
-        }).present();
+        this.toastCtrl.create({ message: this.labelSoon, duration: 1000, position: 'middle' }).present();
       } else {
         this.navCtrl.push('CategoryLessonPage', { category: category });
       }
@@ -245,19 +243,14 @@ export class HomePage implements OnInit {
   startDailyLesson() {
     if (this.principal.isAuthenticated()) {
       this.dailyLessonIsLoading = true;
-      this.api.getQuestions(this.dailyLesson.uuid,
-                            this.settings.learnDir,
-                            'Beginner').subscribe((res) => {
+      this.api.getWords(this.dailyLesson.uuid, this.settings.learnDir).subscribe((res) => {
         if (res.words.lenth === 0) {
-          this.toastCtrl.create({
-            message: 'Incorrect format',
-            duration: 3000,
-            position: 'middle'
-          }).present();
+          this.toastCtrl.create({ message: 'Incorrect format', duration: 3000, position: 'middle' }).present();
           return;
         }
+        console.log('recievied words response : ', res.words);
         const questions = this.questionGenerator.generate(res.words, this.settings.difficultyLevel, true);
-        // console.log('Generated questions were : ', questions);
+        console.log('Generated questions were : ', questions);
         this.navCtrl.push('LessonQuestionPage', {
           lesson: this.dailyLesson,
           questions: questions,
@@ -270,12 +263,8 @@ export class HomePage implements OnInit {
       });
     } else {
       let toastInstance = this.toastCtrl.create({
-        message: this.pleaseLoginLabel,
-        duration: 3000,
-        position: 'middle',
-        showCloseButton: true,
-        closeButtonText: this.loginLabel,
-        dismissOnPageChange: true
+        message: this.pleaseLoginLabel, duration: 3000, position: 'middle',
+        showCloseButton: true, closeButtonText: this.loginLabel, dismissOnPageChange: true
       });
       toastInstance.onDidDismiss((data, role) => {
         if (role === 'close') {

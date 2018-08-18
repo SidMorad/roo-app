@@ -154,9 +154,9 @@ export class QuestionGenerator {
     this.pictures = [];
     this.subjects = [];
     for (let i = 1; i <= Object.keys(data).length; i++) {
-      if (data[i].p) {
+      if (data[i].p) {  // if is picture
         this.pictures.push(i);
-      } else if (data[i].v || data[i].b) {
+      } else if (data[i].v || data[i].b) {  // if is a verb or a background word
         if (isDialyLesson) {
           this.subjects.push(i);
         }

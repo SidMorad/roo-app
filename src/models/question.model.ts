@@ -346,7 +346,7 @@ export class Question {
     }
     else {
       if (this.lookupWords[this.d.question]) {
-        return this.isNormal() ? this.lookupWords[this.d.question]['t']: this.lookupWords[this.d.question]['m'];
+        return this.isNormal() ? this.lookupWordTarget(this.d.question): this.lookupWordMother(this.d.question);
       }
     }
   }
@@ -374,15 +374,15 @@ export class Question {
       }
     }
     else {
-      res =  this.lookupWords[this.d.question]['t'];
+      res =  this.lookupWordTarget(this.d.question);
     }
     return this.replaceAll(res, '_', '');
   }
 
   get answer(): string {
     const answer = this.isNormal()
-      ? this.lookupWords[this.d.question]['c'] ? this.capitalizeFirstLetter(this.lookupWords[this.d.question]['m']) : this.lookupWords[this.d.question]['m']
-      : this.lookupWords[this.d.question]['c'] ? this.capitalizeFirstLetter(this.lookupWords[this.d.question]['t']) : this.lookupWords[this.d.question]['t'];
+      ? this.lookupWords[this.d.question]['c'] ? this.capitalizeFirstLetter(this.lookupWordMother(this.d.question)) : this.lookupWordMother(this.d.question)
+      : this.lookupWords[this.d.question]['c'] ? this.capitalizeFirstLetter(this.lookupWordTarget(this.d.question)) : this.lookupWordTarget(this.d.question);
     return answer;
   }
 
@@ -462,6 +462,14 @@ export class Question {
     }
   }
 
+  private lookupWordTarget(indexOrder) {
+    return this.lookupWords[indexOrder]['ts'][0].w;
+  }
+
+  private lookupWordMother(indexOrder) {
+    return this.lookupWords[indexOrder]['ms'][0].w;
+  }
+
   public shuffle(array) {
     let currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -496,7 +504,7 @@ export class Question {
   }
 
   private determineOptionValue(option: any, dir: string, removeDot?: boolean): string {
-    const result = this.lookupWords[option.text].c ? this.capitalizeFirstLetter(this.lookupWords[option.text][dir]) : this.lookupWords[option.text][dir];
+    const result = dir === 't' ? this.lookupWordTarget(option.text) : this.lookupWordMother(option.text);
     return removeDot ? this.replaceAll(result, '.', '') : result;
   }
 

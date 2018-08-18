@@ -64,25 +64,22 @@ export class CategoryService {
   }
 
   private openLessonByLessonSearch(lessonSearch: any) {
-    this.api.getQuestions(lessonSearch.lUuid, this.settings.learnDir, this.settings.difficultyLevel)
-      .subscribe(res => {
-        const lesson: Lesson = new Lesson(ScoreTypeFactory.lesson, lessonSearch.lUuid, null, this.settings.learnDir, lessonSearch.lIndex, null);
-        if (res.words.length === 0) {
-          this.showCommingSoonToast();
-          lessonSearch.isLoading = false;
-          return;
-        }
-        const questions = res.questions.length === 0 ? this.questionGenerator.generate(res.words, this.settings.difficultyLevel) : res.questions;
-        this.app.getActiveNav().push('LessonQuestionPage', {
-          category: this.categoryIdentityMap[lessonSearch.cUuid],
-          lesson: lesson,
-          questions: questions,
-          words: res.words
-        }).then(() => {
-          lessonSearch.isLoading = false;
-        }).catch(() => {
-          lessonSearch.isLoading = false;
-        });
+    this.api.getWords(lessonSearch.lUuid, this.settings.learnDir).subscribe(res => {
+      const lesson: Lesson = new Lesson(ScoreTypeFactory.lesson, lessonSearch.lUuid, null, this.settings.learnDir, lessonSearch.lIndex, null);
+      if (res.words.length === 0) {
+        this.showCommingSoonToast();
+        lessonSearch.isLoading = false;
+        return;
+      }
+      const questions = res.questions.length === 0 ? this.questionGenerator.generate(res.words, this.settings.difficultyLevel) : res.questions;
+      this.app.getActiveNav().push('LessonQuestionPage', {
+        category: this.categoryIdentityMap[lessonSearch.cUuid],
+        lesson: lesson, questions: questions, words: res.words
+      }).then(() => {
+        lessonSearch.isLoading = false;
+      }).catch(() => {
+        lessonSearch.isLoading = false;
+      });
     }, error => {
       console.log('Oops this should not happen, TODO');
       lessonSearch.isLoading = false;
