@@ -1,14 +1,16 @@
+✔ Gathering environment info - done!
 
 Ionic:
 
-   ionic (Ionic CLI)  : 4.0.5 (/home/developer/.nvm/versions/node/v8.11.3/lib/node_modules/ionic)
+   ionic (Ionic CLI)  : 4.1.0 (/home/developer/.nvm/versions/node/v8.11.3/lib/node_modules/ionic)
    Ionic Framework    : ionic-angular 3.9.2
    @ionic/app-scripts : 3.1.11
 
 Cordova:
 
    cordova (Cordova CLI) : 8.0.0
-   Cordova Platforms     : android 7.1.1, ios 4.5.4
+   Cordova Platforms     : android 7.1.1
+   Cordova Plugins       : cordova-plugin-ionic-webview 1.2.1, (and 18 other plugins)
 
 System:
 
