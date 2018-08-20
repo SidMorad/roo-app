@@ -150,6 +150,7 @@ export class Settings {
   }
 
   private storeCachedScoreLookups() {
+    this.updateLearnDirList();
     this.storage.set(this.scoreLookupCacheKey, JSON.stringify(this.cachedScoreLookup))
         .then(() => console.debug('Score lookups cached successfully.'))
         .catch(() => console.warn('Score lookups cache failed.'));
@@ -198,48 +199,59 @@ export class Settings {
     }
   }
 
-  scoreLookupCacheKeyPrefix: string = 'CACHED_SCORE_LOOKUP_';
+  private readonly scoreLookupCacheKeyPrefix: string = 'CACHED_SCORE_LOOKUP_';
   public get scoreLookupCacheKey(): string {
     return `${this.scoreLookupCacheKeyPrefix}${this.learnDir}_${this.difficultyLevel}`;
   }
 
-  learnDirList() {
-    return new Observable((observer) => {
-      let result = [];
-      let promises = [];
-      const keys = this.allPossibleScoreLookupKeys();
-      for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
-        let promise = this.storage.get(key).then((value) => {
-          if (value) {
-            result.push({ key: key, value: JSON.parse(value) });
-          }
-        }).catch();
-        promises.push(promise);
+  private readonly learnDirListKey: string = 'LEARN_DIR_LIST_KEY';
+  private updateLearnDirList() {
+    this.storage.get(this.learnDirListKey).then(learnDirDic => {
+      if (learnDirDic) {
+        learnDirDic[this.scoreLookupCacheKey] = JSON.stringify(this.cachedScoreLookup);
+      } else {
+        learnDirDic = {};
+        learnDirDic[this.scoreLookupCacheKey] = JSON.stringify(this.cachedScoreLookup);
       }
-      Promise.all(promises).then(() => {
-        observer.next(result);
+      this.storage.set(this.learnDirListKey, learnDirDic);
+    });
+  }
+
+  learnDirList() {
+    return new Observable(observer => {
+      this.storage.get(this.learnDirListKey).then(learnDirDic => {
+        if (learnDirDic) {
+          const result = Object.keys(learnDirDic).map(function(key) {
+            return { key: key, value: JSON.parse(learnDirDic[key]) };
+          });
+          observer.next(result);
+        } else {
+          observer.next([]);
+        }
         observer.complete();
-      }).catch();
+      });
+    });
+  }
+
+  deleteLearnDirFromList(key) {
+    const that = this;
+    return new Promise((resolve, reject) => {
+      that.storage.get(that.learnDirListKey).then(learnDirDic => {
+        delete learnDirDic[key];
+        that.storage.set(that.learnDirListKey, learnDirDic).then(() => {
+          resolve(true);
+        }).catch(err => reject(err));
+      }).catch(err => reject(err));
     });
   }
 
   removeByKey(key) {
-    return this.storage.remove(key);
-  }
-
-  private allPossibleScoreLookupKeys() : any[] {
-    let result = [];
-    for (let learnDir in LearnDir) {
-      if (isNaN(Number(learnDir))) {
-        for (let dl in DifficultyLevel) {
-          if (isNaN(Number(dl))) {
-            result.push(this.scoreLookupCacheKeyPrefix + learnDir + '_' + dl);
-          }
-        }
-      }
+    if (key.indexOf(this.scoreLookupCacheKeyPrefix) !== -1) {
+      const promises = [this.deleteLearnDirFromList(key), this.storage.remove(key)];
+      return Promise.all(promises);
+    } else {
+      return this.storage.remove(key);
     }
-    return result;
   }
 
 }

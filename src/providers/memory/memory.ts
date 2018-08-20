@@ -6,6 +6,11 @@ export class Memory {
   private lessonDoneSuccessfully: boolean;
   private numberOfDoneLessons: number;
   private previousScoreLevel: number;
+  private allLanguages: any[];
+
+  constructor() {
+    this.initAllLanguages();
+  }
 
   public setLessonDoneSuccessfully(value: boolean) {
     this.lessonDoneSuccessfully = value;
@@ -65,22 +70,18 @@ export class Memory {
     ];
   }
 
-  public translateKeyFor(languageCode: string) {
-    switch(languageCode) {
-      case 'DE_DE':
-        return 'LANG_GERMAN';
-      case 'EN_GB':
-        return 'LANG_ENGLISH';
-      case 'FA_IR':
-        return 'LANG_PERSIAN';
-      default:
-        for (let i = 0; i < this.betaLanguages().length; i++) {
-          if (this.betaLanguages()[i].value === languageCode) {
-            return this.betaLanguages()[i].translateKey;
-          }
-        }
-        // return this.betaLanguages().filter(row => { row.value === languageCode})['translateKey'];
+  private initAllLanguages() {
+    this.allLanguages = [];
+    this.allLanguages['DE_DE'] = { translateKey: 'LANG_GERMAN', value: 'ES_ES', flag: 'de' };
+    this.allLanguages['EN_GB'] = { translateKey: 'LANG_ENGLISH', value: 'EN_GB', flag: 'gb' };
+    this.allLanguages['FA_IR'] = { translateKey: 'LANG_PERSIAN', value: 'FA_IR', flag: 'ir' };
+    for (let i = 0; i < this.betaLanguages().length; i++) {
+      this.allLanguages[this.betaLanguages()[i].value] = this.betaLanguages()[i];
     }
+  }
+
+  public translateKeyFor(languageCode: string) {
+    return this.allLanguages[languageCode].translateKey;
   }
 
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { IonicPage, ViewController, NavController } from 'ionic-angular';
+import { IonicPage, ViewController, NavController, Platform } from 'ionic-angular';
 
 import { Settings, ScoreUtil, Memory } from '../../providers';
 
@@ -11,7 +11,7 @@ import { Settings, ScoreUtil, Memory } from '../../providers';
     <ion-item-sliding *ngFor="let learn of learnDirList">
       <ion-item (click)="switchTo(learn)">
         <ion-avatar item-start>
-          <span class="flag-icon flag-icon-{{learn.flagl}}"></span>
+          <span class="flag-icon flag-icon-{{learn.flag}}"></span>
         </ion-avatar>
         <h2>{{learn.translKey | translate}}
           <ion-spinner *ngIf="isSwitching && learn.wantToSwitch"></ion-spinner>
@@ -46,29 +46,31 @@ export class LearnDirPopover implements OnInit {
 
   constructor(private settings: Settings, private scoreUtil: ScoreUtil,
               private ngZone: NgZone, private viewCtrl: ViewController,
-              private navCtrl: NavController, private memory: Memory) {
+              private navCtrl: NavController, private memory: Memory,
+              private platform: Platform) {
+    this.platform.ready().then(() => {
+      this.loadLearnDirList();
+    });
   }
 
   ngOnInit() {
-    this.loadLearnDirList();
   }
 
   loadLearnDirList() {
     this.ngZone.run(() => {
     this.settings.learnDirList().subscribe((list: any[]) => {
       this.learnDirList = [];
-      list.forEach((row) => {
+      list.forEach(row => {
         const learnDir = row.value.learnDir;
         const target = learnDir.split('$')[1];
-        const targetFlag = target.split('_')[1];
+        const targetFlag = target.split('_')[1].toLowerCase();
         const translateKey = this.memory.translateKeyFor(target);
         const level = this.scoreUtil.resolveLevelFrom(row.value.total);
         let difIcon = row.value.difficultyLevel === 'Beginner' ? 'ios-text' : row.value.difficultyLevel === 'Intermediate' ? 'ios-chatbubbles' : 'ios-chatboxes';
         difIcon = row.key === this.currentKey ? difIcon : difIcon + '-outline';
         this.learnDirList.push({
-            flag: targetFlag, translKey: `${translateKey}`,
-            key: row.key, level: level, learnDir: learnDir, difLevel: row.value.difficultyLevel,
-            flagl: targetFlag.toLowerCase(), difIcon: difIcon });
+            flag: targetFlag, translKey: `${translateKey}`, key: row.key, level: level,
+            learnDir: learnDir, difLevel: row.value.difficultyLevel, difIcon: difIcon });
       });
     });
     });
