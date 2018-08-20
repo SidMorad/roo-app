@@ -240,4 +240,8 @@ export class SettingsPage {
     return this.platform.is('android');
   }
 
+  get isRTL(): boolean {
+    return this.platform.isRTL;
+  }
+
 }
