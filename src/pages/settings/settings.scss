@@ -1,3 +1,15 @@
 page-settings {
 
+  ion-list-header {
+    margin: 0 !important;
+  }
+
+  ion-label {
+    margin: 0 !important;
+  }
+
+  .beta-header ion-label {
+    line-height: 3em;
+  }
+
 }

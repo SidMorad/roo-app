@@ -71,13 +71,12 @@ export class Api {
     return this.get(`roo/api/public/lesson/search/${difficultyLevel}`, params, { observe: 'response' });
   }
 
-  // DEPRECATED
-  private getQuestions(lessonUuid: string, learnDir: string, difLevel: string): Observable<any> {
-    return this.get(`roo/api/public/questions/${learnDir}/${difLevel}/${lessonUuid}`);
-  }
-
   getWords(lessonUuid: string, learnDir: string): Observable<any> {
     return this.get(`roo/api/public/words/${learnDir}/${lessonUuid}`);
+  }
+
+  completedWordPercentage(languageCode: string): Observable<any> {
+    return this.get(`roo/api/public/words/${languageCode}/percentage`);
   }
 
   createScore(score: Score): Observable<any> {

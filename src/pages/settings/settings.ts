@@ -5,7 +5,7 @@ import { IonicPage, NavParams, ViewController, Platform, ToastController, Events
 import { AppVersion } from '@ionic-native/app-version';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Settings, Api, Principal } from '../../providers';
+import { Settings, Api, Principal, Memory } from '../../providers';
 
 /**
  * The Settings page is a simple form that syncs with a Settings provider
@@ -44,11 +44,17 @@ export class SettingsPage {
   saveInProgress: boolean;
   private unregisterBackButtonAction: any;
   showDnameError: boolean;
+  showBetaLangs: boolean;
+  betaLanguage = 'ES_ES'; // init Spanish
+  betaLanguages: any[];
+  betaLanguageRows: any;
+  betaCompletedPercentage: string;
+  betaCompletedPercentageIsInProgress: boolean;
 
   constructor(private settings: Settings,
     private formBuilder: FormBuilder, private navParams: NavParams,
     private translate: TranslateService, private api: Api, private platform: Platform,
-    public principal: Principal, private appVersion: AppVersion,
+    public principal: Principal, private appVersion: AppVersion, private memory: Memory,
     private viewCtrl: ViewController, private toastCtrl: ToastController, private events: Events) {
       this.appVersion.getVersionNumber().then((versionNum) => {
         this.versionNumber = versionNum;
@@ -61,6 +67,9 @@ export class SettingsPage {
           }
         }
       });
+      this.betaLanguages = this.memory.betaLanguages();
+      this.betaLanguageRows = Array.from(Array(Math.ceil(this.betaLanguages.length / 3)).keys());
+      this.betaLanguageClicked(this.betaLanguage);
   }
 
   _buildForm() {
@@ -106,6 +115,11 @@ export class SettingsPage {
       if (v.language && v.language !== this.translate.currentLang) {
         this.ok();
       }
+      if (v.targetLanguage === 'BETA') {
+        this.showBetaLangs = true;
+      } else {
+        this.showBetaLangs = false;
+      }
     });
   }
 
@@ -133,6 +147,11 @@ export class SettingsPage {
         if (account) {
           this.options.login = account.login;
         }
+        if (this.settings.allSettings['targetLanguage'] === 'BETA') {
+          this.betaLanguage = this.settings.allSettings['betaLanguage'];
+          this.showBetaLangs = true;
+          this.betaLanguageClicked(this.betaLanguage);
+        }
         this._buildForm();
       });
     });
@@ -156,10 +175,7 @@ export class SettingsPage {
       if (this.exitConfirmed) {
         this.viewCtrl.dismiss();
       }
-      const toast = this.toastCtrl.create({
-        message: 'Want to cancel update? press back again.',
-        duration: 3000,
-      });
+      const toast = this.toastCtrl.create({ message: 'Want to cancel update? press back again.', duration: 3000, position: 'middle' });
       toast.onDidDismiss(() => {
         this.exitConfirmed = false;
       });
@@ -167,11 +183,15 @@ export class SettingsPage {
       this.exitConfirmed = true;
     }
     this.saveInProgress = true;
+    this.form.value.betaLanguage = this.betaLanguage;
     this.settings.merge(this.form.value).then(() => {
       console.log('SETTINGS#VALUES ', this.settings.allSettings, this.form.value);
       let learnDir = this.settings.allSettings.learnDir;
       if (this.page === 'learn') {
-        learnDir = this.form.value.motherLanguage + '$' + this.form.value.targetLanguage;
+        if (this.form.value.targetLanguage === 'BETA')
+          learnDir = this.form.value.motherLanguage + '$' + this.betaLanguage;
+        else
+          learnDir = this.form.value.motherLanguage + '$' + this.form.value.targetLanguage;
       }
       this.settings.setValue('learnDir', learnDir).then(() => {
         if (this.principal.isAuthenticated()) {
@@ -202,6 +222,14 @@ export class SettingsPage {
         this.viewCtrl.dismiss();
       }
     }
+  }
+
+  betaLanguageClicked(languageCode) {
+    this.betaCompletedPercentageIsInProgress = true;
+    this.api.completedWordPercentage(languageCode).subscribe(percentage => {
+      this.betaCompletedPercentage = `${percentage} %`;
+      this.betaCompletedPercentageIsInProgress = false;
+    });
   }
 
   ngOnChanges() {

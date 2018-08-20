@@ -50,8 +50,8 @@ export class HomePage implements OnInit {
   ngOnInit() {
     console.log('Home initalized. ', new Date());
     this.fetchCategories();
-    this.appVersion.getVersionCode().then((versionCode) => {
-      this.api.versionCode().subscribe((remoteVersion) => {
+    this.appVersion.getVersionCode().then(versionCode => {
+      this.api.versionCode().subscribe(remoteVersion => {
         console.log('App version code is ', versionCode, ' and remoteVersion ', remoteVersion);
         if (+remoteVersion > +versionCode) {
           this.ngZone.run(() => {

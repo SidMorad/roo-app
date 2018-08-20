@@ -31,15 +31,13 @@ export class Lesson {
     return this.langs()[1];
   }
 
-  targetLocale(): string {
-    switch(this.targetLanguage()) {
-      case 'EN_GB':
-        return 'en-GB';
-      case 'DE_DE':
-        return 'de-DE';
-      default:
-        return 'en-GB';
+  targetLocale(isAndroid: boolean): string {
+    if (this.targetLanguage() === 'ZH_CN' && isAndroid) {
+      return 'cmn-Hans-CN';
     }
+    const lang = this.targetLanguage().split('_')[0].toLowerCase();
+    const country = this.targetLanguage().split('_')[1].toUpperCase();
+    return `${lang}-${country}`;
   }
 
   get motherLangKey(): string {

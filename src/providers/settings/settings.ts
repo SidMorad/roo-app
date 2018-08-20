@@ -127,9 +127,7 @@ export class Settings {
     // console.log('Notify At: ', time, +time[0], +time[1]);
     if (!isNaN(time[0]) && !isNaN(time[1])) {
       cordova.plugins.notification.local.schedule({
-        id: 1,
-        title: 'Roo',
-        text: 'Your daily lesson is ready.',
+        id: 1, title: 'Roo', text: 'Your daily lesson is ready.',
         icon: this.dailyLessonPictureUrl,
         trigger: { every: { hour: +time[0], minute: +time[1] } }
       });

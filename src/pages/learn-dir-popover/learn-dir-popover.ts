@@ -1,7 +1,7 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { IonicPage, ViewController, NavController } from 'ionic-angular';
 
-import { Settings, ScoreUtil } from '../../providers';
+import { Settings, ScoreUtil, Memory } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -46,7 +46,7 @@ export class LearnDirPopover implements OnInit {
 
   constructor(private settings: Settings, private scoreUtil: ScoreUtil,
               private ngZone: NgZone, private viewCtrl: ViewController,
-              private navCtrl: NavController) {
+              private navCtrl: NavController, private memory: Memory) {
   }
 
   ngOnInit() {
@@ -59,15 +59,14 @@ export class LearnDirPopover implements OnInit {
       this.learnDirList = [];
       list.forEach((row) => {
         const learnDir = row.value.learnDir;
-        const mother = learnDir.split('$')[0];
         const target = learnDir.split('$')[1];
-        const motherLang = mother.split('_')[0];
         const targetFlag = target.split('_')[1];
+        const translateKey = this.memory.translateKeyFor(target);
         const level = this.scoreUtil.resolveLevelFrom(row.value.total);
         let difIcon = row.value.difficultyLevel === 'Beginner' ? 'ios-text' : row.value.difficultyLevel === 'Intermediate' ? 'ios-chatbubbles' : 'ios-chatboxes';
         difIcon = row.key === this.currentKey ? difIcon : difIcon + '-outline';
         this.learnDirList.push({
-            flag: targetFlag, translKey: `LANG_${targetFlag}_${motherLang}`,
+            flag: targetFlag, translKey: `${translateKey}`,
             key: row.key, level: level, learnDir: learnDir, difLevel: row.value.difficultyLevel,
             flagl: targetFlag.toLowerCase(), difIcon: difIcon });
       });
