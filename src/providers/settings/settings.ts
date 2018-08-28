@@ -3,7 +3,7 @@ import { Platform } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Observable } from 'rxjs/Rx';
 
-import { DefaultSettings, ScoreLookup, Score, LearnDir, DifficultyLevel } from '../../models';
+import { DefaultSettings, ScoreLookup, Score } from '../../models';
 import { Api } from './../';
 
 declare var cordova: any;

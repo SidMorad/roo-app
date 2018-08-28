@@ -22,6 +22,26 @@ export class QuestionGenerator {
     }
   }
 
+  wordCompletationAnaysis(lessonWords) {
+    let isOk = true, doneNumber = 0, totalNumber = 0;
+    this.analysis(lessonWords);
+    this.pictures.forEach(row => {
+      if (lessonWords[row]['ts'].length === 0)
+        isOk = false;
+      else
+        doneNumber++;
+      totalNumber++;
+    });
+    this.subjects.forEach(row => {
+      if (lessonWords[row]['ts'].length === 0)
+        isOk = false;
+      else
+        doneNumber++;
+      totalNumber++;
+    });
+    return { isOk: isOk, total: totalNumber, done: doneNumber, remain: totalNumber - doneNumber};
+  }
+
   private generateBeginner(pictures, subjects, data) {
     let res = []; const maxIndex = subjects.length - 1; const maxPicIndex = pictures.length - 1;
     for (let i = 0; i < maxPicIndex; i = i + 4) {
@@ -153,15 +173,15 @@ export class QuestionGenerator {
   private analysis(data, isDialyLesson?: boolean) {
     this.pictures = [];
     this.subjects = [];
-    for (let i = 1; i <= Object.keys(data).length; i++) {
+    for (let i in data) {
       if (data[i].p) {  // if is picture
-        this.pictures.push(i);
+        this.pictures.push(+i);
       } else if (data[i].v || data[i].b) {  // if is a verb or a background word
         if (isDialyLesson) {
-          this.subjects.push(i);
+          this.subjects.push(+i);
         }
       } else {
-        this.subjects.push(i);
+        this.subjects.push(+i);
       }
     }
   }

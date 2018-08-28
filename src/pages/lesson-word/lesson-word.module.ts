@@ -4,21 +4,20 @@ import { TranslateModule } from '@ngx-translate/core';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { NgProgressHttpModule } from '@ngx-progressbar/http';
 
-
-import { LessonSearchPage } from './lesson-search';
+import { LessonWordPage } from './lesson-word';
 
 @NgModule({
   declarations: [
-    LessonSearchPage
+    LessonWordPage
   ],
   imports: [
-    IonicPageModule.forChild(LessonSearchPage),
+    IonicPageModule.forChild(LessonWordPage),
     TranslateModule.forChild(),
     NgProgressModule,
     NgProgressHttpModule
   ],
   exports: [
-    LessonSearchPage
+    LessonWordPage
   ]
 })
-export class LessonSearchModule { }
+export class LessonWordModule { }

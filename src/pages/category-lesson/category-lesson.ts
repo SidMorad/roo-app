@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
-import { IonicPage, Platform, NavParams, Slides, NavController, ToastController } from 'ionic-angular';
+import { IonicPage, Platform, NavParams, Slides, NavController } from 'ionic-angular';
 import { NgProgress } from '@ngx-progressbar/core';
 import { Subscription } from 'rxjs/Rx';
 
-import { Category, Lesson, ScoreTypeFactory } from '../../models';
-import { Api, Memory, Settings, QuestionGenerator } from '../../providers';
+import { Category, Lesson, ScoreTypeFactory, LessonSearch } from '../../models';
+import { Api, Memory, Settings, CategoryService } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -24,8 +24,7 @@ export class CategoryLessonPage implements OnInit {
 
   constructor(public platform: Platform, navParams: NavParams, private navCtrl: NavController,
               private api: Api, public ngProgress: NgProgress, private ngZone: NgZone,
-              private memory: Memory, private settings: Settings, private toastCtrl: ToastController,
-              private questionGenerator: QuestionGenerator) {
+              private memory: Memory, private settings: Settings, private categoryService: CategoryService) {
     this.category = navParams.get('category');
     this.lessons = [];
   }
@@ -111,19 +110,21 @@ export class CategoryLessonPage implements OnInit {
   }
 
   startLesson(index) {
-    this.subscription = this.api.getWords(this.lessons[index].uuid,
-                                              this.settings.learnDir).subscribe((res) => {
-      const lesson: Lesson = new Lesson(ScoreTypeFactory.lesson, this.lessons[index].uuid, null, this.settings.learnDir, this.lessons[index].indexOrder, null);
-      if (res.words.length === 0) {
-        this.toastCtrl.create({ message: 'Incorrect format', duration: 3000 }).present();
-        return;
-      }
-      const questions = res.questions.length === 0 ? this.questionGenerator.generate(res.words, this.settings.difficultyLevel) : res.questions;
-      this.navCtrl.push('LessonQuestionPage', {
-        category: this.category, lesson: lesson, questions: questions, words: res.words});
-    }, (error) => {
-      console.log('Oops this should not happend, TODO');
-    });
+    const lessonSearch = new LessonSearch(null, null, null, this.lessons[index].uuid, this.lessons[index].indexOrder, null);
+    this.subscription = this.categoryService.openLessonByLessonSearch(lessonSearch);
+    // this.subscription = this.api.getWords(this.lessons[index].uuid,
+    //                                           this.settings.learnDir).subscribe((res) => {
+    //   const lesson: Lesson = new Lesson(ScoreTypeFactory.lesson, this.lessons[index].uuid, null, this.settings.learnDir, this.lessons[index].indexOrder, null);
+    //   if (res.words.length === 0) {
+    //     this.toastCtrl.create({ message: 'Incorrect format', duration: 3000 }).present();
+    //     return;
+    //   }
+    //   const questions = res.questions.length === 0 ? this.questionGenerator.generate(res.words, this.settings.difficultyLevel) : res.questions;
+    //   this.navCtrl.push('LessonQuestionPage', {
+    //     category: this.category, lesson: lesson, questions: questions, words: res.words});
+    // }, (error) => {
+    //   console.log('Oops this should not happend, TODO');
+    // });
   }
 
   cancel(index) {

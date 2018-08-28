@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
 
-import { Score, DefaultSettings, Category } from '../../models';
+import { Score, DefaultSettings, Category, CommWordCommand, TranslateCommand } from '../../models';
 
 /**
  * Api is a generic(and customized for Roo domain) REST Api handler.
@@ -10,7 +10,7 @@ import { Score, DefaultSettings, Category } from '../../models';
 @Injectable()
 export class Api {
   public static API_URL: string = 'https://mars.webebook.org/';
-  // public static API_URL: string = 'http://192.168.10.106:8080/';
+  // public static API_URL: string = 'http://192.168.10.166:8080/';
 
   constructor(private http: HttpClient) {
   }
@@ -81,6 +81,22 @@ export class Api {
 
   createScore(score: Score): Observable<any> {
     return this.post('roo/api/user/score/create', score);
+  }
+
+  createCommWord(cmd: CommWordCommand) {
+    return this.post('roo/api/user/comm-words', cmd);
+  }
+
+  updateCommWord(cmd: CommWordCommand) {
+    return this.put('roo/api/user/comm-words', cmd);
+  }
+
+  deleteCommWord(commWordUuid: string) {
+    return this.delete(`roo/api/user/comm-words/${commWordUuid}`);
+  }
+
+  translateWithGoogleTranslate(translateCommnd: TranslateCommand) {
+    return this.post(`roo/api/user/translate`, translateCommnd);
   }
 
   get(endpoint: string, params?: any, reqOpts?: any) {

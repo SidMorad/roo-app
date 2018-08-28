@@ -61,20 +61,9 @@ export class HomePage implements OnInit {
             this.alertCtrl.create({
               title: this.labelUpdate,
               message: this.labelNewVersionIsAvaialable,
-              buttons: [
-                {
-                  text: this.labelCancel,
-                  role: 'cancel'
-                },
-                {
-                  text: this.labelUpgrade,
-                  cssClass: 'btn-success',
-                  handler: () => {
-                    this.upgrade();
-                  }
-                }
-              ]
-            }).present();
+              buttons: [ { text: this.labelCancel, role: 'cancel' },
+                         { text: this.labelUpgrade, cssClass: 'btn-success',
+                           handler: () => { this.upgrade(); } } ] }).present();
           }, 3000);
         }
       });
@@ -166,7 +155,7 @@ export class HomePage implements OnInit {
 
   fetchCategories(force?: boolean) {
     this.showRetryButton = true;
-    this.api.getCategoryPublicList(this.settings.learnDir, force).subscribe((response) => {
+    this.api.getCategoryPublicList(this.settings.learnDir, force).subscribe(response => {
       this.ngZone.run(() => {
         this.categories = response;
         this.showRetryButton = false;
@@ -241,38 +230,51 @@ export class HomePage implements OnInit {
   }
 
   startDailyLesson() {
+    if (this.dailyLessonIsLoading)
+      return;
     if (this.principal.isAuthenticated()) {
       this.dailyLessonIsLoading = true;
       this.api.getWords(this.dailyLesson.uuid, this.settings.learnDir).subscribe((res) => {
         if (res.words.lenth === 0) {
           this.toastCtrl.create({ message: 'Incorrect format', duration: 3000, position: 'middle' }).present();
+          this.dailyLessonIsLoading = false;
           return;
         }
-        console.log('recievied words response : ', res.words);
+        const isok = this.questionGenerator.wordCompletationAnaysis(res.words);
+        console.log('isOk: ', isok, res.words);
+        if (!isok.isOk) {
+          this.translateService.get('X_OUT_OF_Y_PHRASES_ARE_COMPLETE_WOULD_YOU_LIKE_TO_TRANSLATE_REMAIN_Z_PHRASES_TO_PROGRESS_FORWARD_WITH_THE_LESSON', { X: isok.done, Y: isok.total, Z: isok.remain }).subscribe(message => {
+            this.alertCtrl.create({
+              title: this.labelTranslateIsIncomplete,
+              message: message,
+              buttons: [ { text: this.labelNo, role: 'cancel' },
+              { text: this.labelYes, cssClass: 'btn-success',
+              handler: () => { this.navCtrl.push('LessonWordPage',
+                                { words: res.words, lesson: this.dailyLesson }); } } ]
+            }).present();
+          });
+          this.dailyLessonIsLoading = false;
+          return;
+        }
         const questions = this.questionGenerator.generate(res.words, this.settings.difficultyLevel, true);
-        console.log('Generated questions were : ', questions);
         this.navCtrl.push('LessonQuestionPage', {
-          lesson: this.dailyLesson,
-          questions: questions,
+          lesson: this.dailyLesson, questions: questions,
           words: res.words}).then(() => {
             this.dailyLessonIsLoading = false;
           });
       }, (error) => {
-        console.log('Oops this should not happend, TODO');
+        console.warn('Oops this should not happend, TODO');
         this.dailyLessonIsLoading = false;
       });
     } else {
-      let toastInstance = this.toastCtrl.create({
+      const toastInstance = this.toastCtrl.create({
         message: this.pleaseLoginLabel, duration: 3000, position: 'middle',
         showCloseButton: true, closeButtonText: this.loginLabel, dismissOnPageChange: true
       });
       toastInstance.onDidDismiss((data, role) => {
         if (role === 'close') {
-          this.loginService.appLogin(data => {
-          }, (error) => {
-          });
+          this.loginService.appLogin(data => {}, error => {});
         }
-        toastInstance = null;
       });
       toastInstance.present();
     }
@@ -356,6 +358,9 @@ export class HomePage implements OnInit {
   labelUpgrade: string;
   labelNewVersionIsAvaialable: string;
   labelCancel: string;
+  labelTranslateIsIncomplete: string;
+  labelYes: string;
+  labelNo: string;
 
   initTranslations() {
     return new Observable((observer) => {
@@ -363,7 +368,8 @@ export class HomePage implements OnInit {
                                  'CLICK_HERE_TO_SEE_GUIDE', 'TO_THE_RIGHT',
                                  'AND_CONTINUE_YOUR_PATH', 'SOON_LABEL',
                                  'PLEASE_LOGIN_FIRST', 'LOGIN_BUTTON', 'CANCEL_BUTTON',
-                                 'UPDATE', 'UPGRADE', 'NEW_VERSION_IS_AVAILABLE']).subscribe((translated) => {
+                                 'UPDATE', 'UPGRADE', 'NEW_VERSION_IS_AVAILABLE',
+                                 'TRANSLATE_IS_INCOMPLETE', 'YES', 'NO']).subscribe((translated) => {
         this.labelOk = translated.OK;
         this.labelNext = translated.NEXT;
         this.labelPrev = translated.PREV;
@@ -378,6 +384,9 @@ export class HomePage implements OnInit {
         this.labelUpgrade = translated.UPGRADE;
         this.labelNewVersionIsAvaialable = translated.NEW_VERSION_IS_AVAILABLE;
         this.labelCancel = translated.CANCEL_BUTTON;
+        this.labelTranslateIsIncomplete = translated.TRANSLATE_IS_INCOMPLETE;
+        this.labelYes = translated.YES;
+        this.labelNo = translated.NO;
         observer.next(translated);
         observer.complete();
       });

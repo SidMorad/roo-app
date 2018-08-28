@@ -8,6 +8,7 @@
         <span class="flag-icon flag-icon-{{searchFlag}}"></span>
       </button>
     </ion-buttons>
+    <ng-progress></ng-progress>
   </ion-toolbar>
 </ion-header>
 
@@ -20,9 +21,7 @@
       <h2>{{lesson.cTitle}}</h2>
     </ion-item-divider>
     <ion-item *virtualItem="let lesson" (click)="openLesson(lesson)">
-      <h2>{{lessonTitleKey(lesson) | translate}} {{lessonNumber(lesson)}}
-        <ion-spinner *ngIf="lesson.isLoading"></ion-spinner>
-      </h2>
+      <h2>{{lessonTitleKey(lesson) | translate}} {{lessonNumber(lesson)}}</h2>
       <p *ngIf="starLookup(lesson) !== 0" item-end>
         <span *ngFor="let i of [1, 2, 3, 4, 5]">
           <ion-icon name="star" color="gold" *ngIf="i <= starLookup(lesson)" style="zoom:2;"></ion-icon>

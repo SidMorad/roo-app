@@ -15,3 +15,7 @@ export * from './subscribe.model';
 export * from './two.word';
 export * from './default-settings';
 export * from './difficulty-level';
+export * from './comm-word.command';
+export * from './lesson-search.model';
+export * from './translate.command';
+export * from './translate.dto';

@@ -16,7 +16,7 @@ export class Lesson {
   }
 
   isTargetLangLTR(): boolean {
-    return this.targetLanguage() !== 'FA_IR';
+    return !(this.targetLanguage() === 'FA_IR' || this.targetLanguage() === 'HE_IL' || this.targetLanguage() === 'AR_SA');
   }
 
   langs(): any {

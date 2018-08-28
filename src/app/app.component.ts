@@ -72,7 +72,7 @@ export class MyApp implements OnInit {
   account: Account = new Account();
   dname: string;
   exitConfirmationText: string;
-  // fallbackAuthBaseUrl: string = 'http://192.168.10.106:9080';
+  // fallbackAuthBaseUrl: string = 'http://192.168.10.166:9080';
   fallbackAuthBaseUrl: string = 'https://mars.webebook.org';
   onLangChangeSubscription: Subscription;
   appVersionNumber: string;

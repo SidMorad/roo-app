@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      {{'LESSON_REVIEW' | translate}}
+    </ion-title>
+    <ion-buttons end>
+      <span class="flag-icon flag-icon-{{target.flag}}"></span>
+    </ion-buttons>
+    <ion-buttons left>
+      <span class="flag-icon flag-icon-{{mother.flag}}"></span>
+    </ion-buttons>
+    <ng-progress></ng-progress>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list class="accordion-list">
+    <ion-list-header *ngFor="let item of wordList; let i = index" no-lines no-padding>
+      <button ion-item (click)="toggleSection(i)" detail-none [ngClass]="{'section-active': item.open, 'section': !item.open}">
+        <ion-icon item-start name="arrow-forward" *ngIf="!item.open"></ion-icon>
+        <ion-icon item-start name="arrow-down" *ngIf="item.open"></ion-icon>
+        <ion-avatar item-start *ngIf="item.p">
+          <img [src]="resolveImageUrl(item)"/>
+        </ion-avatar>
+        <div [class.dir-ltr]="!lesson.isMotherLangRTL()" [class.dir-rtl]="lesson.isMotherLangRTL()"
+             [class.text-left]="!lesson.isMotherLangRTL()" [class.text-right]="lesson.isMotherLangRTL()">
+             {{item.ms[0].w}}
+        </div>
+      </button>
+
+      <ion-item-sliding *ngIf="item.open" #slidingItem>
+        <ion-item>
+          <ion-input [(ngModel)]="item.ts[0].w" (ionBlur)="wordChangeEvent(item)" placeholder="{{'TYPE_HERE_' + target.lang | translate }} {{item.ms[0].w}}"
+            [class.dir-ltr]="lesson.isTargetLangLTR()"   [class.dir-rtl]="!lesson.isTargetLangLTR()"
+            [class.text-left]="lesson.isTargetLangLTR()" [class.text-right]="!lesson.isTargetLangLTR()"></ion-input>
+        </ion-item>
+        <ion-item-options side="end">
+          <button ion-button expandable (click)="translateWithGoogleTranslate(item, slidingItem)">
+            <ion-icon name="logo-google"></ion-icon>T
+          </button>
+        </ion-item-options>
+    </ion-item-sliding>
+
+      <ng-container *ngIf="item.open && item.ts.length > 1">
+        <ion-item *ngFor="let child of item.ts | slice:1;"
+          [class.dir-ltr]="lesson.isTargetLangLTR()"   [class.dir-rtl]="!lesson.isTargetLangLTR()"
+          [class.text-left]="lesson.isTargetLangLTR()" [class.text-right]="!lesson.isTargetLangLTR()">
+          {{child.w}}
+        </ion-item>
+      </ng-container>
+
+    </ion-list-header>
+  </ion-list>
+</ion-content>

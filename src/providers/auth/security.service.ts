@@ -14,6 +14,7 @@ export class SecurityService {
     if (localStorage.getItem(AUTH_CONFIG)) {
       const authConfig: AuthConfig = JSON.parse(localStorage.getItem(AUTH_CONFIG));
       // console.log('AUTH_CONFIG: ', authConfig);
+      // authConfig.requireHttps = false;
       this.oauthService.configure(authConfig);
       this.oauthService.dummyClientSecret = 'ce33892c-bd46-429f-a91d-65358439f127';
     }

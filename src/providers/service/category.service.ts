@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { App, ToastController } from 'ionic-angular';
+import { App, ToastController, AlertController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Principal, Api, Settings, QuestionGenerator } from '../';
-import { Lesson, ScoreTypeFactory } from '../../models';
+import { Lesson, ScoreTypeFactory, LessonSearch } from '../../models';
 
 @Injectable()
 export class CategoryService {
@@ -12,7 +12,8 @@ export class CategoryService {
 
   constructor(private principal: Principal, private app: App,
     private toastCtrl: ToastController, private api: Api, private settings: Settings,
-    private translateService: TranslateService, private questionGenerator: QuestionGenerator) {
+    private translateService: TranslateService, private questionGenerator: QuestionGenerator,
+    private alertCtrl: AlertController) {
       this.initTranslations();
   }
 
@@ -30,7 +31,7 @@ export class CategoryService {
     }
   }
 
-  openLesson(lessonSearch: any) {
+  openLesson(lessonSearch: LessonSearch) {
     if(!this.categoryIdentityMap) {
       this.initalizeCategoryIdentityMap().subscribe(res => {
         this.categoryIdentityMap = {};
@@ -63,12 +64,27 @@ export class CategoryService {
     });
   }
 
-  private openLessonByLessonSearch(lessonSearch: any) {
-    this.api.getWords(lessonSearch.lUuid, this.settings.learnDir).subscribe(res => {
+  public openLessonByLessonSearch(lessonSearch: LessonSearch) {
+    return this.api.getWords(lessonSearch.lUuid, this.settings.learnDir).subscribe(res => {
+      // console.log('Received lesson: ', res);
       const lesson: Lesson = new Lesson(ScoreTypeFactory.lesson, lessonSearch.lUuid, null, this.settings.learnDir, lessonSearch.lIndex, null);
       if (res.words.length === 0) {
         this.showCommingSoonToast();
         lessonSearch.isLoading = false;
+        return;
+      }
+      const isok = this.questionGenerator.wordCompletationAnaysis(res.words);
+      if (!isok.isOk) {
+        this.translateService.get('X_OUT_OF_Y_PHRASES_ARE_COMPLETE_WOULD_YOU_LIKE_TO_TRANSLATE_REMAIN_Z_PHRASES_TO_PROGRESS_FORWARD_WITH_THE_LESSON', { X: isok.done, Y: isok.total, Z: isok.remain }).subscribe(message => {
+          this.alertCtrl.create({
+            title: this.labelTranslateIsIncomplete,
+            message: message,
+            buttons: [ { text: this.labelNo, role: 'cancel' },
+            { text: this.labelYes, cssClass: 'btn-success',
+            handler: () => { this.app.getActiveNav().push('LessonWordPage',
+                              { words: res.words, lesson: lesson }); } } ]
+          }).present();
+        });
         return;
       }
       const questions = res.questions.length === 0 ? this.questionGenerator.generate(res.words, this.settings.difficultyLevel) : res.questions;
@@ -115,9 +131,15 @@ export class CategoryService {
   }
 
   labelSoon: string;
+  labelYes: string;
+  labelNo: string;
+  labelTranslateIsIncomplete: string;
   initTranslations() {
-    this.translateService.get(['SOON_LABEL']).subscribe(translated => {
+    this.translateService.get(['SOON_LABEL', 'YES', 'NO', 'TRANSLATE_IS_INCOMPLETE']).subscribe(translated => {
       this.labelSoon = translated.SOON_LABEL;
+      this.labelYes = translated.YES;
+      this.labelNo = translated.NO;
+      this.labelTranslateIsIncomplete = translated.TRANSLATE_IS_INCOMPLETE
     });
   }
 }

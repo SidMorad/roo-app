@@ -1,5 +1,6 @@
 import { Component, NgZone, Renderer2 } from '@angular/core';
 import { IonicPage, InfiniteScroll } from 'ionic-angular';
+import { NgProgress } from '@ngx-progressbar/core';
 
 import { Settings, Api, CategoryService, JhiParseLinks } from '../../providers';
 import { IMAGE_ORIGIN } from '../../app/app.constants';
@@ -22,7 +23,7 @@ export class LessonSearchPage {
 
   constructor(private settings: Settings, private api: Api, private ngZone: NgZone,
               private categoryService: CategoryService, private jhiParseLinks:JhiParseLinks,
-              private renderer: Renderer2) {
+              private renderer: Renderer2, private ngProgress: NgProgress) {
   }
 
   ionViewDidLoad() {
@@ -32,13 +33,12 @@ export class LessonSearchPage {
     }
     this.searchText = '';
     this.searchResults = [];
+    this.initSearchLangFromSettings();
     this.doSearch();
   }
 
   ionViewDidEnter() {
-    this.searchLang = this.settings.motherLang;
-    this.searchFlag = this.settings.motherFlag.toLowerCase();
-    this.alternFlag = this.settings.targetFlag.toLowerCase();
+    this.initSearchLangFromSettings();
   }
 
 
@@ -59,16 +59,11 @@ export class LessonSearchPage {
     let options = {
       page: this.page,
       'lessonDifficLevel.equals': this.settings.difficultyLevel,
+      'language.equals': `${this.searchLang}_${this.searchFlag.toUpperCase()}`,
       sort: 'categoryIndexOrder,lessonIndexOrder'
     };
     if (searchText) {
-      if (this.searchLang === 'EN') {
-        options['wordEnGb.contains'] = searchText;
-      } else if (this.searchLang === 'FA') {
-        options['wordFaIr.contains'] = searchText;
-      } else if (this.searchLang === 'DE') {
-        options['wordDeDe.contains'] = searchText;
-      }
+      options['text.contains'] = searchText;
     }
     this.api.searchLesson(this.settings.learnDir, options).subscribe((res) => {
       console.log('Full response: ', res);
@@ -86,6 +81,7 @@ export class LessonSearchPage {
         console.log('infiniteScroll done, total result size is ', this.searchResults.length, ' links: ', this.links);
         infiniteScroll.complete();
       }
+      this.ngProgress.complete();
     });
   });
   }
@@ -104,7 +100,6 @@ export class LessonSearchPage {
   }
 
   openLesson(lessonSearch: any) {
-    lessonSearch.isLoading = true;
     this.categoryService.openLesson(lessonSearch);
   }
 
@@ -170,6 +165,12 @@ export class LessonSearchPage {
             this.renderer.selectRootElement(selector).focus();
         }, 0);
     });
+  }
+
+  initSearchLangFromSettings() {
+    this.searchLang = this.settings.motherLang;
+    this.searchFlag = this.settings.motherFlag.toLowerCase();
+    this.alternFlag = this.settings.targetFlag.toLowerCase();
   }
 
 }
