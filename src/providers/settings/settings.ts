@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { Platform, Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Observable } from 'rxjs/Rx';
 
@@ -19,7 +19,7 @@ export class Settings {
   public dailyLessonPictureUrl: string;
 
   constructor(private storage: Storage, public defaults: DefaultSettings,
-    private api: Api, private platform: Platform) {
+    private api: Api, private platform: Platform, private events: Events) {
     this._defaults = defaults;
     this.loadCachedScoreLookups();
     if (this.platform.is('android')) {
@@ -93,7 +93,6 @@ export class Settings {
   get targetLang() { return this.learnDir.split('$')[1].split('_')[0]; }
   get targetFlag() { return this.learnDir.split('$')[1].split('_')[1]; }
 
-
   get difficultyLevel() {
     return this.settings ? this.settings.difficultyLevel : 'Beginner';
   }
@@ -140,6 +139,7 @@ export class Settings {
         this.setValue('difficultyLevel', difLevel).then(() => {
           this.api.getCategoryPublicList(learnDir, true).subscribe(() => {
             this.loadCachedScoreLookups(true).subscribe(() => {
+              this.events.publish('LEARN_DIR_DIFFIC_LEVEL_SWITCH_EVENT');
               observer.next(true);
               observer.complete();
             });

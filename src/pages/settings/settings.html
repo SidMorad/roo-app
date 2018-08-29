@@ -60,9 +60,9 @@
             {{'MOTHER_GERMAN' | translate}}</ion-option>
         </ion-select>
       </ion-item>
-      <ion-item *ngIf="isAndroid">
+      <ion-item *ngIf="isAndroid" (click)="advertismentClicked()">
         <ion-label>{{ 'SETTINGS_ADVERTISMENT_ENABLE' | translate }}</ion-label>
-        <ion-toggle formControlName="advertismentEnabled"></ion-toggle>
+        <ion-toggle formControlName="advertismentEnabled" [disabled]="!isMember"></ion-toggle>
       </ion-item>
       <ion-item>
         <ion-label>{{'APP_VERSION' | translate}}</ion-label>

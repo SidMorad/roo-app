@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { IonicPage, NavParams, ViewController, Platform, ToastController, Events } from 'ionic-angular';
+import { IonicPage, NavParams, ViewController, Platform, ToastController, Events, NavController } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Settings, Api, Principal, Memory } from '../../providers';
+import { Account } from '../../models';
 
 /**
  * The Settings page is a simple form that syncs with a Settings provider
@@ -50,12 +51,14 @@ export class SettingsPage {
   betaLanguageRows: any;
   betaCompletedPercentage: string;
   betaCompletedPercentageIsInProgress: boolean;
+  isMember: boolean;
 
   constructor(private settings: Settings,
     private formBuilder: FormBuilder, private navParams: NavParams,
     private translate: TranslateService, private api: Api, private platform: Platform,
     public principal: Principal, private appVersion: AppVersion, private memory: Memory,
-    private viewCtrl: ViewController, private toastCtrl: ToastController, private events: Events) {
+    private viewCtrl: ViewController, private toastCtrl: ToastController, private events: Events,
+    private navCtrl: NavController) {
       this.appVersion.getVersionNumber().then((versionNum) => {
         this.versionNumber = versionNum;
       }).catch((err) => { console.error('getVersionNumber ', err) });
@@ -138,14 +141,21 @@ export class SettingsPage {
 
     this.translate.get(this.pageTitleKey).subscribe((res) => {
       this.pageTitle = res;
-    })
+    });
 
     this.settings.load().then(() => {
-      this.principal.identity().then((account) => {
+      this.principal.identity().then((account: Account) => {
         this.settingsReady = true;
         this.options = this.settings.allSettings;
         if (account) {
           this.options.login = account.login;
+          if (account.member) {
+            this.isMember = true;
+          } else {
+            this.options.advertismentEnabled = true;
+          }
+        } else {
+          this.options.advertismentEnabled = true;
         }
         if (this.settings.allSettings['targetLanguage'] === 'BETA') {
           this.betaLanguage = this.settings.allSettings['betaLanguage'];
@@ -230,6 +240,25 @@ export class SettingsPage {
       this.betaCompletedPercentage = `${percentage} %`;
       this.betaCompletedPercentageIsInProgress = false;
     });
+  }
+
+  advertismentClicked() {
+    if (!this.isMember) {
+      this.translate.get(['SUBSCRIBE_TITLE', 'SUBSCRIPTION']).subscribe(translated => {
+        const toastInstance = this.toastCtrl.create({
+          message: translated.SUBSCRIBE_TITLE, duration: 2000, position: 'middle',
+          dismissOnPageChange: true, showCloseButton: true, closeButtonText: translated.SUBSCRIPTION
+        });
+        toastInstance.onDidDismiss((data, role) => {
+          if (role === 'close') {
+            this.navCtrl.push('SubscribePage').then(() => {
+              this.viewCtrl.dismiss();
+            });
+          }
+        });
+        toastInstance.present();
+      });
+    }
   }
 
   ngOnChanges() {

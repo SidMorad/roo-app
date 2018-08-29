@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, ToastController, Platform, ItemSliding } from 'ionic-angular';
 
-import { Api, CategoryService } from '../../providers';
+import { Api } from '../../providers';
 import { IMAGE_ORIGIN } from '../../app/app.constants';
 import { Lesson, CommWordCommand, TranslateCommand } from '../../models';
 
@@ -20,7 +20,7 @@ export class LessonWordPage {
   wordList: any[];
 
   constructor(private api: Api, navParams: NavParams, private platform: Platform,
-              private categoryService: CategoryService, private toastCtrl: ToastController) {
+              private toastCtrl: ToastController) {
     this.lesson = navParams.get('lesson');
     this.words = navParams.get('words');
     const mt = this.lesson.learnDir.split('$');
@@ -36,11 +36,6 @@ export class LessonWordPage {
   }
 
   ionViewDidEnter() {
-  }
-
-  openLesson(lessonSearch: any) {
-    lessonSearch.isLoading = true;
-    this.categoryService.openLesson(lessonSearch);
   }
 
   wordChangeEvent(item) {

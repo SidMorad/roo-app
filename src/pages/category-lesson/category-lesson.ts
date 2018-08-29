@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
 import { IonicPage, Platform, NavParams, Slides, NavController } from 'ionic-angular';
 import { NgProgress } from '@ngx-progressbar/core';
-import { Subscription } from 'rxjs/Rx';
 
 import { Category, Lesson, ScoreTypeFactory, LessonSearch } from '../../models';
 import { Api, Memory, Settings, CategoryService } from '../../providers';
@@ -19,7 +18,6 @@ export class CategoryLessonPage implements OnInit {
   category: Category;
   isEnd: boolean;
   isBeginning: boolean;
-  subscription: Subscription;
   initialIndexToGo: number;
 
   constructor(public platform: Platform, navParams: NavParams, private navCtrl: NavController,
@@ -110,27 +108,23 @@ export class CategoryLessonPage implements OnInit {
   }
 
   startLesson(index) {
-    const lessonSearch = new LessonSearch(null, null, null, this.lessons[index].uuid, this.lessons[index].indexOrder, null);
-    this.subscription = this.categoryService.openLessonByLessonSearch(lessonSearch);
-    // this.subscription = this.api.getWords(this.lessons[index].uuid,
-    //                                           this.settings.learnDir).subscribe((res) => {
-    //   const lesson: Lesson = new Lesson(ScoreTypeFactory.lesson, this.lessons[index].uuid, null, this.settings.learnDir, this.lessons[index].indexOrder, null);
-    //   if (res.words.length === 0) {
-    //     this.toastCtrl.create({ message: 'Incorrect format', duration: 3000 }).present();
-    //     return;
-    //   }
-    //   const questions = res.questions.length === 0 ? this.questionGenerator.generate(res.words, this.settings.difficultyLevel) : res.questions;
-    //   this.navCtrl.push('LessonQuestionPage', {
-    //     category: this.category, lesson: lesson, questions: questions, words: res.words});
-    // }, (error) => {
-    //   console.log('Oops this should not happend, TODO');
-    // });
+    const l: Lesson = this.lessons[index];
+    const c = this.category;
+    const lessonSearch = new LessonSearch(c.uuid, c.indexOrder, c.title, l.uuid, l.indexOrder);
+    this.categoryService.openLesson(lessonSearch);
+  }
+
+  review(index) {
+    const l: Lesson = this.lessons[index];
+    const c = this.category;
+    const lessonSearch = new LessonSearch(c.uuid, c.indexOrder, c.title, l.uuid, l.indexOrder);
+    this.categoryService.openReview(lessonSearch);
   }
 
   cancel(index) {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    // if (this.subscription) {
+    //   this.subscription.unsubscribe();
+    // }
   }
 
   isInProgress() {

@@ -4,7 +4,7 @@ import { NgProgress } from '@ngx-progressbar/core';
 
 import { Settings, Api, CategoryService, JhiParseLinks } from '../../providers';
 import { IMAGE_ORIGIN } from '../../app/app.constants';
-import { Lesson, ScoreTypeFactory } from '../../models';
+import { Lesson, ScoreTypeFactory, LessonSearch } from '../../models';
 
 @IonicPage()
 @Component({
@@ -99,7 +99,7 @@ export class LessonSearchPage {
     this.categoryService.openCategory(categoryUuid);
   }
 
-  openLesson(lessonSearch: any) {
+  openLesson(lessonSearch: LessonSearch) {
     this.categoryService.openLesson(lessonSearch);
   }
 

@@ -10,3 +10,11 @@ export const MAIL_SUPPORT = 'webebook.org@gmail.com';
 export const TELEGRAM_SUPPORT = 'mars_tech';
 
 export const TELEGRAM_CHANNEL = 'mars_roo';
+
+// export const API_URL = 'http://192.168.10.166:8080/';
+export const API_URL = 'https://mars.webebook.org/';
+
+// export const AUTH_URL = 'http://192.168.10.166:9080/';
+export const AUTH_URL = API_URL;
+
+export const TRANSLATE_URL = 'https://server-marstranslate.wedeploy.io/';

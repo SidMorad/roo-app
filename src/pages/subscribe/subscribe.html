@@ -44,7 +44,9 @@
         <ion-icon name="pricetag"></ion-icon>
         <span class="padh-10">{{'1 Month' | translate}}</span>
         <span class="padh-10">|</span>
-        <span class="padh-10">{{'10 Toman' | translate}}</span>
+        <span class="padh-10 old-price">{{'10 Toman' | translate}}</span>
+        <ion-badge id="discount-badge" color="danger" [style.left]="isRTL ? '10%': '60%'">90% OFF!</ion-badge>
+        <ion-badge id="new-price" color="secondary" [style.left]="isRTL ? '10%': '60%'">{{'1 Toman' | translate}}</ion-badge>
       </button>
     </ion-item>
     <ion-item text-center *ngIf="false">

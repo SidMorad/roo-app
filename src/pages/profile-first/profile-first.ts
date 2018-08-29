@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { IonicPage, ViewController, NavParams, Platform } from 'ionic-angular';
 
-import { Settings, Api, Principal } from '../../providers';
+import { Settings, Api, Principal, Memory } from '../../providers';
 import { DefaultSettings, Account } from '../../models';
 
 /**
@@ -26,11 +26,20 @@ export class ProfileFirstPage {
   pageTitle: string;
   isLoading: boolean;
   private unregisterBackButtonAction: any;
+  showBetaLangs: boolean;
+  betaLanguage = 'ES_ES'; // init Spanish
+  betaLanguages: any[];
+  betaLanguageRows: any;
+  betaCompletedPercentage: string;
+  betaCompletedPercentageIsInProgress: boolean;
 
   constructor(private viewCtrl: ViewController, private api: Api,
     private settings: Settings, private formBuilder: FormBuilder,
     private navParams: NavParams, private translate: TranslateService,
-    private principal: Principal, private platform: Platform) {
+    private principal: Principal, private platform: Platform, private memory: Memory) {
+    this.betaLanguages = this.memory.betaLanguages();
+    this.betaLanguageRows = Array.from(Array(Math.ceil(this.betaLanguages.length / 3)).keys());
+    this.betaLanguageClicked(this.betaLanguage);
   }
 
   _buildForm() {
@@ -47,6 +56,11 @@ export class ProfileFirstPage {
     this.form.valueChanges.subscribe((v) => {
       if (v.motherLanguage === 'EN_GB' && v.targetLanguage === 'EN_GB') {
         this.form.controls['motherLanguage'].setValue('FA_IR');
+      }
+      if (v.targetLanguage === 'BETA') {
+        this.showBetaLangs = true;
+      } else {
+        this.showBetaLangs = false;
       }
       this.settings.merge(this.form.value);
     });
@@ -80,6 +94,11 @@ export class ProfileFirstPage {
             this.principal.identity().then((account: Account) => {
               this.pageTitle = this.pageTitle + ' ' + account.login;
               this.settingsReady = true;
+              if (this.settings.allSettings['targetLanguage'] === 'BETA') {
+                this.betaLanguage = this.settings.allSettings['betaLanguage'];
+                this.showBetaLangs = true;
+                this.betaLanguageClicked(this.betaLanguage);
+              }
               this._buildForm();
               this.isLoading = false;
             });
@@ -102,7 +121,11 @@ export class ProfileFirstPage {
   ok() {
     if (this.isLoading) return;
     this.isLoading = true;
-    const learnDir =  this.form.value['motherLanguage'] + '$' + this.form.value['targetLanguage'];
+    let learnDir: string;
+    if (this.form.value.targetLanguage === 'BETA')
+      learnDir = this.form.value.motherLanguage + '$' + this.betaLanguage;
+    else
+      learnDir = this.form.value.motherLanguage + '$' + this.form.value.targetLanguage;
     this.settings.setValue('learnDir',learnDir).then(() => {
       this.api.updateProfile(this.settings.allSettings).subscribe(() => {
         this.settings.switchLearnLevelTo(learnDir, this.settings.difficultyLevel).subscribe(() => {
@@ -111,6 +134,14 @@ export class ProfileFirstPage {
       }, (err) => {
         console.warn('Update profile failed.');
       });
+    });
+  }
+
+  betaLanguageClicked(languageCode) {
+    this.betaCompletedPercentageIsInProgress = true;
+    this.api.completedWordPercentage(languageCode).subscribe(percentage => {
+      this.betaCompletedPercentage = `${percentage} %`;
+      this.betaCompletedPercentageIsInProgress = false;
     });
   }
 

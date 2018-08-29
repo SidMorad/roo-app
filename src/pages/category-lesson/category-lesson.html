@@ -25,9 +25,20 @@
         <button ion-button round large (click)="startLesson(i)" style="min-width: 150px" *ngIf="!isInProgress() && starLookup(lesson) === 0">
           <span>{{ 'START' | translate}}</span>
         </button>
-        <button ion-button round large (click)="startLesson(i)" style="min-width: 150px" *ngIf="!isInProgress() && starLookup(lesson) !== 0">
-          <span>{{ 'AGAIN' | translate}}</span>
-        </button>
+        <ion-grid *ngIf="!isInProgress() && starLookup(lesson) !== 0" class="button-group">
+          <ion-row>
+            <ion-col>
+              <button ion-button round block large (click)="startLesson(i)" style="min-width: 150px">
+                <span>{{ 'AGAIN' | translate}}</span>
+              </button>
+            </ion-col>
+            <ion-col>
+              <button ion-button round block large icon-only color="light" (click)="review(i)">
+                <ion-icon name="list-box"></ion-icon>
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
         <button ion-button icon-only clear (click)="cancel()" *ngIf="isInProgress()">
           <ion-icon name="close"></ion-icon>
         </button>

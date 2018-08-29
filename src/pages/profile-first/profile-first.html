@@ -55,6 +55,21 @@
           </ion-segment-button>
         </ion-segment>
       </ion-item>
+      <ion-list-header *ngIf="showBetaLangs" class="beta-header">
+        <ion-note color="danger"> {{'LANG_BETA_HEADER' | translate}}</ion-note>
+        <ion-spinner *ngIf="betaCompletedPercentageIsInProgress"></ion-spinner>
+        <span *ngIf="!betaCompletedPercentageIsInProgress">{{betaCompletedPercentage}}</span>
+      </ion-list-header>
+      <ion-item  *ngIf="showBetaLangs">
+        <ion-segment [(ngModel)]="betaLanguage" mode="ios" *ngFor="let i of betaLanguageRows" [ngModelOptions]="{standalone: true}">
+          <ng-container *ngFor="let lang of betaLanguages | slice:(i*3):(i+1)*3">
+            <ion-segment-button value="{{lang.value}}" (click)="betaLanguageClicked(lang.value)" [style.text-align]="isRTL ? 'right': 'left'">
+              <span class="flag-icon flag-icon-{{lang.flag}}"></span>
+              {{lang.translateKey | translate}}
+            </ion-segment-button>
+          </ng-container>
+        </ion-segment>
+      </ion-item>
       <ion-list-header>
         {{'LEVEL_DIFFICULTY' | translate}}
       </ion-list-header>

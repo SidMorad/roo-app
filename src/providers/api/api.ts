@@ -3,14 +3,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
 
 import { Score, DefaultSettings, Category, CommWordCommand, TranslateCommand } from '../../models';
+import { API_URL, TRANSLATE_URL } from '../../app/app.constants';
 
 /**
  * Api is a generic(and customized for Roo domain) REST Api handler.
  */
 @Injectable()
 export class Api {
-  public static API_URL: string = 'https://mars.webebook.org/';
-  // public static API_URL: string = 'http://192.168.10.166:8080/';
 
   constructor(private http: HttpClient) {
   }
@@ -60,7 +59,7 @@ export class Api {
   }
 
   getScoreLookup(learnDir: string, difLevel: string): Observable<any> {
-    return this.http.get(`${Api.API_URL}roo/api/user/score/lookup/${learnDir}/${difLevel}`);
+    return this.http.get(`${API_URL}roo/api/user/score/lookup/${learnDir}/${difLevel}`);
   }
 
   getLessonPublicList(difficultyLevel: string, uuid: string): Observable<any> {
@@ -96,7 +95,8 @@ export class Api {
   }
 
   translateWithGoogleTranslate(translateCommnd: TranslateCommand) {
-    return this.post(`roo/api/user/translate`, translateCommnd);
+    // return this.post(`roo/api/user/translate`, translateCommnd);
+    return this.http.post(`${TRANSLATE_URL}translate`, translateCommnd);
   }
 
   get(endpoint: string, params?: any, reqOpts?: any) {
@@ -114,30 +114,30 @@ export class Api {
       };
       reqOpts.params = options;
     }
-    return this.http.get(Api.API_URL + endpoint, reqOpts);
+    return this.http.get(API_URL + endpoint, reqOpts);
   }
 
   post(endpoint: string, body: any, reqOpts?: any) {
-    return this.http.post(Api.API_URL + endpoint, body, reqOpts);
+    return this.http.post(API_URL + endpoint, body, reqOpts);
   }
 
   put(endpoint: string, body: any, reqOpts?: any) {
-    return this.http.put(Api.API_URL + endpoint, body, reqOpts);
+    return this.http.put(API_URL + endpoint, body, reqOpts);
   }
 
   delete(endpoint: string, reqOpts?: any) {
-    return this.http.delete(Api.API_URL + endpoint, reqOpts);
+    return this.http.delete(API_URL + endpoint, reqOpts);
   }
 
   patch(endpoint: string, body: any, reqOpts?: any) {
-    return this.http.put(Api.API_URL + endpoint, body, reqOpts);
+    return this.http.put(API_URL + endpoint, body, reqOpts);
   }
 
   cachedCategories: Category[];
   getCategoryPublicList(learnDir: string, force?: boolean): Observable<any> {
     if (this.cachedCategories && force !== true) return Observable.of(this.cachedCategories);
     return new Observable((observer) => {
-      this.http.get(`${Api.API_URL}roo/api/public/categories/${learnDir}`).subscribe((res: Category[]) => {
+      this.http.get(`${API_URL}roo/api/public/categories/${learnDir}`).subscribe((res: Category[]) => {
         this.cachedCategories = res;
         observer.next(this.cachedCategories);
         observer.complete();

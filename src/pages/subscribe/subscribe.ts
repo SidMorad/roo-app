@@ -33,7 +33,7 @@ export class SubscribePage {
   toastInstance: any;
   private readonly lastSubscribeKey = 'LAST_SUBSCRIBE';
 
-  constructor(platform: Platform, private browserTab: BrowserTab,
+  constructor(private platform: Platform, private browserTab: BrowserTab,
               private principal: Principal, private toastCtrl: ToastController,
               private api: Api, private alertCtrl: AlertController, private ngZone: NgZone,
               private translateService: TranslateService, private viewCtrl: ViewController,
@@ -128,7 +128,7 @@ export class SubscribePage {
                         }).present();
                       });
                     } else if (data === 'cafebazaar') {
-                      console.log('Attempt to subscribe to ', `ROO_${subscriptionType.toString()}`);
+                      console.log('Attempt to subscribe to ', that.resolvePaymentSKU(subscriptionType));
                       inappbilling.subscribe(function (success) {
                         console.log('Subscription succeed: ', success);
                         subscribeModel.paymentApiReturnString = JSON.stringify(success);
@@ -147,7 +147,7 @@ export class SubscribePage {
                         that.toastCtrl.create({ message: 'Error client-side: ' + error,
                           duration: 4000, position: 'middle' }).present();
                         that.inProgress = false;
-                      }, `ROO_${subscriptionType.toString()}`);
+                      }, that.resolvePaymentSKU(subscriptionType));
                     } else if (data === 'avvalmarket') {
                       console.log('Attempt to subscribe with AvvalMarket to ', `ROO_${subscriptionType.toString()}_TEST`);
                       inappbilling.subscribe(function (success) {
@@ -170,7 +170,7 @@ export class SubscribePage {
                         that.inProgress = false;
                       }, `ROO_${subscriptionType.toString()}_TEST`);
                     } else if (data == 'googleplay') {
-                      console.log('Attempt to subscribe to ', `roo_play_${subscriptionType.toString().toLowerCase()}`);
+                      console.log('Attempt to subscribe to ', that.resolvePaymentSKU(subscriptionType));
                       inappbilling.subscribe(function(success) {
                         console.log('Subscription succeed: ', success);
                         subscribeModel.paymentApiReturnString = JSON.stringify(success);
@@ -243,6 +243,10 @@ export class SubscribePage {
     return res;
   }
 
+  resolvePaymentSKU(subscriptionType: SubscriptionType): string {
+    return `roo_${subscriptionType.toString()}_V2_1`;
+  }
+
   showLoginToast(duration: number) {
     this.toastInstance = this.toastCtrl.create({
       message: this.pleaseLoginLabel,
@@ -284,6 +288,10 @@ export class SubscribePage {
       this.pleaseLoginLabel = translated.PLEASE_LOGIN_FIRST;
       this.loginLabel = translated.LOGIN_BUTTON;
     });
+  }
+
+  get isRTL(): boolean {
+    return this.platform.isRTL;
   }
 
 }

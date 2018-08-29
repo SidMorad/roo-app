@@ -39,14 +39,14 @@ export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
-export function provideSettings(storage: Storage, api:Api, platform: Platform) {
+export function provideSettings(storage: Storage, api:Api, platform: Platform, events: Events) {
   /**
    * The Settings provider takes a set of default settings for your app.
    *
    * You can add new settings options at any time. Once the settings are saved,
    * these values will not overwrite the saved values (this can be done manually if desired).
    */
-  return new Settings(storage, DefaultSettings.newInstance(), api, platform);
+  return new Settings(storage, DefaultSettings.newInstance(), api, platform, events);
 }
 
 @NgModule({
@@ -109,7 +109,7 @@ export function provideSettings(storage: Storage, api:Api, platform: Platform) {
     CategoryService,
     JhiParseLinks,
     NativeAudio,
-    { provide: Settings, useFactory: provideSettings, deps: [Storage, Api, Platform] },
+    { provide: Settings, useFactory: provideSettings, deps: [Storage, Api, Platform, Events] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: RooErrorHandler },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

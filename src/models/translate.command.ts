@@ -1,8 +1,8 @@
 
 export class TranslateCommand {
   constructor(
-    public motherLanguage?: string,
-    public targetLanguage?: string,
+    public from?: string,
+    public to?: string,
     public text?: string
   ) {
 

@@ -16,7 +16,7 @@ import { Principal } from '../providers/auth/principal.service';
 import { LoginService } from '../providers/login/login.service';
 import { Account } from '../models/';
 import { AUTH_REDIRECT_URI, AUTH_IAB_REDIRECT_URI, MAIL_SUPPORT,
-         TELEGRAM_SUPPORT, TELEGRAM_CHANNEL } from './app.constants';
+         TELEGRAM_SUPPORT, TELEGRAM_CHANNEL, AUTH_URL } from './app.constants';
 
 declare const window: any;
 
@@ -72,8 +72,6 @@ export class MyApp implements OnInit {
   account: Account = new Account();
   dname: string;
   exitConfirmationText: string;
-  // fallbackAuthBaseUrl: string = 'http://192.168.10.166:9080';
-  fallbackAuthBaseUrl: string = 'https://mars.webebook.org';
   onLangChangeSubscription: Subscription;
   appVersionNumber: string;
   appVersionCode: any;
@@ -198,11 +196,11 @@ export class MyApp implements OnInit {
           });
         });
       }, error => {
-        console.error('ERROR fetching authentication information, defaulting to Keycloak settings');
+        console.error('ERROR fetching authentication information, defaulting to Keycloak settings', error);
         this.securityService.oidc().redirectUri = AUTH_REDIRECT_URI;
         this.securityService.oidc().clientId = 'web_app';
         this.securityService.oidc().scope = 'openid profile email offline_access';
-        this.securityService.oidc().issuer = this.fallbackAuthBaseUrl + '/auth/realms/mars';
+        this.securityService.oidc().issuer = AUTH_URL + 'auth/realms/mars';
         this.tryLogin();
       });
     }

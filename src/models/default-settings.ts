@@ -11,11 +11,12 @@ export class DefaultSettings {
               public notificationEnabled: boolean,
               public notificationDailyAt: string,
               public advertismentEnabled: boolean,
-              public soundEffects: boolean) {
+              public soundEffects: boolean,
+              public betaLanguage: string) {
   }
 
   public static newInstance(): DefaultSettings {
-    return new DefaultSettings(false, 'fa', true, true, 100, 'Guest', 'FA_IR$EN_GB', 'Beginner', false, '10:00', true, true);
+    return new DefaultSettings(false, 'fa', true, true, 100, 'Guest', 'FA_IR$EN_GB', 'Beginner', false, '10:00', true, true, 'ES_ES');
   }
 
   get motherLanguage(): string {
