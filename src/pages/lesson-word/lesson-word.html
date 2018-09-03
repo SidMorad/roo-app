@@ -29,7 +29,7 @@
       </button>
 
       <ion-item-sliding *ngIf="item.open" #slidingItem>
-        <ion-item>
+        <ion-item #itemSlide>
           <ion-input [(ngModel)]="item.ts[0].w" (ionBlur)="wordChangeEvent(item)" placeholder="{{'TYPE_HERE_' + target.lang | translate }} {{item.ms[0].w}}"
             [class.dir-ltr]="lesson.isTargetLangLTR()"   [class.dir-rtl]="!lesson.isTargetLangLTR()"
             [class.text-left]="lesson.isTargetLangLTR()" [class.text-right]="!lesson.isTargetLangLTR()"></ion-input>
@@ -39,7 +39,8 @@
             <ion-icon name="logo-google"></ion-icon>T
           </button>
         </ion-item-options>
-    </ion-item-sliding>
+        {{openItemIfNecessary(item, slidingItem, itemSlide)}}
+      </ion-item-sliding>
 
       <ng-container *ngIf="item.open && item.ts.length > 1">
         <ion-item *ngFor="let child of item.ts | slice:1;"

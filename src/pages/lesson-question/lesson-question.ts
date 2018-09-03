@@ -183,7 +183,9 @@ export class LessonQuestionPage implements OnInit {
       if (this.settings.allSettings.soundEffects) {
         this.nativeAudio.play('lessonCompleted');
       }
-      this.uploadScore();
+      if (this.noWrong < 6) {
+        this.uploadScore();
+      }
       return;
     }
   }
@@ -266,10 +268,10 @@ export class LessonQuestionPage implements OnInit {
         this.writingAnswerTextarea.nativeElement.focus();
       }, 300);
     }
-    console.log(text, this.lesson.targetLocale(this.platform.is('android')), this.settings.allSettings.voiceSpeedRate /100);
+    console.log(text, this.lesson.targetLocaleTTS(this.platform.is('android')), this.settings.allSettings.voiceSpeedRate /100);
     return this.textToSpeech.speak({
       text: text,
-      locale: this.lesson.targetLocale(this.platform.is('android')),
+      locale: this.lesson.targetLocaleTTS(this.platform.is('android')),
       rate: this.settings.allSettings.voiceSpeedRate / 100
     }).then().catch((error) => {
       console.log('TTS#', error);
@@ -371,7 +373,7 @@ export class LessonQuestionPage implements OnInit {
   microphoneDown(event) {
     this.microphonePressed = true;
     if (this.hasAudioRecordingPermission) {
-      this.speechRecognition.startListening({ language: this.lesson.targetLocale(this.platform.is('android')) }).subscribe((matches: any) => {
+      this.speechRecognition.startListening({ language: this.lesson.targetLocaleSpeech(this.platform.is('android')) }).subscribe((matches: any) => {
         let findBest;
         if (this.isType('Speaking')) {
           findBest = findBestMatch(this.question.speakingAnswer(), matches);

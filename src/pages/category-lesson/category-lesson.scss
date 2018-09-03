@@ -18,10 +18,19 @@ page-category-lesson {
   .button-group {
     ion-col {
       &:first-child:not(:last-child) {
-        padding-right: 0;
-        .button {
-          border-top-right-radius: 0;
-          border-bottom-right-radius: 0;
+        @include ltr() {
+          padding-right: 0;
+          .button {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+          }
+        }
+        @include rtl() {
+          padding-left: 0;
+          .button {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+          }
         }
       }
       &:not(:first-child):not(:last-child) {
@@ -32,10 +41,19 @@ page-category-lesson {
         }
       }
       &:last-child:not(:first-child) {
-        padding-left: 0;
-        .button {
-          border-top-left-radius: 0;
-          border-bottom-left-radius: 0;
+        @include ltr() {
+          padding-left: 0;
+          .button {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+          }
+        }
+        @include rtl() {
+          padding-right: 0;
+          .button {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+          }
         }
       }
     }

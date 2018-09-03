@@ -57,6 +57,9 @@ export class ProfileFirstPage {
       if (v.motherLanguage === 'EN_GB' && v.targetLanguage === 'EN_GB') {
         this.form.controls['motherLanguage'].setValue('FA_IR');
       }
+      if (v.motherLanguage === 'DE_DE' && v.targetLanguage === 'DE_DE') {
+        this.form.controls['motherLanguage'].setValue('FA_IR');
+      }
       if (v.targetLanguage === 'BETA') {
         this.showBetaLangs = true;
       } else {

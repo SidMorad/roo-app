@@ -12,11 +12,15 @@ export class Lesson {
   ) { }
 
   isMotherLangRTL(): boolean {
-    return this.motherLanguage() === 'FA_IR';
+    return this.motherLanguage() === 'FA_IR' ||
+           this.motherLanguage() === 'HE_IL' ||
+           this.motherLanguage() === 'AR_SA';
   }
 
   isTargetLangLTR(): boolean {
-    return !(this.targetLanguage() === 'FA_IR' || this.targetLanguage() === 'HE_IL' || this.targetLanguage() === 'AR_SA');
+    return !(this.targetLanguage() === 'FA_IR' ||
+             this.targetLanguage() === 'HE_IL' ||
+             this.targetLanguage() === 'AR_SA');
   }
 
   langs(): any {
@@ -31,9 +35,18 @@ export class Lesson {
     return this.langs()[1];
   }
 
-  targetLocale(isAndroid: boolean): string {
+  targetLocaleSpeech(isAndroid: boolean): string {
     if (this.targetLanguage() === 'ZH_CN' && isAndroid) {
       return 'cmn-Hans-CN';
+    }
+    const lang = this.targetLanguage().split('_')[0].toLowerCase();
+    const country = this.targetLanguage().split('_')[1].toUpperCase();
+    return `${lang}-${country}`;
+  }
+
+  targetLocaleTTS(isAndroid: boolean): string {
+    if (this.targetLanguage() === 'SV_SE' && isAndroid) {
+      return 'sv-SV';
     }
     const lang = this.targetLanguage().split('_')[0].toLowerCase();
     const country = this.targetLanguage().split('_')[1].toUpperCase();
@@ -49,7 +62,7 @@ export class Lesson {
   }
 
   isClassRTL(reverse: boolean): boolean {
-    return this.isMotherLangRTL() && reverse;
+    return (this.isMotherLangRTL() && reverse) || (!this.isTargetLangLTR() && !reverse);
   }
 
   isClassLTR(reverse: boolean): boolean {

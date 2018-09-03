@@ -72,6 +72,7 @@ export class LessonWordPage {
       if (!word.ts[0].a) {  // If current user is not author of first [sorted] record.
         word.ts.unshift({});
       }
+      word.openedOnce = true;
     }
     return word;
   }
@@ -86,6 +87,21 @@ export class LessonWordPage {
       console.error('Translate error: ', err);
       itemSliding.close();
     });
+  }
+
+  openItemIfNecessary(item, itemSliding: ItemSliding, itemSlide) {
+    if (!item.openedOnce) {
+      item.openedOnce = true;
+      let swipeAmount = 40; //set your required swipe amount
+      itemSliding.startSliding(swipeAmount);
+      itemSliding.moveSliding(swipeAmount);
+
+      itemSliding.setElementClass('active-options-right', true);
+      itemSliding.setElementClass('active-swipe-right', true);
+
+      itemSlide.setElementStyle('transition', null);
+      itemSlide.setElementStyle('transform', this.platform.isRTL ? 'translate3d('+swipeAmount+'px, 0px, 0px)' : 'translate3d(-'+swipeAmount+'px, 0px, 0px)');
+    }
   }
 
   toggleSection(index) {
