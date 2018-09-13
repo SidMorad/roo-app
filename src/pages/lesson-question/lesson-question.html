@@ -71,21 +71,27 @@
               <ion-col>
                 <ion-icon name="ios-arrow-back" class="float-right" style="padding-top: 1.5em" *ngIf="isRTL"></ion-icon>
                 <ion-icon name="ios-arrow-back" class="float-left" style="padding-top: 1.5em" *ngIf="!isRTL"></ion-icon>
-                <button ion-button large icon-end (click)="voteUp(isRTL ? true : false)" color="light" [ngStyle]="{'background-color' : leftBackgroundColor}">
+                <button ion-button large icon-end (click)="voteUp(isRTL ? true : false)" color="light" [ngStyle]="{'background-color' : leftBackgroundColor}"
+                    [class.dir-rtl]="lesson.isClassRTL(questionCounter > this.words.length / 2)"
+                    [class.dir-ltr]="lesson.isClassLTR(questionCounter > this.words.length / 2)">
                   {{word.option1}}
                 </button>
               </ion-col>
             </ion-row>
             <ion-row text-center center>
               <ion-col>
-                <button ion-button large full color="primary" style="clear:both" (click)="speak()">
+                <button ion-button large full color="primary" style="clear:both" (click)="speak()"
+                    [class.dir-rtl]="lesson.isClassRTL(questionCounter < this.words.length / 2)"
+                    [class.dir-ltr]="lesson.isClassLTR(questionCounter < this.words.length / 2)">
                   {{word.question}}
                 </button>
               </ion-col>
             </ion-row>
             <ion-row text-center center padding>
               <ion-col (click)="voteUp(true)">
-                <button ion-button large icon-end (click)="voteUp(isRTL ? false : true)" color="light" [ngStyle]="{'background-color' : rightBackgroundColor}">
+                <button ion-button large icon-end (click)="voteUp(isRTL ? false : true)" color="light" [ngStyle]="{'background-color' : rightBackgroundColor}"
+                    [class.dir-rtl]="lesson.isClassRTL(questionCounter > this.words.length / 2)"
+                    [class.dir-ltr]="lesson.isClassLTR(questionCounter > this.words.length / 2)">
                   {{word.option2}}
                 </button>
                 <ion-icon name="ios-arrow-forward" class="float-left" style="padding-top: 1.5em" *ngIf="isRTL"></ion-icon>
@@ -97,14 +103,18 @@
             <ion-row text-center center padding>
               <ion-col>
                 <button ion-button large icon-end [disabled]="true"
-                  color="{{ wasWrong && !words[questionCounter-1].isAnswerRight(false) ? 'danger' : wasCorrect && words[questionCounter-1].isAnswerRight(false) ? 'secondary' : 'light'}}">
+                    color="{{ wasWrong && !words[questionCounter-1].isAnswerRight(false) ? 'danger' : wasCorrect && words[questionCounter-1].isAnswerRight(false) ? 'secondary' : 'light'}}"
+                    [class.dir-rtl]="lesson.isClassRTL(questionCounter > this.words.length / 2)"
+                    [class.dir-ltr]="lesson.isClassLTR(questionCounter > this.words.length / 2)">
                   {{words[questionCounter-1].option1}}
                 </button>
               </ion-col>
             </ion-row>
             <ion-row text-center center>
               <ion-col>
-                <button ion-button large full color="primary" style="clear:both" (click)="speak()">
+                <button ion-button large full color="primary" style="clear:both" (click)="speak()"
+                    [class.dir-rtl]="lesson.isClassRTL(questionCounter < this.words.length / 2)"
+                    [class.dir-ltr]="lesson.isClassLTR(questionCounter < this.words.length / 2)">
                   {{words[questionCounter-1].question}}
                 </button>
               </ion-col>
@@ -112,7 +122,9 @@
             <ion-row text-center center padding>
               <ion-col>
                 <button ion-button large icon-end [disabled]="true"
-                  color="{{ wasWrong && !words[questionCounter-1].isAnswerRight(true) ? 'danger' : wasCorrect && words[questionCounter-1].isAnswerRight(true) ? 'secondary' : 'light'}}">
+                    color="{{ wasWrong && !words[questionCounter-1].isAnswerRight(true) ? 'danger' : wasCorrect && words[questionCounter-1].isAnswerRight(true) ? 'secondary' : 'light'}}"
+                    [class.dir-rtl]="lesson.isClassRTL(questionCounter > this.words.length / 2)"
+                    [class.dir-ltr]="lesson.isClassLTR(questionCounter > this.words.length / 2)">
                   {{words[questionCounter-1].option2}}
                 </button>
               </ion-col>
@@ -125,10 +137,11 @@
         <div *ngFor="let answer of question.d.options; let i = index;">
           <div *ngIf="i < questionCounter" style="overflow: scroll;">
             <div [class.float-left]="i % 2 == 0" [class.float-right]="i % 2 == 1" class="alert"
-                 [class.alert-info]="i % 2 == 0" [class.alert-warning]="i % 2 == 1" style="width: 80%" (click)="speak(question.targetOptions[i].text)">
+                 [class.alert-info]="i % 2 == 0" [class.alert-warning]="i % 2 == 1" style="width: 80%" (click)="speakConversation(question.targetOptions[i].text)">
               <div [class.dir-ltr]="lesson.isTargetLangLTR()"   [class.dir-rtl]="!lesson.isTargetLangLTR()"
                    [class.text-left]="lesson.isTargetLangLTR()" [class.text-right]="!lesson.isTargetLangLTR()"
-                   [class.text-unclear]="i === questionCounter-1 && !isChecking"
+                   [style.color]="i === questionCounter-1 && !isChecking ? 'rgba(0,0,0,' + textClearPrecentageReverse + ')' : ''"
+                   [ngStyle]="{'text-shadow' : i === questionCounter-1 && !isChecking ? '0 0 20px rgba(0,0,0,' + textClearPrecentage +')' : ''}"
                   *ngIf="question.targetOptions[i]">{{question.targetOptions[i].text}}</div>
               <div [class.dir-ltr]="!lesson.isMotherLangRTL()" [class.dir-rtl]="lesson.isMotherLangRTL()"
                    [class.text-left]="!lesson.isMotherLangRTL()" [class.text-right]="lesson.isMotherLangRTL()"
@@ -236,7 +249,9 @@
             <ion-col col-6>
               <div class="relative-flex-1" id="twoPicture-0">
                 <img [src]="resolveImageUrl(question.d.options[0].name)" class="z_index_0"/>
-                <button ion-button full small clear color="dark">{{question.pictureLabel(0)}}</button>
+                <button ion-button full small clear color="dark"
+                    [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)"
+                    [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)">{{question.pictureLabel(0)}}</button>
               </div>
             </ion-col>
             <ion-col col-3></ion-col>
@@ -250,7 +265,9 @@
             <ion-col col-6>
               <div class="relative-flex-1" id="twoPicture-1">
                 <img [src]="resolveImageUrl(question.d.options[1].name)" class="z_index_0"/>
-                <button ion-button full small clear color="dark">{{question.pictureLabel(1)}}</button>
+                <button ion-button full small clear color="dark"
+                    [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)"
+                    [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)">{{question.pictureLabel(1)}}</button>
               </div>
             </ion-col>
             <ion-col col-3></ion-col>
@@ -269,7 +286,9 @@
                     *ngIf="(!wasWrong && !wasCorrect) || pictureCorrectIndex === 0 || question.d.options[0].answered">
               <div class="relative-flex-1" id="fourPicture-0">
                 <img [src]="resolveImageUrl(question.d.options[0].name)" class="z_index_0"/>
-                <button ion-button full small clear color="dark">{{question.pictureLabel(0)}}</button>
+                <button ion-button full small clear color="dark"
+                    [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)"
+                    [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)">{{question.pictureLabel(0)}}</button>
               </div>
             </ion-col>
             <ion-col col-6 (click)="fourPictureSelected(1)"
@@ -279,7 +298,9 @@
                     *ngIf="(!wasWrong && !wasCorrect) || pictureCorrectIndex === 1 || question.d.options[1].answered">
               <div class="relative-flex-1" id="fourPicture-1">
                 <img [src]="resolveImageUrl(question.d.options[1].name)" class="z_index_0"/>
-                <button ion-button full small clear color="dark">{{question.pictureLabel(1)}}</button>
+                <button ion-button full small clear color="dark"
+                    [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)"
+                    [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)">{{question.pictureLabel(1)}}</button>
               </div>
             </ion-col>
           </ion-row>
@@ -291,7 +312,9 @@
                     *ngIf="(!wasWrong && !wasCorrect) || pictureCorrectIndex === 2  || question.d.options[2].answered">
               <div class="relative-flex-1" id="fourPicture-2">
                 <img [src]="resolveImageUrl(question.d.options[2].name)" class="z_index_0"/>
-                <button ion-button full small clear color="dark">{{question.pictureLabel(2)}}</button>
+                <button ion-button full small clear color="dark"
+                    [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)"
+                    [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)">{{question.pictureLabel(2)}}</button>
               </div>
             </ion-col>
             <ion-col col-6 (click)="fourPictureSelected(3)"
@@ -301,7 +324,9 @@
                     *ngIf="(!wasWrong && !wasCorrect) || pictureCorrectIndex === 3  || question.d.options[3].answered">
               <div class="relative-flex-1" id="fourPicture-3">
                 <img [src]="resolveImageUrl(question.d.options[3].name)" class="z_index_0"/>
-                <button ion-button full small clear color="dark">{{question.pictureLabel(3)}}</button>
+                <button ion-button full small clear color="dark"
+                    [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)"
+                    [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)">{{question.pictureLabel(3)}}</button>
               </div>
             </ion-col>
           </ion-row>
@@ -323,9 +348,15 @@
       </button>
     </div>
   </div>
+  <ion-fab start bottom large *ngIf="isType('Conversation') && microphonePressed">
+    <button ion-fab large color="danger">
+      <ion-icon name="recording"></ion-icon>
+    </button>
+  </ion-fab>
   <ion-fab center bottom large *ngIf="isType('Conversation')">
     <button ion-fab large color="{{microphonePressed ? 'danger' : 'primary'}}"
-      (touchstart)="microphoneDown($event)" [disabled]="isChecking" id="speakingButton">
+      (touchstart)="microphoneDown($event)" [disabled]="isChecking" id="speakingButton"
+      (touchend)="microphoneUp($event)">
       <ion-icon name="microphone"></ion-icon>
     </button>
   </ion-fab>

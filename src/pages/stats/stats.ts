@@ -114,8 +114,10 @@ export class StatsPage {
     this.total = this.settings.cachedScoreLookup.total;
     this.progressLevelFrom = this.scoreUtil.resolveLevelFrom(this.total);
     this.progressLevelTo = this.progressLevelFrom + 1;
-    this.progressLevelValue =  this.total - this.scoreUtil.resolveMaxScoreFrom(this.progressLevelFrom-1);
+    this.progressLevelValue = this.total > this.scoreUtil.resolveMaxScoreFrom(this.progressLevelFrom-1) ?
+                              this.total - this.scoreUtil.resolveMaxScoreFrom(this.progressLevelFrom-1) : this.total;
     this.progressLevelMax = this.scoreUtil.determineDivider(this.total);
+    console.log(`Total ${this.total} LevelFrom ${this.progressLevelFrom} LevelTo ${this.progressLevelTo} LevelValue ${this.progressLevelValue} LevelMax ${this.progressLevelMax}`);
   }
 
   isAuthenticated() {

@@ -9,6 +9,7 @@ import { Config, Nav, Platform, Events, App, ToastController } from 'ionic-angul
 import { Subscription } from 'rxjs/Rx';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { AppVersion } from '@ionic-native/app-version';
+import { NativeAudio } from '@ionic-native/native-audio';
 
 import { Settings, SecurityService } from '../providers';
 import { Api } from '../providers/api/api';
@@ -82,7 +83,8 @@ export class MyApp implements OnInit {
     private securityService: SecurityService, private api: Api, private app: App,
     private principal: Principal, private loginService: LoginService,
     private events: Events, private toastCtrl: ToastController, private browserTab: BrowserTab,
-    private socialSharing: SocialSharing, private appVersion: AppVersion, private inAppBrowser: InAppBrowser) {
+    private socialSharing: SocialSharing, private appVersion: AppVersion,
+    private nativeAudio: NativeAudio, private inAppBrowser: InAppBrowser) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -92,6 +94,7 @@ export class MyApp implements OnInit {
       this.initTranslate();
       this.initAddAd();
       this.initAppVersion();
+      this.initNativeAudio();
     });
 
     if (!this.securityService.oidc().hasValidAccessToken()) {
@@ -275,6 +278,13 @@ export class MyApp implements OnInit {
     this.appVersion.getVersionCode().then(versionCode => {
       this.appVersionCode = versionCode;
     });
+  }
+
+  initNativeAudio() {
+    this.nativeAudio.preloadSimple('correctSound', 'assets/sounds/correct.mp3');
+    this.nativeAudio.preloadSimple('wrongSound', 'assets/sounds/wrong.mp3');
+    this.nativeAudio.preloadSimple('lessonCompleted', 'assets/sounds/lessonCompleted.mp3');
+    this.nativeAudio.preloadSimple('lessonFailed', 'assets/sounds/lessonFailed.mp3');
   }
 
   sendEmailToSupport() {

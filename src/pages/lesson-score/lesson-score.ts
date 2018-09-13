@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, ViewController, Platform, NavController } from 'ionic-angular';
+import { IonicPage, Platform, NavController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { Score } from '../../models';
@@ -28,14 +28,16 @@ export class LessonScorePage {
   levelUpFlag: boolean;
   scoreUploadedFlag: boolean;
 
-  constructor(private viewCtrl: ViewController, private storage: Storage, private platform: Platform,
+  constructor(private storage: Storage, private platform: Platform,
               private api: Api, private scoreUtil: ScoreUtil, private settings: Settings,
               private memory: Memory, private navCtrl: NavController) {
   }
 
-  ionViewDidEnter() {
+  ionViewDidLoad() {
     console.log('Previous score(', this.settings.cachedScoreLookup.total, ') level is ', this.scoreUtil.resolveLevelFrom(this.settings.cachedScoreLookup.total));
-    this.memory.setPreviousScoreLevel(this.scoreUtil.resolveLevelFrom(this.settings.cachedScoreLookup.total));
+  }
+
+  ionViewDidEnter() {
     if (!this.scoreUploadedFlag) {
       this.uploadScore();
     }
@@ -63,14 +65,16 @@ export class LessonScorePage {
         let score: Score = JSON.parse(scoreStr);
         this.score = score;
         this.resolveScoreStats();
+        console.log('Previous level set to ', me.scoreUtil.resolveLevelFrom(me.settings.cachedScoreLookup.total));
+        me.memory.setPreviousScoreLevel(me.scoreUtil.resolveLevelFrom(me.settings.cachedScoreLookup.total));
         this.api.createScore(score).subscribe((res) => {
             this.settings.updateCachedScoreLookupWith(score);
-            this.displayLevelUpPageIfNecessary();
             this.storage.remove('LAST_SCORE').then().catch((err) => console.error('LAST_SCORE remove failure.'));
             setTimeout(() => {
               me.inProgress = false;
               me.resolveScoreStats();
               me.loadTopMembers();
+              me.displayLevelUpPageIfNecessary();
             }, 1000);
         }, (err) => {
           console.log('OOPS upload score failed.', err);
@@ -89,7 +93,8 @@ export class LessonScorePage {
     this.total = this.settings.cachedScoreLookup.total;
     this.progressLevelFrom = this.scoreUtil.resolveLevelFrom(this.total);
     this.progressLevelTo = this.progressLevelFrom + 1;
-    this.progressLevelValue =  this.total - this.scoreUtil.resolveMaxScoreFrom(this.progressLevelFrom-1);
+    this.progressLevelValue = this.total > this.scoreUtil.resolveMaxScoreFrom(this.progressLevelFrom-1) ?
+                              this.total - this.scoreUtil.resolveMaxScoreFrom(this.progressLevelFrom-1) : this.total;
     this.progressLevelMax = this.scoreUtil.determineDivider(this.total);
     console.log(`Total ${this.total} LevelFrom ${this.progressLevelFrom} LevelTo ${this.progressLevelTo} LevelValue ${this.progressLevelValue} LevelMax ${this.progressLevelMax}`);
   }
@@ -104,7 +109,7 @@ export class LessonScorePage {
 
   displayLevelUpPageIfNecessary() {
     const currentLevel = this.scoreUtil.resolveLevelFrom(this.settings.cachedScoreLookup.total);
-    console.log('Current score (', this.settings.cachedScoreLookup.total,') level is ', currentLevel);
+    console.log('Current score (', this.settings.cachedScoreLookup.total,') level is ', currentLevel, ' previous score was ', this.memory.getPreviousScoreLevel());
     if (this.memory.getPreviousScoreLevel() < currentLevel) {
       this.levelUpFlag = true;
       this.navCtrl.push('LevelUpPage').then(() => {
@@ -114,7 +119,7 @@ export class LessonScorePage {
   }
 
   continue() {
-    this.viewCtrl.dismiss({action: 'continue'});
+    this.navCtrl.pop();
   }
 
 }

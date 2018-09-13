@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, NgZone, ViewChildren, QueryList, ElementRef } from '@angular/core';
-import { IonicPage, Platform, NavParams, AlertController, ViewController,
+import { IonicPage, Platform, NavParams, AlertController, NavController,
         Content, ModalController, ToastController } from 'ionic-angular';
 import { Market } from '@ionic-native/market';
 import { TranslateService } from '@ngx-translate/core';
@@ -40,10 +40,11 @@ export class LessonQuestionPage implements OnInit {
   stackConfig: StackConfig; leftBackgroundColor: string; rightBackgroundColor: string;
   dir: string = 'ltr'; questionCounter: number; lookupWords: any; description: string; typeHere: string;
   private unregisterBackButtonAction: any; private exitAlertInstance: any;
-  private questionStartIndex: number = 0;
+  private questionStartIndex: number = 0; textClearPrecentage = 1.0; textClearPrecentageReverse = 0.0;
+
 
   constructor(private platform: Platform, navParams: NavParams, private alertCtrl: AlertController,
-              private translateService: TranslateService, private viewCtrl: ViewController,
+              private translateService: TranslateService, private navCtrl: NavController,
               private principal: Principal, private loginService: LoginService,
               private modalCtrl: ModalController, private ngZone: NgZone, private market: Market,
               private textToSpeech: TextToSpeech, private speechRecognition: SpeechRecognition,
@@ -54,16 +55,9 @@ export class LessonQuestionPage implements OnInit {
     this.category = navParams.get('category');
     this.questions = navParams.get('questions');
     this.lookupWords = navParams.get('words');
-    // this.lesson.determinePictureCorrectIndexies(this.questions, this.lookupWords);
     this.initTranslations();
     this.initSettings();
     this.initSwingStackConfig();
-    this.platform.ready().then(() => {
-      this.nativeAudio.preloadSimple('correctSound', 'assets/sounds/correct.mp3');
-      this.nativeAudio.preloadSimple('wrongSound', 'assets/sounds/wrong.mp3');
-      this.nativeAudio.preloadSimple('lessonCompleted', 'assets/sounds/lessonCompleted.mp3');
-      this.nativeAudio.preloadSimple('lessonFailed', 'assets/sounds/lessonFailed.mp3');
-    });
   }
 
   ngOnInit() {
@@ -145,12 +139,17 @@ export class LessonQuestionPage implements OnInit {
         this.checkIfIsEnd();
         this.questionCounter++;
         this.isChecking = false;
+        if (this.autoPlayVoice) {
+          this.speak();
+        }
       }).catch(() => {
         this.checkIfIsEnd();
         this.questionCounter++;
         this.isChecking = false;
       });
       this.content.scrollToBottom();
+      this.textClearPrecentage = 1.0;
+      this.textClearPrecentageReverse = 0.0;
     }
     else if (this.isType('Words')) {
       this.noTotal = this.question.d.options.length * 2;
@@ -275,20 +274,28 @@ export class LessonQuestionPage implements OnInit {
       rate: this.settings.allSettings.voiceSpeedRate / 100
     }).then().catch((error) => {
       console.log('TTS#', error);
-      const toast = this.toastCtrl.create({
-        message: this.labelPleaseUpdateThisOtherAppFromMarket,
-        duration: 10000,
-        position: 'middle',
-        showCloseButton: true,
-        closeButtonText: this.labelMarket
-      });
-      toast.onDidDismiss((data, role) => {
-        if (role === 'close') {
-          this.market.open('com.google.android.tts');
-        }
-      })
-      toast.present();
+      if (error == 'ERR_UNKNOWN') {
+        const toast = this.toastCtrl.create({
+          message: this.labelPleaseUpdateThisOtherAppFromMarket,
+          duration: 10000,
+          position: 'middle',
+          showCloseButton: true,
+          closeButtonText: this.labelMarket
+        });
+        toast.onDidDismiss((data, role) => {
+          if (role === 'close') {
+            this.market.open('com.google.android.tts');
+          }
+        })
+        toast.present();
+      }
     });
+  }
+
+  speakConversation(text) {
+    this.speak(text);
+    this.textClearPrecentage -= 0.3;
+    this.textClearPrecentageReverse += 0.3;
   }
 
   determinePictureCorrectIndex(): number {
@@ -373,7 +380,9 @@ export class LessonQuestionPage implements OnInit {
   microphoneDown(event) {
     this.microphonePressed = true;
     if (this.hasAudioRecordingPermission) {
-      this.speechRecognition.startListening({ language: this.lesson.targetLocaleSpeech(this.platform.is('android')) }).subscribe((matches: any) => {
+      this.speechRecognition.startListening({
+          language: this.lesson.targetLocaleSpeech(this.platform.is('android')),
+          showPopup: false }).subscribe((matches: Array<string>) => {
         let findBest;
         if (this.isType('Speaking')) {
           findBest = findBestMatch(this.question.speakingAnswer(), matches);
@@ -382,24 +391,26 @@ export class LessonQuestionPage implements OnInit {
         }
         this.speakingAnswer = findBest.bestMatch.target;
         this.check();
-        this.microphoneUp(event);
+        // this.microphoneUp(event);
       },
       (error) => {
-        console.log('Oops: ', error);
+        console.log('SpeechRecognitionError: ', error);
         this.microphoneUp(event);
-        const toast = this.toastCtrl.create({
-          message: this.labelPleaseUpdateThisOtherAppFromMarket,
-          duration: 4000,
-          position: 'top',
-          showCloseButton: true,
-          closeButtonText: this.labelMarket
-        });
-        toast.onDidDismiss((data, role) => {
-          if (role === 'close') {
-            this.market.open('com.google.android.googlequicksearchbox');
-          }
-        })
-        toast.present();
+        // if (error == 'Client side error') {
+          const toast = this.toastCtrl.create({
+            message: this.labelPleaseUpdateThisOtherAppFromMarket,
+            duration: 4000,
+            position: 'top',
+            showCloseButton: true,
+            closeButtonText: this.labelMarket
+          });
+          toast.onDidDismiss((data, role) => {
+            if (role === 'close') {
+              this.market.open('com.google.android.googlequicksearchbox');
+            }
+          });
+          toast.present();
+        // }
       });
     } else {
       this.checkHasAudioRecordingPermission();
@@ -408,9 +419,7 @@ export class LessonQuestionPage implements OnInit {
 
   microphoneUp(event) {
     this.microphonePressed = false;
-    if (this.platform.is('ios')) {
-      this.speechRecognition.stopListening();
-    }
+    this.speechRecognition.stopListening();
   }
 
   onItemSwing(element, x, y, r) {
@@ -582,7 +591,7 @@ export class LessonQuestionPage implements OnInit {
 
   dismiss(withSuccess) {
     this.memory.setLessonDoneSuccessfully(withSuccess);
-    this.viewCtrl.dismiss();
+    this.navCtrl.pop();
   }
 
   initSettings() {
@@ -627,6 +636,9 @@ export class LessonQuestionPage implements OnInit {
           role: 'cancel',
           handler: () => {
             this.hasFirstRoleInConversation = true;
+            if (this.autoPlayVoice) {
+              this.speak();
+            }
           }
         },
         {
@@ -677,7 +689,7 @@ export class LessonQuestionPage implements OnInit {
       introSteps = [
         { element: '.answer-background', intro: this.labelTypeCorrectAnswerHere, position: 'auto' } ];
     }
-    else if (this.isType('Speaking')) {
+    else if (this.isType('Speaking') || this.isType('Conversation')) {
       introSteps = [
         { element: '#speakingButton', intro: this.labelHoldMicrophoneButtonAndSpeak, position: 'auto' } ];
     }

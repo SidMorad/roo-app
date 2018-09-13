@@ -29,7 +29,7 @@ export class Memory {
   }
 
   public setPreviousScoreLevel(value: number) {
-    this.previousScoreLevel;
+    this.previousScoreLevel = value;
   }
 
   public getPreviousScoreLevel() {

@@ -31,6 +31,7 @@ export class CategoryLessonPage implements OnInit {
     this.isBeginning = true;
     this.api.getLessonPublicList(this.settings.difficultyLevel, this.category.uuid).subscribe((res) => {
       this.lessons = res;
+      this.memory.setNumberOfDoneLessons(this.getNumberOfDoneLessons());
       this.initialIndexToGo = 0;
       for (let i = 0; i < this.lessons.length; i++) {
         const noStars = this.starLookup(this.lessons[i]);
@@ -48,13 +49,6 @@ export class CategoryLessonPage implements OnInit {
           this.initialIndexToGo++;
         }
       }
-      let numberOfDoneLessons = 0;
-      for (let i = 0; i < this.lessons.length; i++) {
-        const noStars = this.starLookup(this.lessons[i]);
-        if (noStars)
-          numberOfDoneLessons++;
-      }
-      this.memory.setNumberOfDoneLessons(numberOfDoneLessons);
     }, (error) => {
       console.log('Oops category-lesson load failed! TODO');
     });
@@ -64,6 +58,11 @@ export class CategoryLessonPage implements OnInit {
   }
 
   ionViewDidEnter() {
+    console.log('Number of done lessons was ', this.memory.getNumberOfDoneLessons(), ' and is now ', this.getNumberOfDoneLessons());
+    if (this.memory.getNumberOfDoneLessons() < 8 && (this.getNumberOfDoneLessons() === 7 || this.getNumberOfDoneLessons() === 8)) {
+      this.navCtrl.push('CategoryCompletePage', { category: this.category });
+      this.memory.setNumberOfDoneLessons(8);
+    }
     setTimeout(() => {
       this.renderPaginationBulletRender();
       this.slides.update();
@@ -77,11 +76,6 @@ export class CategoryLessonPage implements OnInit {
         }
       }, 1000);
       this.memory.setLessonDoneSuccessfully(false);
-    }
-    console.log('Number of done lessons was ', this.memory.getNumberOfDoneLessons());
-    if (this.memory.isLessonDoneSuccessfully() && this.memory.getNumberOfDoneLessons() === 7) {
-      this.navCtrl.push('CategoryCompletePage', { category: this.category });
-      this.memory.setNumberOfDoneLessons(0);
     }
   }
 
@@ -157,6 +151,17 @@ export class CategoryLessonPage implements OnInit {
       }
     }
     return 0;
+  }
+
+  getNumberOfDoneLessons(): number {
+    let numberOfDoneLessons = 0;
+    for (let i = 0; i < this.lessons.length; i++) {
+      const noStars = this.starLookup(this.lessons[i]);
+      // console.log('Lesson ', this.lessons[i].uuid, ' Stars ', noStars);
+      if (noStars)
+        numberOfDoneLessons++;
+    }
+    return numberOfDoneLessons;
   }
 
   titleKey(lesson) {
