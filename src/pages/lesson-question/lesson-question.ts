@@ -512,9 +512,10 @@ export class LessonQuestionPage implements OnInit {
       }).present();
     } else {
       let modal = this.modalCtrl.create('LessonScorePage');
-      modal.onDidDismiss((data) => { });
+      modal.onDidDismiss((data) => {
+        this.dismiss(true);
+      });
       modal.present();
-      this.dismiss(true);
     }
   }
 

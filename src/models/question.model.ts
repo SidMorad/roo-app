@@ -330,7 +330,10 @@ export class Question {
   }
 
   public conversationAnswer(index: number): string {
-    return this.isNormal() ? this.targetOptions[index].text : this.motherOptions[index].text;
+    if (this.targetOptions[index] || this.motherOptions[index]) {
+      return this.isNormal() ? this.targetOptions[index].text : this.motherOptions[index].text;
+    }
+    return "";
   }
 
   public face(viewComp): string {

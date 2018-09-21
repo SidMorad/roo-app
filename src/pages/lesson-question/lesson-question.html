@@ -202,7 +202,7 @@
       <div *ngIf="isType('Speaking')">
         <div class="answer-background dir-ltr" id="answer-background">
           <div  padding>
-          <ion-spinner name="dots" *ngIf="microphonePressed"></ion-spinner>
+            <ion-spinner name="dots" *ngIf="microphonePressed"></ion-spinner>
             <div *ngIf="speakingAnswerDiff">
               <span *ngFor="let part of speakingAnswerDiff" [class.part-removed]="part.added" [class.part-added]="part.removed">{{part.value}}&nbsp;</span>
             </div>
@@ -211,7 +211,8 @@
         <a *ngIf="isType('Speaking')" (click)="skipSpeakingQuestions()" style="color:gray">{{'SKIP_MICROPHONE_QUESTIONS_FOR_NOW' | translate}}</a>
         <ion-fab center bottom large>
           <button ion-fab large color="{{microphonePressed ? 'danger' : 'primary'}}"
-            (touchstart)="microphoneDown($event)" [disabled]="isChecking" id="speakingButton">
+            (touchstart)="microphoneDown($event)" [disabled]="isChecking" id="speakingButton"
+            (touchend)="microphoneUp($event)">
             <ion-icon name="microphone"></ion-icon>
           </button>
         </ion-fab>
@@ -349,8 +350,8 @@
     </div>
   </div>
   <ion-fab start bottom large *ngIf="isType('Conversation') && microphonePressed">
-    <button ion-fab large color="danger">
-      <ion-icon name="recording"></ion-icon>
+    <button ion-fab large style="background-color: transparent">
+      <ion-spinner name="dots"></ion-spinner>
     </button>
   </ion-fab>
   <ion-fab center bottom large *ngIf="isType('Conversation')">

@@ -77,4 +77,8 @@ export class Lesson {
     return `${IMAGE_ORIGIN}/lessons/${this.picture}`;
   }
 
+  isCoW(): boolean {  // is Conversation or Words lesson/question type.
+    return this.indexOrder === 70 || this.indexOrder === 80;
+  }
+
 }

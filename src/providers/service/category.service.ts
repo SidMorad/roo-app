@@ -72,7 +72,7 @@ export class CategoryService {
               });
               return;
             }
-            const questions = res.questions.length === 0 ? this.questionGenerator.generate(res.words, this.settings.difficultyLevel) : res.questions;
+            const questions = lesson.isCoW() ? res.questions : this.questionGenerator.generate(res.words, this.settings.difficultyLevel);
             this.app.getActiveNav().push('LessonQuestionPage', {
               category: this.categoryIdentityMap[lessonSearch.cUuid],
               lesson: lesson, questions: questions, words: res.words

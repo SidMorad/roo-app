@@ -68,20 +68,19 @@ export class LessonScorePage {
         console.log('Previous level set to ', me.scoreUtil.resolveLevelFrom(me.settings.cachedScoreLookup.total));
         me.memory.setPreviousScoreLevel(me.scoreUtil.resolveLevelFrom(me.settings.cachedScoreLookup.total));
         this.api.createScore(score).subscribe((res) => {
-            this.settings.updateCachedScoreLookupWith(score);
-            this.storage.remove('LAST_SCORE').then().catch((err) => console.error('LAST_SCORE remove failure.'));
-            setTimeout(() => {
+          this.storage.remove('LAST_SCORE').then().catch((err) => console.error('LAST_SCORE remove failure.'));
+            this.settings.updateCachedScoreLookupWith(score).subscribe(() => {
               me.inProgress = false;
               me.resolveScoreStats();
               me.loadTopMembers();
               me.displayLevelUpPageIfNecessary();
-            }, 1000);
+            });
         }, (err) => {
-          console.log('OOPS upload score failed.', err);
+          console.log('OOPS upload score failed.', scoreStr, err);
           this.showRetry = true;
         });
       } catch (err) {
-        console.log('Oops, parsing last score failed: ', err, scoreStr);
+        console.log('Oops, parsing last score failed: ', scoreStr, err);
         this.showRetry = true;
       }
     }).catch((error) => {

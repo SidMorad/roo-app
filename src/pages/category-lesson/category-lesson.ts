@@ -15,6 +15,7 @@ export class CategoryLessonPage implements OnInit {
   @ViewChild(Slides) slides: Slides;
 
   lessons: Lesson[];
+  lessonsLength: 8;
   category: Category;
   isEnd: boolean;
   isBeginning: boolean;
@@ -31,6 +32,7 @@ export class CategoryLessonPage implements OnInit {
     this.isBeginning = true;
     this.api.getLessonPublicList(this.settings.difficultyLevel, this.category.uuid).subscribe((res) => {
       this.lessons = res;
+      this.lessonsLength = res.length;
       this.memory.setNumberOfDoneLessons(this.getNumberOfDoneLessons());
       this.initialIndexToGo = 0;
       for (let i = 0; i < this.lessons.length; i++) {
@@ -59,9 +61,9 @@ export class CategoryLessonPage implements OnInit {
 
   ionViewDidEnter() {
     console.log('Number of done lessons was ', this.memory.getNumberOfDoneLessons(), ' and is now ', this.getNumberOfDoneLessons());
-    if (this.memory.getNumberOfDoneLessons() < 8 && (this.getNumberOfDoneLessons() === 7 || this.getNumberOfDoneLessons() === 8)) {
+    if (this.memory.getNumberOfDoneLessons() === this.lessonsLength - 1 && this.getNumberOfDoneLessons() === this.lessonsLength) {
       this.navCtrl.push('CategoryCompletePage', { category: this.category });
-      this.memory.setNumberOfDoneLessons(8);
+      this.memory.setNumberOfDoneLessons(this.lessonsLength);
     }
     setTimeout(() => {
       this.renderPaginationBulletRender();
@@ -157,7 +159,7 @@ export class CategoryLessonPage implements OnInit {
     let numberOfDoneLessons = 0;
     for (let i = 0; i < this.lessons.length; i++) {
       const noStars = this.starLookup(this.lessons[i]);
-      // console.log('Lesson ', this.lessons[i].uuid, ' Stars ', noStars);
+      // console.log('Lesson ', this.lessons[i].indexOrder, ' Stars ', noStars);
       if (noStars)
         numberOfDoneLessons++;
     }

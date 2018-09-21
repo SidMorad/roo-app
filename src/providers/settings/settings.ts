@@ -183,20 +183,28 @@ export class Settings {
   }
 
   updateCachedScoreLookupWith(score: Score) {
-    if (this.cachedScoreLookup) {
-      this.cachedScoreLookup.total += score.score;
-      if (this.cachedScoreLookup.lessonMap[score.lessonUuid] == null) {
-        this.cachedScoreLookup.lessonMap[score.lessonUuid] = score.star;
-        if (this.cachedScoreLookup.categoryMap[score.categoryUuid]) {
-          this.cachedScoreLookup.categoryMap[score.categoryUuid] = this.cachedScoreLookup.categoryMap[score.categoryUuid] + 1;
-        } else {
-          this.cachedScoreLookup.categoryMap[score.categoryUuid] = 1;
+    return new Observable(observer => {
+      if (this.cachedScoreLookup) {
+        this.cachedScoreLookup.total += score.score;
+        if (this.cachedScoreLookup.lessonMap[score.lessonUuid] == null) {
+          this.cachedScoreLookup.lessonMap[score.lessonUuid] = score.star;
+          console.log('Lesson (', score.lessonUuid , ') star set to ', score.star);
+          if (this.cachedScoreLookup.categoryMap[score.categoryUuid]) {
+            this.cachedScoreLookup.categoryMap[score.categoryUuid] = this.cachedScoreLookup.categoryMap[score.categoryUuid] + 1;
+          } else {
+            this.cachedScoreLookup.categoryMap[score.categoryUuid] = 1;
+          }
+        } else if (this.cachedScoreLookup.lessonMap[score.lessonUuid] < score.star) {
+          this.cachedScoreLookup.lessonMap[score.lessonUuid] = score.star;
         }
-      } else if (this.cachedScoreLookup.lessonMap[score.lessonUuid] < score.star) {
-        this.cachedScoreLookup.lessonMap[score.lessonUuid] = score.star;
+        this.storeCachedScoreLookups();
+        observer.next(null);
+        observer.complete();
+      } else {
+        observer.next(null);
+        observer.complete();
       }
-      this.storeCachedScoreLookups();
-    }
+    });
   }
 
   private readonly scoreLookupCacheKeyPrefix: string = 'CACHED_SCORE_LOOKUP_';
