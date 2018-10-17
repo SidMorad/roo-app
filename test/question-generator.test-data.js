@@ -216,9 +216,9 @@ function questions() {
     },
     {
       "uuid": "51a9eb18-734d-4838-9844-f1c981d967a7",
-      "type": "OneCheck",
+      "type": "SpellSelect",
       "indexOrder": 30,
-      "dynamicPart": "{\"options\":[{\"text\":\"5\",\"isCorrect\":\"correct\"},{\"text\":\"6\"},{\"text\":\"7\"},{\"text\":\"8\"}]}"
+      "dynamicPart": "{\"question\":\"3\"}"
     },
     {
       "uuid": "84291d34-dcf8-4ccf-82fd-4419fa8ab29c",

@@ -22,7 +22,7 @@ describe('Question Generator', () => {
     const res = [];
     res.push(qg.generateTwoPicture(lw[1], lw[2], 10, 1, 2));
     res.push(qg.generateTwoPicture(lw[3], lw[4], 20, 3, 4));
-    res.push(qg.generateOneCheck(5, 30, [5, 6, 7, 8]));
+    res.push(qg.generateSpellSelect(30, 3));
     res.push(qg.generateFourPicture(lw[1], lw[2], lw[3], lw[4], 40, 1, 2, 3, 4));
     res.push(qg.generateOneCheck(6, 50, [5, 6, 7, 8]));
     res.push(qg.generateSpeaking(60, 9));

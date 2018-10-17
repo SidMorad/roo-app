@@ -5,6 +5,7 @@ import { SwingModule } from 'angular2-swing';
 
 import { LessonQuestionPage } from './lesson-question';
 import { LongPressDirective } from '../../providers';
+import { PipesModule } from '../../providers/pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { LongPressDirective } from '../../providers';
   imports: [
     IonicPageModule.forChild(LessonQuestionPage),
     TranslateModule.forChild(),
-    SwingModule
+    SwingModule,
+    PipesModule
   ],
   exports: [
     LessonQuestionPage

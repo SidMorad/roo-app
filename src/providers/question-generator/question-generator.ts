@@ -49,10 +49,10 @@ export class QuestionGenerator {
         res.push(this.generateTwoPicture(data[pictures[i]], data[pictures[i+1]], 10+i*i, pictures[i], pictures[i+1]));
       if (maxPicIndex >= i + 3)
         res.push(this.generateTwoPicture(data[pictures[i+2]], data[pictures[i+3]], 20+i*i, pictures[i+2], pictures[i+3]));
-      else if (maxPicIndex >= i + 1)
+      else if (maxPicIndex <= 2)  // For when there are two or less pictures only.
         res.push(this.generateTwoPicture(data[pictures[i+1]], data[pictures[i]], 30+i*i, pictures[i+1], pictures[i]));
-      if (maxPicIndex >= i + 3)
-        res.push(this.generateOneCheck(pictures[this.randomBetween(i,i+1)], 40+i*i, [pictures[i], pictures[i+1], pictures[i+2], pictures[i+3]]));
+      if (maxPicIndex >= i + 1)
+        res.push(this.generateSpellSelect(40+i*i, pictures[this.randomBetween(i,i+1)]));
       if (maxPicIndex >= i + 3)
         res.push(this.generateFourPicture(data[pictures[i]], data[pictures[i+1]], data[pictures[i+2]], data[pictures[i+3]], 50+i*i,
                                                pictures[i],       pictures[i+1],       pictures[i+2],       pictures[i+3]));
@@ -60,7 +60,7 @@ export class QuestionGenerator {
         res.push(this.generateFourPicture(data[pictures[i]], data[pictures[i+1]], data[pictures[i+2]], data[pictures[i+3]], 60+i*i,
                                                pictures[i],       pictures[i+1],       pictures[i+2],       pictures[i+3]));
       if (maxPicIndex >= i + 3)
-        res.push(this.generateOneCheck(pictures[this.randomBetween(i+2,i+3)], 70+i*i, [pictures[i], pictures[i+1], pictures[i+2], pictures[i+3]]));
+        res.push(this.generateSpellSelect(70+i*i, pictures[this.randomBetween(i+2,i+3)]));
     }
     for (let i = 0; i < 13; i = i + 6) {
       if (maxIndex >= i+5)
@@ -92,10 +92,10 @@ export class QuestionGenerator {
         res.push(this.generateTwoPicture(data[pictures[i]], data[pictures[i+1]], 10+i*i, pictures[i], pictures[i+1]));
       if (maxPicIndex >= i + 3)
         res.push(this.generateTwoPicture(data[pictures[i+2]], data[pictures[i+3]], 20+i*i, pictures[i+2], pictures[i+3]));
-      else if (maxPicIndex >= i + 1)
+      else if (maxPicIndex <= 2) // For when there are two or less pictures only.
         res.push(this.generateTwoPicture(data[pictures[i+1]], data[pictures[i]], 30+i*i, pictures[i+1], pictures[i]));
       if (maxPicIndex >= i + 1)
-        res.push(this.generateWriting(40+i*i, pictures[this.randomBetween(i,i+1)], this.trueOrFalse()));
+        res.push(this.generateSpellSelect(40+i*i, pictures[this.randomBetween(i,i+1)]));
       if (maxPicIndex >= i + 3)
         res.push(this.generateFourPicture(data[pictures[i]], data[pictures[i+1]], data[pictures[i+2]], data[pictures[i+3]], 50+i*i,
                                                pictures[i],       pictures[i+1],       pictures[i+2],       pictures[i+3]));
@@ -103,7 +103,7 @@ export class QuestionGenerator {
         res.push(this.generateFourPicture(data[pictures[i]], data[pictures[i+1]], data[pictures[i+2]], data[pictures[i+3]], 60+i*i,
                                                pictures[i],       pictures[i+1],       pictures[i+2],       pictures[i+3]));
       if (maxPicIndex >= i + 3)
-        res.push(this.generateWriting(70+i*i, pictures[this.randomBetween(i+2,i+3)], this.trueOrFalse()));
+        res.push(this.generateSpellSelect(70+i*i, pictures[this.randomBetween(i+2,i+3)]));
     }
     for (let i = 0; i < 11; i = i + 5) {
       if (maxIndex >= i+4) {
@@ -221,6 +221,10 @@ export class QuestionGenerator {
 
   private generateSpeaking(indexOrder, n) {
     return { type: 'Speaking', dynamicPart: `{"question":"${n}"}`, indexOrder: indexOrder };
+  }
+
+  private generateSpellSelect(indexOrder: number, n: number) {
+    return { type: 'SpellSelect', dynamicPart: `{"question":"${n}"}`, indexOrder: indexOrder };
   }
 
   private generateWriting(indexOrder:number, n: number, isReverse?: boolean) {

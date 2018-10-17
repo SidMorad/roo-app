@@ -2,6 +2,7 @@ import { compareTwoStrings } from 'string-similarity';
 import { diffWords } from 'diff';
 
 import { QuestionType } from './question-type';
+import { IMAGE_ORIGIN } from '../app/app.constants';
 
 export class Question {
   constructor(
@@ -50,6 +51,7 @@ export class Question {
   public targetOptions: any[];             public motherOptions: any[];
   private targetMultiSelectOptions: any[];  private motherMultiSelectOptions: any[];
   private targetOneCheckAnswer: any;         private motherOneCheckAnswer: any;
+  private spellSelectOptionsProp: any[];
 
   initOptions(removeDot: boolean) {
     this.toptions(removeDot);
@@ -140,6 +142,12 @@ export class Question {
     else if (this.isType('Words')) {
       return viewComp.words[viewComp.questionCounter-1].isAnswerRight(viewComp.wordAnswer);
     }
+    else if (this.isType('SpellSelect')) {
+      const actual = viewComp.chosens.map((opt) => opt.text).join('');
+      const expected = this.lookupWordTarget(this.d.question);
+      console.log('Expected: ', expected, ' Actual: ', actual);
+      return expected === actual;
+    }
     return false;
   }
 
@@ -164,6 +172,9 @@ export class Question {
             return true;
           }
         }
+      }
+      else if (this.isType('SpellSelect')) {
+        return viewComp.chosens.length === viewComp.options.length;
       }
     }
     return false;
@@ -244,6 +255,9 @@ export class Question {
         }
       }
     }
+    else {
+      result = this.answer;
+    }
     if (viewComp.wasWrong) {
       viewComp.description = 'CORRECT_ANSWER';
     } else if (viewComp.wasCorrect) {
@@ -309,12 +323,25 @@ export class Question {
     return this.isNormal() ? this.mmultiSelectOptions : this.tmultiSelectOptions;
   }
 
+  public spellSelectOptions(): any[] {
+    if (!this.spellSelectOptionsProp) {
+      const word: string = this.lookupWordTarget(this.d.question), options = [];
+      word.toString().split('').forEach((option) => options.push({ text: option}));
+      this.spellSelectOptionsProp = this.shuffle(options);
+    }
+    return this.spellSelectOptionsProp;
+  }
+
   public pictureLabel(index): string {
     return this.isNormal() ? this.motherOptions[index].text : this.targetOptions[index].text;
   }
 
   public pictureQuestion(index): string {
     return this.isNormal() ? this.targetOptions[index].text : this.motherOptions[index].text;
+  }
+
+  get pictureUrl(): string {
+    return `${IMAGE_ORIGIN}lessons/${this.lookupWords[this.d.question]['e']}.jpeg`;
   }
 
   public writingAnswer(): string {

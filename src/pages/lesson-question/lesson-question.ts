@@ -31,7 +31,7 @@ export class LessonQuestionPage implements OnInit {
   options: any[]; chosens: any[]; choices: any[];
   twoPicturesNominated: string[]; pictureCorrectIndex: number;
   noTotal: number; noWrong: number;
-  writingAnswer: string = ''; speakingAnswer: string; wordAnswer: boolean; rightAnswerString: string;
+  writingAnswer: string = ''; speakingAnswer: string; wordAnswer: boolean; rightAnswerString: string; spellSelectHelpText: string;
   wasCorrect: boolean; wasWrong: boolean; wasAlmostCorrect: boolean;
   isChecking: boolean; autoPlayVoice: boolean; autoContinue: boolean; skipSpeaking: boolean;
   microphonePressed: boolean; hasAudioRecordingPermission: boolean;
@@ -107,7 +107,9 @@ export class LessonQuestionPage implements OnInit {
         this.nativeAudio.play('wrongSound');
       }
     }
-    this.question.resolveRightAnswerString(this, true);
+    this.ngZone.run(() => {
+      this.question.resolveRightAnswerString(this, true);
+    });
     setTimeout(() => {
       this.content.scrollToBottom(1000);
     }, 300);
@@ -210,6 +212,11 @@ export class LessonQuestionPage implements OnInit {
       this.choices = this.question.oneCheckChoices();
       this.question.toneCheckAnswer;  // for initalize answer into variable and also speak function works as expected.
       this.description = 'CHOOSE_CORRECT_TRANSLATION';
+    } else if (this.isType('SpellSelect')) {
+      this.options = this.question.spellSelectOptions();
+      this.chosens = [];
+      this.spellSelectHelpText = this.question.answer;
+      this.description = 'SELECT_CORRECT_SPELL';
     } else if (this.isType('FourPicture')) {
       this.pictureCorrectIndex = this.determinePictureCorrectIndex();
       this.description = 'CHOOSE_CORRECT_PICTURE';

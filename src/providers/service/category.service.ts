@@ -76,11 +76,9 @@ export class CategoryService {
             this.app.getActiveNav().push('LessonQuestionPage', {
               category: this.categoryIdentityMap[lessonSearch.cUuid],
               lesson: lesson, questions: questions, words: res.words
-            }).then(() => {
-            }).catch(() => {
             });
           }, error => {
-            console.log('Oops this should not happen, TODO');
+            console.error('Unexpected error: ', error);
           });
         }
       }
