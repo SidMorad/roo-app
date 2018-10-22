@@ -26,7 +26,7 @@ describe('Question Generator', () => {
     res.push(qg.generateFourPicture(lw[1], lw[2], lw[3], lw[4], 40, 1, 2, 3, 4));
     res.push(qg.generateOneCheck(6, 50, [5, 6, 7, 8]));
     res.push(qg.generateSpeaking(60, 9));
-    res.push(qg.generateMultiSelect(8, 70, [9]));
+    res.push(qg.generateOneSelect(8, 70, [9]));
     res.push(qg.generateSpeaking(80, 10));
     res.push(qg.generateMultiSelect(7, 90, [6], true));
     res.push(qg.generateSpeaking(100, 11));

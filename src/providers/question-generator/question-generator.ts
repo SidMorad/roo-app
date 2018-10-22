@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { DifficultyLevel } from '../../models';
+import { QuestionUtil } from '../../providers';
 
 @Injectable()
 export class QuestionGenerator {
@@ -68,7 +69,10 @@ export class QuestionGenerator {
       if (maxIndex >= i+3)
         res.push(this.generateOneCheck(subjects[i], 60+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
       if (maxIndex >= i+1)
-        res.push(this.generateMultiSelect(subjects[i+1], 70+i*20, [subjects[this.randomLessThan(i+1)]], this.trueOrFalse()));
+        if (this.isMoreThanTwoWords(subjects[i+1], data))
+          res.push(this.generateOneSelect(subjects[i+1], 70+i*20, subjects[i]));
+        else
+          res.push(this.generateMultiSelect(subjects[i+1], 70+i*20, [subjects[this.randomLessThan(i+1)]], this.trueOrFalse()));
       if (maxIndex >= i+2)
         res.push(this.generateMultiSelect(subjects[i+2], 90+i*20, [subjects[this.randomLessThan(i+2)]], this.trueOrFalse()));
       if (maxIndex >= i+3)
@@ -106,16 +110,17 @@ export class QuestionGenerator {
         res.push(this.generateSpellSelect(70+i*i, pictures[this.randomBetween(i+2,i+3)]));
     }
     for (let i = 0; i < 11; i = i + 5) {
-      if (maxIndex >= i+4) {
+      if (maxIndex >= i+4)
         res.push(this.generateSpeaking(50+i*20, subjects[this.randomBetween(i, i+4)]));
-      }
-      if (maxIndex >= i+3) {
+      if (maxIndex >= i+3)
         res.push(this.generateOneCheck(subjects[i], 60+i*20, [subjects[i], subjects[i+1], subjects[i+2], subjects[i+3]]));
-      }
-      if (maxIndex >= i+1) {
-        const tOrf = this.trueOrFalse();
-        res.push(this.generateMultiSelect(subjects[i+1], 70+i*20, [subjects[this.randomLessThan(i+1)]], tOrf, tOrf ? true : undefined));
-      }
+      if (maxIndex >= i+1)
+        if (this.isMoreThanTwoWords(subjects[i+1], data))
+          res.push(this.generateOneSelect(subjects[i+1], 70+i*20, subjects[i]));
+        else {
+          const tOrf = this.trueOrFalse();
+          res.push(this.generateMultiSelect(subjects[i+1], 70+i*20, [subjects[this.randomLessThan(i+1)]], tOrf, tOrf ? true : undefined));
+        }
       if (maxIndex >= i+2) {
         const tOrf = this.trueOrFalse();
         res.push(this.generateMultiSelect(subjects[i+2], 80+i*20, [subjects[this.randomLessThan(i+2)]], tOrf, tOrf ? undefined : true));
@@ -245,16 +250,27 @@ export class QuestionGenerator {
     return res;
   }
 
+  private generateOneSelect(na: number, indexOrder: number, no: number) { // na: number of answer no: number of option
+    return {
+      type: 'OneSelect', dynamicPart: `{"question":"${na}","option":"${no}"}`, indexOrder: indexOrder
+    };
+  }
+
   private randomLessThan(num): number {
-    return Math.floor(Math.random() * (num - 1)) + 0;
+    return QuestionUtil.randomLessThan(num);
   }
 
   private randomBetween(min, max): number {
-    return Math.floor(Math.random()*(max-min+1)+min);
+    return QuestionUtil.randomBetween(min, max);
   }
 
   private trueOrFalse(): boolean {
-    return Math.random() >= 0.5;
+    return QuestionUtil.trueOrFalse();
+  }
+
+  private isMoreThanTwoWords(lookupNumber: number, data: any[]) {
+    const sentenceOrWord = data[lookupNumber]['ts'][0].w;
+    return sentenceOrWord.split(' ').length >= 3;
   }
 
 }

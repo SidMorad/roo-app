@@ -52,12 +52,15 @@
         <p [class.dir-rtl]="isRTL"
            [class.dir-ltr]="!isRTL">&nbsp; {{description | translate}}</p>
       </div>
-      <div *ngIf="question && isNotTypes(['Conversation', 'Words', 'SpellSelect']) && (!question.d.listen || isInContinueState)" (click)="speak()"
+      <div *ngIf="question && isNotTypes(['Conversation', 'Words', 'SpellSelect',
+          'OneSelect']) && (!question.d.listen || isInContinueState)" (click)="speak()"
           [class.dir-rtl]="lesson.isClassRTL(question.d.reverse)"
           [class.dir-ltr]="lesson.isClassLTR(question.d.reverse)" class="question-question">
           {{questionFace}}
       </div>
-      <div *ngIf="(wasWrong || wasAlmostCorrect) && isNotTypes(['TwoPicture', 'FourPicture', 'OneCheck', 'Conversation', 'Words', 'Speaking', 'SpellSelect'])" class="alert alert-info"
+      <div *ngIf="(wasWrong || wasAlmostCorrect) && isNotTypes(['TwoPicture',
+          'FourPicture', 'OneCheck', 'Conversation', 'Words', 'Speaking',
+          'SpellSelect', 'OneSelect'])" class="alert alert-info"
           [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)"
           [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)" (click)="speak()">
         {{rightAnswerString}}
@@ -65,10 +68,11 @@
       <div *ngIf="isType('SpellSelect')" (click)="speak()"
           [class.dir-rtl]="lesson.isClassRTL(!question.d.reverse)"
           [class.dir-ltr]="lesson.isClassLTR(!question.d.reverse)" class="question-question"
-          [style.background-image]="'url(' + question.pictureUrl + ')' | safe: 'style'" style="background-position: center center; height: 18vh">
-          <h2 class="spell-select-help-text">{{spellSelectHelpText}}</h2>
+          [style.background-image]="'url(' + question.pictureUrl + ')' | safe: 'style'"
+          style="background-position: center center; height: 18vh">
+        <h2 class="spell-select-help-text">{{spellSelectHelpText}}</h2>
       </div>
-      <div *ngIf="wasWrong && isType('SpellSelect')" class="alert alert-info"
+      <div *ngIf="isTypes(['SpellSelect', 'OneSelect']) && wasWrong" class="alert alert-info"
           [class.dir-rtl]="lesson.isClassRTL(question.d.reverse)"
           [class.dir-ltr]="lesson.isClassLTR(question.d.reverse)" (click)="speak()">
         {{questionFace}}
@@ -191,6 +195,25 @@
             </div>
           </div>
         </ion-list>
+      </div>
+
+      <div *ngIf="isType('OneSelect')">
+        <div class="answer-background" id="answer-background">
+          <div [class.dir-rtl]="lesson.isClassRTL(question.d.reverse)" padding
+               [class.dir-ltr]="lesson.isClassLTR(question.d.reverse)" style="line-height: 47px">
+            {{question.oneSelectBeforeAnswer}}
+            <span class="answer" (click)="moveOneBackToOptions()">
+              <button class="{{chosen?.class}} answer-contents" id="chosen-{{i}}">{{chosen?.text}}</button>
+            </span>
+            {{question.oneSelectAfterAnswer}}
+          </div>
+        </div>
+        <div [class.dir-rtl]="lesson.isClassRTL(question.d.reverse)" padding
+             [class.dir-ltr]="lesson.isClassLTR(question.d.reverse)" id="optionsContainer">
+          <span class="answer answer-container" *ngFor="let option of options; let i = index;" id="option-{{i}}">
+            <button (click)="moveOneToChosen(option)" [disabled]="option?.class === 'option-selected'" class="answer-contents {{option.class}}">{{option.text}}</button>
+          </span>
+        </div>
       </div>
 
       <div *ngIf="isType('MultiSelect')">

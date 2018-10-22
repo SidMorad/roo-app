@@ -3,6 +3,9 @@ import { diffWords } from 'diff';
 
 import { QuestionType } from './question-type';
 import { IMAGE_ORIGIN } from '../app/app.constants';
+import { QuestionUtil } from '../providers';
+
+const npl = require('compromise');
 
 export class Question {
   constructor(
@@ -51,7 +54,8 @@ export class Question {
   public targetOptions: any[];             public motherOptions: any[];
   private targetMultiSelectOptions: any[];  private motherMultiSelectOptions: any[];
   private targetOneCheckAnswer: any;         private motherOneCheckAnswer: any;
-  private spellSelectOptionsProp: any[];
+  private spellSelectOptionsProperty: any[]; private oneSelectOptionsProperty: any[];
+  private oneSelectBeforeAnswer: string;     private oneSelectAfterAnswer: string;
 
   initOptions(removeDot: boolean) {
     this.toptions(removeDot);
@@ -78,6 +82,12 @@ export class Question {
         }
         return true;
       }
+    }
+    else if (this.isType('OneSelect')) {
+      const expected = this.lookupWordTarget(this.d.question);
+      const actual = this.oneSelectBeforeAnswer + viewComp.chosen.text + this.oneSelectAfterAnswer;
+      console.log('Expected: ', expected, ' Actual: ', actual);
+      return expected === actual;
     }
     else if (this.isType('TwoPicture')) {
       return this.d.options[viewComp.pictureCorrectIndex].answered;
@@ -155,6 +165,9 @@ export class Question {
     if (this) {
       if (this.isType('MultiSelect')) {
         return viewComp.chosens.length > 0
+      }
+      else if (this.isType('OneSelect')) {
+        return viewComp.chosen && viewComp.chosen.text;
       }
       else if (this.isType('Writing')) {
         return viewComp.writingAnswer;
@@ -323,13 +336,29 @@ export class Question {
     return this.isNormal() ? this.mmultiSelectOptions : this.tmultiSelectOptions;
   }
 
+  public oneSelectOptions(): any[] {
+    if (!this.oneSelectOptionsProperty) {
+      const targetSentence = this.lookupWordTarget(this.d.question);
+      const optionSentence = this.lookupWordTarget(this.d.option);
+      let options = [];
+      optionSentence.split(' ').forEach((word) => options.push({text: word}));
+      let doc = npl(targetSentence);
+      const blankWord = doc.nouns().data()[QuestionUtil.randomBetween(0, doc.nouns().data().length-1)].text;
+      this.oneSelectBeforeAnswer = targetSentence.substring(0, targetSentence.indexOf(blankWord));
+      this.oneSelectAfterAnswer = targetSentence.substring(targetSentence.indexOf(blankWord) + blankWord.length, targetSentence.length);
+      options.push({text: blankWord});
+      this.oneSelectOptionsProperty = this.shuffle(options);
+    }
+    return this.oneSelectOptionsProperty;
+  }
+
   public spellSelectOptions(): any[] {
-    if (!this.spellSelectOptionsProp) {
+    if (!this.spellSelectOptionsProperty) {
       const word: string = this.lookupWordTarget(this.d.question), options = [];
       word.toString().split('').forEach((option) => options.push({ text: option}));
-      this.spellSelectOptionsProp = this.shuffle(options);
+      this.spellSelectOptionsProperty = this.shuffle(options);
     }
-    return this.spellSelectOptionsProp;
+    return this.spellSelectOptionsProperty;
   }
 
   public pictureLabel(index): string {
@@ -403,8 +432,15 @@ export class Question {
         res = this.targetOptions[viewComp.questionCounter-1].text;
       }
     }
+    else if (this.isType('OneSelect')) {
+      if (!viewComp.isInContinueState)
+        res = this.oneSelectBeforeAnswer + (viewComp.chosen && viewComp.chosen.text ?
+          viewComp.chosen.text : '') + this.oneSelectAfterAnswer;
+      else
+        res = this.lookupWordTarget(this.d.question);
+    }
     else {
-      res =  this.lookupWordTarget(this.d.question);
+      res = this.lookupWordTarget(this.d.question);
     }
     return this.replaceAll(res, '_', '');
   }

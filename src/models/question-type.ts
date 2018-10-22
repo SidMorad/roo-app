@@ -4,7 +4,7 @@ export const enum QuestionType {
   'MultiSelect',
   'SpellSelect',
   'OneCheck',
-  'MultiCheck',
+  'MultiCheck', // unused
   'TwoPicture',
   'FourPicture',
   'Writing'

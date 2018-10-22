@@ -12,3 +12,4 @@ export * from './question-generator/question-generator';
 export * from './error-handler/roo-error-handler';
 export * from './service/category.service';
 export * from './service/parse-links.service';
+export * from './question/question.util';

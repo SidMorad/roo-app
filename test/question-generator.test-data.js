@@ -240,9 +240,9 @@ function questions() {
     },
     {
       "uuid": "048ffdb9-20f7-499d-80e4-3482b24f6bca",
-      "type": "MultiSelect",
+      "type": "OneSelect",
       "indexOrder": 70,
-      "dynamicPart": "{\"question\":\"8\",\"options\":[{\"text\":\"9\"}]}"
+      "dynamicPart": "{\"question\":\"8\",\"option\":\"9\"}"
     },
     {
       "uuid": "bdfb5f18-4463-4120-b875-064db2e64abd",

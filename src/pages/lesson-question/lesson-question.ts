@@ -28,7 +28,7 @@ export class LessonQuestionPage implements OnInit {
   @ViewChildren('mycards1') swingCards: QueryList<SwingCardComponent>;
   @ViewChild('writingAnswerTextarea') writingAnswerTextarea: ElementRef;
   lesson: Lesson; category: Category; question: Question; questions: Question[];
-  options: any[]; chosens: any[]; choices: any[];
+  options: any[]; chosens: any[]; choices: any[]; chosen: any;
   twoPicturesNominated: string[]; pictureCorrectIndex: number;
   noTotal: number; noWrong: number;
   writingAnswer: string = ''; speakingAnswer: string; wordAnswer: boolean; rightAnswerString: string; spellSelectHelpText: string;
@@ -204,7 +204,11 @@ export class LessonQuestionPage implements OnInit {
   setQuestion(q: Question) {
   this.ngZone.run(() => {
     this.question = new Question(q.uuid, q.type, q.indexOrder, q.dynamicPart, null, this.lookupWords);
-    if (this.isType('MultiSelect')) {
+    if (this.isType('OneSelect')) {
+      this.options = this.question.oneSelectOptions();
+      this.chosen = {};
+      this.description = 'SELECT_CORRECT_WORD';
+    } else if (this.isType('MultiSelect')) {
       this.options = this.question.multiSelectOptions();
       this.chosens = [];
       this.description = this.question.d.listen ? 'TRANSLATE_WHAT_YOU_HEAR' : 'TRANSLATE_THIS_SENTENCE';
@@ -351,7 +355,9 @@ export class LessonQuestionPage implements OnInit {
   }
 
   moveToChosen(item) {
-    // this.speak(item.text); // TODO
+    if (this.autoPlayVoice) {
+      this.speak(item.text);
+    }
     if (this.isInContinueState) return;
     this.chosens.push(JSON.parse(JSON.stringify(item)));
     item.class = 'option-selected';
@@ -367,11 +373,39 @@ export class LessonQuestionPage implements OnInit {
     });
   }
 
+  moveOneToChosen(item) {
+    this.moveOneBackToOptions(null);
+    if (this.autoPlayVoice) {
+      this.speak(item.text);
+    }
+    if (this.isInContinueState) return;
+    this.chosen = JSON.parse(JSON.stringify(item));
+    item.class = 'option-selected';
+  }
+
+  moveOneBackToOptions(item) {
+    if (this.isInContinueState) return;
+    this.chosen = {};
+    this.options.forEach((option) => {
+      option.class = 'option-deselected';
+    });
+  }
+
   isType(type: string): boolean {
     if (this.question) {
       return this.question.isType(type);
     }
     return false;
+  }
+
+  isTypes(types: string[]): boolean {
+    let result = false;
+    for (let i = 0; i < types.length; i++) {
+      if (this.isType(types[i])) {
+        result = true;
+      }
+    }
+    return result;
   }
 
   isNotTypes(types: string[]): boolean {
