@@ -26,6 +26,10 @@ export class Api {
     return this.post('roo/api/user/xmarket/subscribe/avvalmarket', subscribeModel);
   }
 
+  subscribeWith(subscribeModel, market) {
+    return this.post(`roo/api/user/xmarket/subscribe/${market}`, subscribeModel);
+  }
+
   createProfile(profile: DefaultSettings): Observable<any> {
     return this.post('roo/api/user/profile/create', profile);
   }

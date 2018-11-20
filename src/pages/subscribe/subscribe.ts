@@ -127,58 +127,36 @@ export class SubscribePage {
                           duration: 3000
                         }).present();
                       });
-                    } else if (data === 'cafebazaar') {
-                      console.log('Attempt to subscribe to ', that.resolvePaymentSKU(subscriptionType));
+                    } else if (data === 'cafebazaar' || data === 'avvalmarket' || data === 'iranapps') {
+                      console.log(`Attempt to subscribe to ${data} `, that.resolvePaymentSKU(subscriptionType));
                       inappbilling.subscribe(function (success) {
                         console.log('Subscription succeed: ', success);
                         subscribeModel.paymentApiReturnString = JSON.stringify(success);
-                        that.api.subscribeWithCafebazaar(subscribeModel).subscribe((success) => {
+                        that.api.subscribeWith(subscribeModel, data).subscribe((success) => {
                           console.log('Subscription stored in the server successfully.', success);
                           that.reCheckMembership();
                         }, (error)=> {
                           that.storage.set(that.lastSubscribeKey, JSON.stringify(subscribeModel)).then((res) => {
                             that.reCheck = true;
                           });
-                          that.toastCtrl.create({ message: 'Error server-side: ' + error,
-                            duration: 4000, position: 'middle' }).present();
+                          that.toastCtrl.create({ message: 'Error server-side: ' + error, duration: 4000, position: 'middle' }).present();
                           that.inProgress = false;
                         });
                       }, function (error) {
-                        that.toastCtrl.create({ message: 'Error client-side: ' + error,
-                          duration: 4000, position: 'middle' }).present();
+                        that.toastCtrl.create({ message: 'Error client-side: ' + error, duration: 4000, position: 'middle' }).present();
+                        console.debug('InAppBilling#subscribe#failure: ', error);
                         that.inProgress = false;
                       }, that.resolvePaymentSKU(subscriptionType));
-                    } else if (data === 'avvalmarket') {
-                      console.log('Attempt to subscribe with AvvalMarket to ', `ROO_${subscriptionType.toString()}_TEST`);
-                      inappbilling.subscribe(function (success) {
-                        subscribeModel.paymentApiReturnString = JSON.stringify(success);
-                        console.log('Subscription succeed: ', success);
-                        that.api.subscribeWithAvvalMarket(subscribeModel).subscribe(success => {
-                          console.log('Subscription stored in server successfully.', success);
-                          that.reCheckMembership();
-                        }, error => {
-                          that.storage.set(that.lastSubscribeKey, JSON.stringify(subscribeModel)).then( res => {
-                            that.reCheck = true;
-                          });
-                          that.toastCtrl.create({ message: 'Error server-side: ' + error,
-                            duration: 4000, position: 'middle' }).present();
-                          that.inProgress = false;
-                        });
-                      }, function (error) {
-                        that.toastCtrl.create({ message: 'Error client-side: ' + error,
-                          duration: 4000, position: 'middle' }).present();
-                        that.inProgress = false;
-                      }, `ROO_${subscriptionType.toString()}_TEST`);
-                    } else if (data == 'googleplay') {
-                      console.log('Attempt to subscribe to ', that.resolvePaymentSKU(subscriptionType));
-                      inappbilling.subscribe(function(success) {
-                        console.log('Subscription succeed: ', success);
-                        subscribeModel.paymentApiReturnString = JSON.stringify(success);
-                        // TODO | FIXME
-                      }, function(error) {
-                        console.log('Subscription failed: ', error);
-                      // }, `roo_play_${subscriptionType.toString().toLowerCase()}`);
-                    }, `android.test.purchased`);
+                    // } else if (data == 'googleplay') {
+                    //   console.log('Attempt to subscribe to ', that.resolvePaymentSKU(subscriptionType));
+                    //   inappbilling.subscribe(function(success) {
+                    //     console.log('Subscription succeed: ', success);
+                    //     subscribeModel.paymentApiReturnString = JSON.stringify(success);
+                    //     // TODO | FIXME or NOT because mine is a copy!
+                    //   }, function(error) {
+                    //     console.log('Subscription failed: ', error);
+                    //   // }, `roo_play_${subscriptionType.toString().toLowerCase()}`);
+                    // }, `android.test.purchased`);
                     }
                   }
                 }
@@ -228,7 +206,7 @@ export class SubscribePage {
   }
 
   resolvePaymentOptions(): any[] {
-    console.log('ENV#', ENV.isPlay, ENV.isCafe, ENV.isAval);
+    console.log('ENV#', ENV.profile, ENV.isPlay, ENV.isCafe, ENV.isAval);
     let res = [];
     if (ENV.isPlay) {
       // res.push({ type: 'radio', label: 'Google play', value: 'googleplay', checked: ENV.isPlay})
@@ -240,11 +218,14 @@ export class SubscribePage {
     if (ENV.isAval) {
       res.push({ type: 'radio', label: 'AvvalMarket (اول مارکت)', value: 'avvalmarket', checked: ENV.isAval });
     }
+    if (ENV.isIaps) {
+      res.push({ type: 'radio', label: 'IranApps (ایران اپس)', value: 'iranapps', checked: ENV.isIaps });
+    }
     return res;
   }
 
   resolvePaymentSKU(subscriptionType: SubscriptionType): string {
-    return `roo_${subscriptionType.toString()}_V2_1`;
+    return `roo_${subscriptionType.toString()}_V3`;
   }
 
   showLoginToast(duration: number) {

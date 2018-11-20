@@ -355,7 +355,7 @@ export class LessonQuestionPage implements OnInit {
   }
 
   moveToChosen(item) {
-    if (this.autoPlayVoice) {
+    if (this.autoPlayVoice && /\s/.test(this.question.answer)) {
       this.speak(item.text);
     }
     if (this.isInContinueState) return;

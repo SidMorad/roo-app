@@ -6,7 +6,7 @@ import { Score } from '../../models';
 import { Api } from '../../providers';
 import { ScoreUtil, Settings, Memory } from '../../providers';
 
-declare const window: any;
+// declare const window: any;
 
 @IonicPage()
 @Component({
@@ -43,7 +43,7 @@ export class LessonScorePage {
     }
     if (this.platform.is('android')) {
       if (this.settings.allSettings.advertismentEnabled) {
-        window.adad.LoadInterstitial();
+        // window.adad.LoadInterstitial();  // Ad disabled for now
       }
     }
   }
@@ -51,7 +51,7 @@ export class LessonScorePage {
   ionViewDidLeave() {
     if (this.platform.is('android') && !this.levelUpFlag) {
       if (this.settings.allSettings.advertismentEnabled) {
-        window.adad.ShowInterstitial();
+        // window.adad.ShowInterstitial();  // Ad disabled for now
       }
     }
   }

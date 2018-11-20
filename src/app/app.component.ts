@@ -92,7 +92,7 @@ export class MyApp implements OnInit {
       this.statusBar.backgroundColorByHexString('#f4f4f4');
       this.splashScreen.hide();
       this.initTranslate();
-      this.initAddAd();
+      // this.initAddAd();  Ad disabled for now.
       this.initAppVersion();
       this.initNativeAudio();
     });
@@ -247,28 +247,28 @@ export class MyApp implements OnInit {
   }
 
   initAddAd() {
-    if (this.platform.is('android')) {
-      window.adad.setUp();
-      window.adad.DisableBanner();
-      window.adad.onAdLoaded = function () {
-        console.log('Adad#onAdLoaded');
-      };
-      window.adad.onAdFailedToLoad = function () {
-        console.log('Adad#onAdFailedToLoad');
-      };
-      window.adad.onInterstitialAdDisplayed = function () {
-        console.log('Adad#onInterstitialAdDisplayed');
-      };
-      window.adad.onRemoveAdsRequested = function () {
-        console.log('Adad#onRemoveAdsRequested');
-      };
-      window.adad.onMessageReceive = function () {
-        console.log('Adad#onMessageReceive');
-      };
-      window.adad.onInterstitialClosed = function () {
-        console.log('Adad#onInterstitialClosed');
-      };
-    }
+    // if (this.platform.is('android')) {
+    //   window.adad.setUp();
+    //   window.adad.DisableBanner();
+    //   window.adad.onAdLoaded = function () {
+    //     console.log('Adad#onAdLoaded');
+    //   };
+    //   window.adad.onAdFailedToLoad = function () {
+    //     console.log('Adad#onAdFailedToLoad');
+    //   };
+    //   window.adad.onInterstitialAdDisplayed = function () {
+    //     console.log('Adad#onInterstitialAdDisplayed');
+    //   };
+    //   window.adad.onRemoveAdsRequested = function () {
+    //     console.log('Adad#onRemoveAdsRequested');
+    //   };
+    //   window.adad.onMessageReceive = function () {
+    //     console.log('Adad#onMessageReceive');
+    //   };
+    //   window.adad.onInterstitialClosed = function () {
+    //     console.log('Adad#onInterstitialClosed');
+    //   };
+    // }
   }
 
   initAppVersion() {

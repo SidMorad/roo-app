@@ -2,5 +2,6 @@ export const ENV = {
   profile: 'cafe',
   isPlay: false,
   isCafe: true,
-  isAval: false
+  isAval: false,
+  isIaps: false
 }

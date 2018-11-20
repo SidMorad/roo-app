@@ -1,6 +1,6 @@
 {
   "name": "roo",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "author": "Roo team",
   "homepage": "https://roo.mars/",
   "private": true,
@@ -52,7 +52,6 @@
     "compromise": "^11.12.1",
     "cordova-android": "7.1.1",
     "cordova-custom-config": "^5.0.2",
-    "cordova-plugin-adad": "git+https://github.com/miladesign/cordova-plugin-adad.git",
     "cordova-plugin-app-version": "^0.1.9",
     "cordova-plugin-badge": "^0.8.7",
     "cordova-plugin-browsertab": "^0.2.0",
@@ -117,11 +116,6 @@
       "cordova-plugin-statusbar": {},
       "cordova-plugin-local-notification": {},
       "cordova-custom-config": {},
-      "cordova-plugin-adad": {
-        "ADAD_TOKEN_CODE": "942c6b4924a84058a4c0e3f6a685cf27",
-        "ADAD_TEST_MODE": "false",
-        "ADAD_LOG_MODE": "false"
-      },
       "cordova-plugin-x-socialsharing": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-nativeaudio": {}

@@ -45,16 +45,18 @@
         <span class="padh-10">{{'1 Month' | translate}}</span>
         <span class="padh-10">|</span>
         <span class="padh-10 old-price">{{'10 Toman' | translate}}</span>
-        <ion-badge id="discount-badge" color="danger" [style.left]="isRTL ? '10%': '60%'">90% OFF!</ion-badge>
-        <ion-badge id="new-price" color="secondary" [style.left]="isRTL ? '10%': '60%'">{{'1 Toman' | translate}}</ion-badge>
+        <ion-badge id="discount-badge" color="danger" [style.left]="isRTL ? '10%': '60%'">20% OFF!</ion-badge>
+        <ion-badge id="new-price" color="secondary" [style.left]="isRTL ? '10%': '60%'">{{'8 Toman' | translate}}</ion-badge>
       </button>
     </ion-item>
-    <ion-item text-center *ngIf="false">
-      <button ion-button large round color="secondary" (click)="subscribe('ONE_YEAR')" item-center [disabled]="true">
+    <ion-item text-center *ngIf="!isMember">
+      <button ion-button large round color="secondary" (click)="subscribe('ONE_YEAR')" item-center [disabled]="inProgress">
         <ion-icon name="pricetag"></ion-icon>
         <span class="padh-10">{{'12 Months' | translate}}</span>
         <span class="padh-10">|</span>
-        <span class="padh-10">{{'50 Toman' | translate}}</span>
+        <span class="padh-10 old-price">{{'120 Toman' | translate}}</span>
+        <ion-badge id="discount-badge" color="danger" [style.left]="isRTL ? '10%': '60%'">60% OFF!</ion-badge>
+        <ion-badge id="new-price" color="secondary" [style.left]="isRTL ? '10%': '60%'">{{'50 Toman' | translate}}</ion-badge>
       </button>
     </ion-item>
     <ion-item text-center *ngIf="isMember">

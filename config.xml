@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="142" id="mars.roo" ios-CFBundleVersion="142" version="2.4.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="146" id="mars.roo" ios-CFBundleVersion="146" version="2.4.1" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Roo</name>
     <description>Learn a language with Roo</description>
     <author email="us@mars" href="https://mars.webebook.org/">Mars Team</author>
@@ -107,13 +107,8 @@
     <plugin name="cordova-plugin-market" spec="~1.2.0" />
     <plugin name="cordova-plugin-statusbar" spec="^2.4.1" />
     <plugin name="cordova-custom-config" spec="^5.0.2" />
-    <plugin name="cordova-plugin-adad" spec="https://github.com/miladesign/cordova-plugin-adad">
-        <variable name="ADAD_TOKEN_CODE" value="942c6b4924a84058a4c0e3f6a685cf27" />
-        <variable name="ADAD_TEST_MODE" value="false" />
-        <variable name="ADAD_LOG_MODE" value="false" />
-    </plugin>
     <plugin name="cordova-plugin-x-socialsharing" spec="^5.4.1" />
     <plugin name="cordova-plugin-ionic-webview" spec="^1.2.1" />
     <plugin name="cordova-plugin-nativeaudio" spec="^3.0.9" />
-    <engine name="android" spec="7.1.1" />
+    <engine name="android" spec="~7.1.1" />
 </widget>
