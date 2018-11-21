@@ -1,8 +1,7 @@
-✔ Gathering environment info - done!
 
 Ionic:
 
-   ionic (Ionic CLI)  : 4.2.1 (/home/developer/.nvm/versions/node/v8.11.3/lib/node_modules/ionic)
+   ionic (Ionic CLI)  : 4.4.0 (/home/developer/.nvm/versions/node/v8.11.3/lib/node_modules/ionic)
    Ionic Framework    : ionic-angular 3.9.2
    @ionic/app-scripts : 3.2.0
 
